@@ -71,6 +71,7 @@ path.py==7.2
 piexif==1.0.2
 Pillow==3.1.1
 polib==1.0.3
+py2neo==3.1.1
 pycrypto>=2.6
 pygments==2.0.1
 pygraphviz==1.1
