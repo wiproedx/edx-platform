@@ -352,9 +352,10 @@ define(['backbone', 'jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers
                 return 'Unknown user: ' + name;
             };
 
-            beforeEach(function() {
-                setFixtures('<ul class="instructor-nav"><li class="nav-item"><<a href data-section=' +
-                    '"cohort_management" class="active-section">Cohort Management</a></li></ul><div></div>' +
+            beforeEach(function () {
+                setFixtures('<ul class="instructor-nav">' +
+                    '<li class="nav-item"><button type="button" data-section="cohort_management" ' +
+                    'class="active-section">Cohort Management</button></li></ul><div></div>' +
                     '<div class="cohort-management"><div class="cohort-state-message"></div></div>');
                 TemplateHelpers.installTemplate('templates/instructor/instructor_dashboard_2/cohorts');
                 TemplateHelpers.installTemplate('templates/instructor/instructor_dashboard_2/cohort-form');
