@@ -27,7 +27,7 @@
 
     <% if (hasExplicitStaffLock && !ancestorLocked) { %>
         <p class="tip tip-warning">
-            <%- gettext('Units inherit the visibility setting of the subsection they are in. If you make this subsection visible to learners, published units that were previously hidden also become visible. Only units that were explicitly hidden remain hidden regardless of the option you select for this subsection.') %>
+            <%- gettext('If you select an option other than Hide entire subsection, after the subsection release date has passed, published units in this subsection will become available to learners unless units are explicitly hidden.') %>
         </p>
     <% } %>
 </div>
