@@ -1,20 +1,24 @@
+"""
+This file contains a management command for exporting the modulestore to
+neo4j, a graph database.
+"""
 import logging
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from py2neo import Graph, Node, Relationship, authenticate
-from py2neo.compat import integer, string, unicode
+from py2neo.compat import integer, string, unicode as neo4j_unicode
 from request_cache.middleware import RequestCache
 from xmodule.modulestore.django import modulestore
 
 log = logging.getLogger(__name__)
 
-logger = logging.getLogger('neo4j.bolt')
-logger.propagate = False
-logger.disabled = True
+bolt_log = logging.getLogger('neo4j.bolt')
+bolt_log.propagate = False
+bolt_log.disabled = True
 
 ITERABLE_NEO4J_TYPES = (tuple, list, set, frozenset)
-ACCEPTABLE_NEO4J_TYPES = ITERABLE_NEO4J_TYPES + (integer, string, unicode, float, bool)
+ACCEPTABLE_NEO4J_TYPES = ITERABLE_NEO4J_TYPES + (integer, string, neo4j_unicode, float, bool)
 
 
 class ModuleStoreSerializer(object):
@@ -26,7 +30,7 @@ class ModuleStoreSerializer(object):
         self.all_courses = modulestore().get_course_summaries()
 
     @staticmethod
-    def _serialize_item(item):
+    def serialize_item(item):
         """
         Args:
             item: an XBlock
@@ -81,7 +85,7 @@ class ModuleStoreSerializer(object):
         # create nodes
         nodes = []
         for item in items:
-            fields, label = self._serialize_item(item)
+            fields, label = self.serialize_item(item)
 
             for field_name, value in fields.iteritems():
                 fields[field_name] = self.coerce_types(value)
@@ -141,7 +145,7 @@ class Command(BaseCommand):
         for entity in neo4j_entities:
             transaction.create(entity)
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):  # pylint: disable=unused-argument
         """
         Iterates through each course, serializes them into graphs, and saves
         those graphs to neo4j.

@@ -1,5 +1,7 @@
- # coding=utf-8
-
+# coding=utf-8
+"""
+Tests for the dump_to_neo4j management command.
+"""
 import mock
 
 import ddt
@@ -36,12 +38,12 @@ class TestDumpToNeo4jCommand(TestDumpToNeo4jCommandBase):
     Tests for the dump to neo4j management command
     """
     @mock.patch('courseware.management.commands.dump_to_neo4j.Graph')
-    def test_dump_to_neo4j(self, MockGraph):
+    def test_dump_to_neo4j(self, mock_graph_class):
         """
         Tests the dump_to_neo4j management command works against a mock
         py2neo Graph
         """
-        mock_graph = MockGraph.return_value
+        mock_graph = mock_graph_class.return_value
         mock_transaction = mock.Mock()
         mock_graph.begin.return_value = mock_transaction
 
@@ -57,12 +59,12 @@ class TestDumpToNeo4jCommand(TestDumpToNeo4jCommandBase):
         self.assertEqual(mock_transaction.create.call_count, 18)
 
     @mock.patch('courseware.management.commands.dump_to_neo4j.Graph')
-    def test_dump_to_neo4j_rollback(self, MockGraph):
+    def test_dump_to_neo4j_rollback(self, mock_graph_class):
         """
         Tests that the management command handles the case where there's
         an exception trying to write to the neo4j database.
         """
-        mock_graph = MockGraph.return_value
+        mock_graph = mock_graph_class.return_value
         mock_transaction = mock.Mock()
         mock_graph.begin.return_value = mock_transaction
         mock_transaction.create.side_effect = ValueError('Something went wrong!')
@@ -86,9 +88,9 @@ class TestModuleStoreSerializer(TestDumpToNeo4jCommandBase):
 
     def test_serialize_item(self):
         """
-        Tests the _serialize_item method.
+        Tests the serialize_item method.
         """
-        fields, label = self.modulestore_serializer._serialize_item(self.course)
+        fields, label = self.modulestore_serializer.serialize_item(self.course)
         self.assertEqual(label, "course")
         self.assertIn("edited_on", fields.keys())
         self.assertIn("display_name", fields.keys())
