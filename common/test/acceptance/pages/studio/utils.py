@@ -148,6 +148,7 @@ def type_in_codemirror(page, index, text, find_prefix="$"):
     CodeMirror.signal(cm, "focus", cm);
     cm.setValue(arguments[0]);
     CodeMirror.signal(cm, "blur", cm);""".format(index=index, find_prefix=find_prefix)
+
     page.browser.execute_script(script, str(text))
 
 
@@ -250,3 +251,22 @@ def click_studio_help(page):
 def studio_help_links(page):
     """Return the list of Studio help links in the page footer."""
     return page.q(css='.support .list-actions a').results
+
+
+def studio_help_links_in_nav_bar(page):
+    """
+    Returns the list studio help links in navigation bar
+    """
+    return page.q(css='.nav-item.nav-account-help a').results
+
+
+def get_element(page, css):
+    """
+    Get the element matching the css passed.
+    Arguments:
+        page (Page Object): Page on which element resides.
+        css (str): css of element
+    Returns:
+        WebElement: Element matching the css.
+    """
+    return page.q(css=css).results[0]

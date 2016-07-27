@@ -350,6 +350,48 @@ def is_404_page(browser):
     return 'Page not found (404)' in browser.find_element_by_tag_name('h1').text
 
 
+def get_url_with_changed_domain(url):
+    """
+    Replaces .org with .io in the url
+
+    Arguments:
+        url (str): The url to perform replace operation on.
+
+    Returns:
+        str: The updated url
+    """
+    return url.replace('.org/', '.io/')
+
+
+def assert_links(test, expected_link, actual_link):
+    """
+    Assert that 'href' and text are the same as expected.
+
+    Arguments:
+        test: Test on which links are being tested.
+        expected_link (dict): The expected link attributes.
+        actual_link (dict): The actual link attribute on page.
+    """
+    test.assertEqual(expected_link['url'], actual_link.get_attribute('href'))
+    test.assertEqual(expected_link['text'], actual_link.text)
+
+
+def assert_help_is_open(test, url):
+    """
+    Assert that help has been opened correctly in the new window.
+    Arguments:
+        test: Test on which assert is being performed.
+        href (str): Url of help.
+    """
+    # Switch to window where help is opened.
+    test.browser.switch_to_window(test.browser.window_handles[-1])
+    # Assert that url in the browser is the same.
+    # Please not that browser will be redirected and org will be changed into
+    # io domain.
+    test.assertEqual(get_url_with_changed_domain(url), test.browser.current_url)
+    test.assertNotIn('Maze Found', test.browser.title)
+
+
 class EventsTestMixin(TestCase):
     """
     Helpers and setup for running tests that evaluate events emitted
