@@ -6,7 +6,7 @@ import logging
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from py2neo import Graph, Node, Relationship, authenticate
+from py2neo import Graph, Node, Relationship
 from py2neo.compat import integer, string, unicode as neo4j_unicode
 from request_cache.middleware import RequestCache
 from xmodule.modulestore.django import modulestore
@@ -18,7 +18,7 @@ bolt_log.propagate = False
 bolt_log.disabled = True
 
 ITERABLE_NEO4J_TYPES = (tuple, list, set, frozenset)
-ACCEPTABLE_NEO4J_TYPES = ITERABLE_NEO4J_TYPES + (integer, string, neo4j_unicode, float, bool)
+PRIMITIVE_NEO4J_TYPES = (integer, string, neo4j_unicode, float, bool)
 
 
 class ModuleStoreSerializer(object):
@@ -125,7 +125,7 @@ class ModuleStoreSerializer(object):
 
         # if it's not one of the types that neo4j accepts,
         # just convert it to unicode
-        elif not isinstance(value, ACCEPTABLE_NEO4J_TYPES):
+        elif not isinstance(value, PRIMITIVE_NEO4J_TYPES):
             coerced_value = unicode(value)
 
         return coerced_value
@@ -152,11 +152,6 @@ class Command(BaseCommand):
         """
         mss = ModuleStoreSerializer()
         graph = Graph(**settings.NEO4J_CONFIG)
-        authenticate(
-            settings.NEO4J_CONFIG['https_port'],
-            settings.NEO4J_CONFIG['user'],
-            settings.NEO4J_CONFIG['password'],
-        )
 
         log.info("deleting existing coursegraph data")
         graph.delete_all()

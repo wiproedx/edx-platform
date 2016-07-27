@@ -2944,7 +2944,8 @@ REDIRECT_CACHE_KEY_PREFIX = 'redirects'
 ############## Settings for Neo4j ############################
 NEO4J_CONFIG = {
     'bolt': True,
-    'password': 'dummy',
-    'user': 'dummy',
-    'https_port': 'localhost:7473',
+    'password': 'password',
+    'user': 'neo4j',
+    'https_port': 7473,
+    'host': 'localhost'
 }
