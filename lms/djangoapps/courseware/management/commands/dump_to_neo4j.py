@@ -13,7 +13,7 @@ from xmodule.modulestore.django import modulestore
 
 log = logging.getLogger(__name__)
 
-bolt_log = logging.getLogger('neo4j.bolt')
+bolt_log = logging.getLogger('neo4j.bolt')  # pylint: disable=invalid-name
 bolt_log.propagate = False
 bolt_log.disabled = True
 
