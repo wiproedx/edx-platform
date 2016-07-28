@@ -2947,5 +2947,6 @@ NEO4J_CONFIG = {
     'password': 'password',
     'user': 'neo4j',
     'https_port': 7473,
-    'host': 'localhost'
+    'host': 'localhost',
+    'secure': True,
 }

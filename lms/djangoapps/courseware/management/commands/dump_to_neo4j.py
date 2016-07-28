@@ -6,7 +6,7 @@ import logging
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-from py2neo import Graph, Node, Relationship
+from py2neo import Graph, Node, Relationship, authenticate
 from py2neo.compat import integer, string, unicode as neo4j_unicode
 from request_cache.middleware import RequestCache
 from xmodule.modulestore.django import modulestore
@@ -157,8 +157,12 @@ class Command(BaseCommand):
                 "No neo4j configuration (NEO4J_CONFIG) defined in lms.auth.json."
             )
 
-        mss = ModuleStoreSerializer()
+        auth_params = ["{host}:{https_port}", "{user}", "{password}"]
+        authenticate(*[param.format(**settings.NEO4J_CONFIG) for param in auth_params])
+
         graph = Graph(**settings.NEO4J_CONFIG)
+
+        mss = ModuleStoreSerializer()
 
         log.info("deleting existing coursegraph data")
         graph.delete_all()
