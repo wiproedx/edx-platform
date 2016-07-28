@@ -5,7 +5,7 @@ neo4j, a graph database.
 import logging
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from py2neo import Graph, Node, Relationship
 from py2neo.compat import integer, string, unicode as neo4j_unicode
 from request_cache.middleware import RequestCache
@@ -13,9 +13,10 @@ from xmodule.modulestore.django import modulestore
 
 log = logging.getLogger(__name__)
 
+# When testing locally, neo4j's bolt logger was noisy, so we'll only have it
+# emit logs if there's an error.
 bolt_log = logging.getLogger('neo4j.bolt')  # pylint: disable=invalid-name
-bolt_log.propagate = False
-bolt_log.disabled = True
+bolt_log.setLevel(logging.ERROR)
 
 ITERABLE_NEO4J_TYPES = (tuple, list, set, frozenset)
 PRIMITIVE_NEO4J_TYPES = (integer, string, neo4j_unicode, float, bool)
@@ -150,6 +151,12 @@ class Command(BaseCommand):
         Iterates through each course, serializes them into graphs, and saves
         those graphs to neo4j.
         """
+        # first, make sure that there's a valid neo4j configuration
+        if settings.NEO4J_CONFIG is None:
+            raise CommandError(
+                "No neo4j configuration (NEO4J_CONFIG) defined in lms.auth.json."
+            )
+
         mss = ModuleStoreSerializer()
         graph = Graph(**settings.NEO4J_CONFIG)
 

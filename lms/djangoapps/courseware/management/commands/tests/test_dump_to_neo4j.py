@@ -10,6 +10,7 @@ from courseware.management.commands.dump_to_neo4j import (
     ITERABLE_NEO4J_TYPES,
 )
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from xmodule.modulestore.tests.django_utils import SharedModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 
@@ -75,6 +76,15 @@ class TestDumpToNeo4jCommand(TestDumpToNeo4jCommandBase):
         self.assertEqual(mock_graph.begin.call_count, 2)
         self.assertEqual(mock_transaction.commit.call_count, 0)
         self.assertEqual(mock_transaction.rollback.call_count, 2)
+
+    @mock.patch('django.conf.settings.NEO4J_CONFIG', None)
+    def test_dump_to_neo4j_no_config(self):
+        """
+        Tests that the command errors out if there isn't a configuration
+        file found
+        """
+        with self.assertRaises(CommandError):
+            call_command('dump_to_neo4j')
 
 
 @ddt.ddt
