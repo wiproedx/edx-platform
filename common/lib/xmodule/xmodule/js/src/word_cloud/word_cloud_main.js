@@ -124,7 +124,7 @@
             minSize = 10000;
             scaleFactor = 1;
             maxFontSize = 200;
-            minFontSize = 15;
+            minFontSize = 16;
 
         // Find the word with the maximum percentage. I.e. the most popular word.
             $.each(words, function(index, word) {
@@ -248,11 +248,18 @@
                 .attr('transform', 'translate(' + (0.5 * this.width) + ',' + (0.5 * this.height) + ')')
                 .selectAll('text')
                 .data(words)
-                .enter().append('g');
+                .enter()
+                .append('g')
+                .attr('aria-describedby', function(d) {
+                    return 'text_word_' + d.text + ' ' + 'title_word_' + d.text;
+                });
 
             groupEl
             .append('title')
-            .text(function(d) {
+            .attr('id', function(d) {
+                return 'title_word_' + d.text
+            })
+            .text(function (d) {
                 var res = '';
 
                 $.each(response.top_words, function(index, value) {
@@ -268,7 +275,10 @@
 
             groupEl
             .append('text')
-            .style('font-size', function(d) {
+            .attr('id', function(d) {
+                return 'text_word_' + d.text
+            })
+            .style('font-size', function (d) {
                 return d.size + 'px';
             })
             .style('font-family', 'Impact')
