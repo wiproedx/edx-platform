@@ -11,8 +11,12 @@
  *  @external d3, $, RequireJS
  */
 
-(function(requirejs, require, define) {
-    define('WordCloudMain', [], function() {
+(function (requirejs, require, define) {
+define('WordCloudMain', [
+    'gettext',
+    'edx-ui-toolkit/js/utils/html-utils'
+], function (gettext, HtmlUtils) {
+
     /**
      * @function WordCloudMain
      *
@@ -228,15 +232,30 @@
             $.each(response.student_words, function(word, stat) {
                 var percent = (response.display_student_percents) ? ' ' + (Math.round(100 * (stat / response.total_count))) + '%' : '';
 
-                studentWordsKeys.push('<strong>' + word + '</strong>' + percent);
-            });
-            studentWordsStr = '' + studentWordsKeys.join(', ');
+            studentWordsKeys.push(HtmlUtils.interpolateHtml(
+                gettext('{startTag}{word}{endTag}{percent}'),
+                {
+                    startTag: HtmlUtils.HTML('<strong>'),
+                    word: word,
+                    endTag: HtmlUtils.HTML('</strong>'),
+                    percent: percent
+                }
+            ));
+        });
+        studentWordsStr = '' + studentWordsKeys.join(', ');
 
-            cloudSectionEl
-            .addClass('active')
-            .find('.your_words').html(studentWordsStr)
-            .end()
-            .find('.total_num_words').html(response.total_count);
+        cloudSectionEl
+            .addClass('active');
+            
+        HtmlUtils.setHtml(
+            cloudSectionEl.find('.your_words'),
+            HtmlUtils.HTML(studentWordsStr)
+        );
+        
+        HtmlUtils.setHtml(
+            cloudSectionEl.find('.your_words').end().find('.total_num_words'),
+            HtmlUtils.HTML(response.total_count)
+        );
 
             $(cloudSectionEl.attr('id') + ' .word_cloud').empty();
 
