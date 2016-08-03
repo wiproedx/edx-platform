@@ -12,11 +12,11 @@
  */
 
 (function (requirejs, require, define) {
-define('WordCloudMain', [
-    'gettext',
-    'edx-ui-toolkit/js/utils/html-utils'
-], function (gettext, HtmlUtils) {
-
+    'use strict';
+    define('WordCloudMain', [
+        'gettext',
+        'edx-ui-toolkit/js/utils/html-utils'
+    ], function(gettext, HtmlUtils) {
     /**
      * @function WordCloudMain
      *
@@ -246,12 +246,12 @@ define('WordCloudMain', [
 
         cloudSectionEl
             .addClass('active');
-            
+
         HtmlUtils.setHtml(
             cloudSectionEl.find('.your_words'),
             HtmlUtils.HTML(studentWordsStr)
         );
-        
+
         HtmlUtils.setHtml(
             cloudSectionEl.find('.your_words').end().find('.total_num_words'),
             HtmlUtils.HTML(response.total_count)
