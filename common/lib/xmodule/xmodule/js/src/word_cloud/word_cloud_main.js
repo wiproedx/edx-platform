@@ -253,7 +253,8 @@
             HtmlUtils.HTML(studentWordsStr)
         );
 
-        cloudSectionEl.find('.your_words').end().find('.total_num_words').text(response.total_count);
+        cloudSectionEl.find('.your_words').end().find('.total_num_words')
+            .text(response.total_count);
 
             $(cloudSectionEl.attr('id') + ' .word_cloud').empty();
 
@@ -267,7 +268,7 @@
                 .data(words)
                 .enter()
                 .append('g')
-                .attr('aria-labelledby', function(d) {
+                .attr('aria-describedby', function(d) {
                     return HtmlUtils.interpolateHtml(
                         gettext('text_word_{word} title_word_{word}'),
                         {
