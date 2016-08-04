@@ -233,15 +233,16 @@
                 var percent = (response.display_student_percents) ? ' ' + (Math.round(100 * (stat / response.total_count))) + '%' : '';
 
             studentWordsKeys.push(HtmlUtils.interpolateHtml(
-                gettext('{startTag}{word}{endTag}{percent}'),
+                '{startTag}{word}{endTag}{percent}',
                 {
                     startTag: HtmlUtils.HTML('<strong>'),
                     word: word,
                     endTag: HtmlUtils.HTML('</strong>'),
                     percent: percent
                 }
-            ));
+            ).toString());
         });
+
         studentWordsStr = '' + studentWordsKeys.join(', ');
 
         cloudSectionEl
@@ -252,10 +253,7 @@
             HtmlUtils.HTML(studentWordsStr)
         );
 
-        HtmlUtils.setHtml(
-            cloudSectionEl.find('.your_words').end().find('.total_num_words'),
-            HtmlUtils.HTML(response.total_count)
-        );
+        cloudSectionEl.find('.your_words').end().find('.total_num_words').text(response.total_count);
 
             $(cloudSectionEl.attr('id') + ' .word_cloud').empty();
 
@@ -270,7 +268,12 @@
                 .enter()
                 .append('g')
                 .attr('aria-labelledby', function(d) {
-                    return 'text_word_' + d.text + ' title_word_' + d.text;
+                    return HtmlUtils.interpolateHtml(
+                        gettext('text_word_{word} title_word_{word}'),
+                        {
+                            word: d.text.replace(/\s/g, '_')
+                        }
+                    );
                 });
 
             groupEl

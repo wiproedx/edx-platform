@@ -13,7 +13,7 @@
 
     <div class="input_cloud_section" role="group">
         % for row in range(num_inputs):
-            <label for="word_cloud_${element_id}_input_${row}" class="sr">${_('Word')} ${row + 1} ${_('of')} ${num_inputs}</label>
+            <label for="word_cloud_${element_id}_input_${row}" class="sr">${row + 1}/${num_inputs}</label>
             <input
                 id="word_cloud_${element_id}_input_${row}"
                 class="input-cloud"
