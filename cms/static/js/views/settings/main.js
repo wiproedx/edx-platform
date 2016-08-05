@@ -119,6 +119,9 @@ var DetailsView = ValidatingView.extend({
         this.$el.find('#video-thumbnail-image-url').val(videoThumbnailImageURL);
         this.$el.find('#video-thumbnail-image').attr('src', videoThumbnailImageURL);
 
+        console.log('I was here.');
+        debugger;
+
         var pre_requisite_courses = this.model.get('pre_requisite_courses');
         pre_requisite_courses = pre_requisite_courses.length > 0 ? pre_requisite_courses : '';
         this.$el.find('#' + this.fieldToSelectorMap['pre_requisite_courses']).val(pre_requisite_courses);

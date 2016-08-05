@@ -968,11 +968,26 @@ def settings_handler(request, course_key_string):
     PUT
         json: update the Course and About xblocks through the CourseDetails model
     """
+
+    import logging
+    from datetime import datetime
+    logging.debug('***********************************************************')
+    logging.debug('***********************************************************')
+    logging.debug('***********************************************************')
+    logging.debug('***********************************************************')
+    logging.debug('Request = ')
+    logging.debug(request)
+
+
     course_key = CourseKey.from_string(course_key_string)
     credit_eligibility_enabled = settings.FEATURES.get('ENABLE_CREDIT_ELIGIBILITY', False)
     with modulestore().bulk_operations(course_key):
         course_module = get_course_and_check_access(course_key, request.user)
         if 'text/html' in request.META.get('HTTP_ACCEPT', '') and request.method == 'GET':
+
+            logging.debug('HTML request')
+            logging.debug(datetime.now().time())
+
             upload_asset_url = reverse_course_url('assets_handler', course_key)
 
             # see if the ORG of this course can be attributed to a defined configuration . In that case, the
@@ -1046,8 +1061,22 @@ def settings_handler(request, course_key_string):
 
             return render_to_response('settings.html', settings_context)
         elif 'application/json' in request.META.get('HTTP_ACCEPT', ''):
+
+
+            logging.debug('JSON request Block')
+            logging.debug(datetime.now().time())
+
+
             if request.method == 'GET':
+                logging.debug('JSON request GET Block')
+                logging.debug(datetime.now().time())
+
                 course_details = CourseDetails.fetch(course_key)
+
+                logging.debug(datetime.now().time())
+                logging.debug(course_details)
+
+
                 return JsonResponse(
                     course_details,
                     # encoder serializes dates, old locations, and instances
