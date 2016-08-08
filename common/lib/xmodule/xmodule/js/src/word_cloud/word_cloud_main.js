@@ -233,17 +233,19 @@
                 var percent = (response.display_student_percents) ? ' ' + (Math.round(100 * (stat / response.total_count))) + '%' : '';
 
             studentWordsKeys.push(HtmlUtils.interpolateHtml(
-                '{startTag}{word}{endTag}{percent}',
+                '{listStart}{startTag}{word}{endTag}{percent}{listEnd}',
                 {
+                    listStart: HtmlUtils.HTML('<li>'),
                     startTag: HtmlUtils.HTML('<strong>'),
                     word: word,
                     endTag: HtmlUtils.HTML('</strong>'),
-                    percent: percent
+                    percent: percent,
+                    listEnd: HtmlUtils.HTML('</li>')
                 }
             ).toString());
         });
 
-        studentWordsStr = '' + studentWordsKeys.join(', ');
+        studentWordsStr = '' + studentWordsKeys.join('');
 
         cloudSectionEl
             .addClass('active');

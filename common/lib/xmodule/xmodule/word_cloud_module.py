@@ -246,7 +246,8 @@ class WordCloudModule(WordCloudFields, XModule):
             'ajax_url': self.system.ajax_url,
             'num_inputs': self.num_inputs,
             'submitted': self.submitted,
-            'instructions': self.instructions
+            'instructions': self.instructions,
+            'display_name': self.display_name
         }
         self.content = self.system.render_template('word_cloud.html', context)
         return self.content

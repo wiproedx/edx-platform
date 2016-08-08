@@ -6,6 +6,7 @@
     class="${element_class}"
     data-ajax-url="${ajax_url}"
 >
+    <h3 class="hd hd-3">${display_name}</h3>
 
     <div class="input_cloud_instructions" id="word_cloud_${element_id}_instructions">
         ${instructions}
@@ -30,9 +31,9 @@
     </div>
 
     <div id="result_cloud_section_${element_id}" class="result_cloud_section">
-        <h3>${_('Your words:')} <span class="your_words"></span></h3>
-        <h3>${_('Total number of words:')} <span class="total_num_words"></span></h3>
         <div class="word_cloud"></div>
+        <p id="heading-words">${'Your'} <strong><span class="total_num_words"></span></strong> ${'words'}:</p>
+        <ul class="your_words" aria-describedby="heading-words"></ul>
     </div>
 
 </div>
