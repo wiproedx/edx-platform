@@ -125,25 +125,25 @@ Feature: LMS.Answer problems
         Then I should see a score of "<Points Possible>"
 
         Examples:
-        | ProblemType       | Correctness   | Score               | Points Possible    |
-        | drop down         | correct       | 1/1 point           | 1 point possible   |
-        | drop down         | incorrect     | 1 point possible    | 1 point possible   |
-        | multiple choice   | correct       | 1/1 point           | 1 point possible   |
-        | multiple choice   | incorrect     | 1 point possible    | 1 point possible   |
-        | checkbox          | correct       | 1/1 point           | 1 point possible   |
-        | checkbox          | incorrect     | 1 point possible    | 1 point possible   |
-        | radio             | correct       | 1/1 point           | 1 point possible   |
-        | radio             | incorrect     | 1 point possible    | 1 point possible   |
-        #| string            | correct       | 1/1 point           | 1 point possible   |
-        #| string            | incorrect     | 1 point possible    | 1 point possible   |
-        | numerical         | correct       | 1/1 point           | 1 point possible   |
-        | numerical         | incorrect     | 1 point possible    | 1 point possible   |
-        | formula           | correct       | 1/1 point           | 1 point possible   |
-        | formula           | incorrect     | 1 point possible    | 1 point possible   |
-        | script            | correct       | 2/2 points          | 2 points possible  |
-        | script            | incorrect     | 2 points possible   | 2 points possible  |
-        | image             | correct       | 1/1 point           | 1 point possible   |
-        | image             | incorrect     | 1 point possible    | 1 point possible   |
+        | ProblemType       | Correctness   | Score                     | Points Possible            |
+        | drop down         | correct       | 1/1 point; graded         | 1 point possible; graded   |
+        | drop down         | incorrect     | 1 point possible; graded  | 1 point possible; graded   |
+        | multiple choice   | correct       | 1/1 point; graded         | 1 point possible; graded   |
+        | multiple choice   | incorrect     | 1 point possible; graded  | 1 point possible; graded   |
+        | checkbox          | correct       | 1/1 point; graded         | 1 point possible; graded   |
+        | checkbox          | incorrect     | 1 point possible; graded  | 1 point possible; graded   |
+        | radio             | correct       | 1/1 point; graded         | 1 point possible; graded   |
+        | radio             | incorrect     | 1 point possible; graded  | 1 point possible; graded   |
+        #| string            | correct       | 1/1 point; graded        | 1 point possible; graded   |
+        #| string            | incorrect     | 1 point possible; graded | 1 point possible; graded   |
+        | numerical         | correct       | 1/1 point; graded         | 1 point possible; graded   |
+        | numerical         | incorrect     | 1 point possible; graded  | 1 point possible; graded   |
+        | formula           | correct       | 1/1 point; graded         | 1 point possible; graded   |
+        | formula           | incorrect     | 1 point possible; graded  | 1 point possible; graded   |
+        | script            | correct       | 2/2 points; graded        | 2 points possible; graded  |
+        | script            | incorrect     | 2 points possible; graded | 2 points possible; graded  |
+        | image             | correct       | 1/1 point; graded         | 1 point possible; graded   |
+        | image             | incorrect     | 1 point possible; graded  | 1 point possible; graded   |
 
     Scenario: I can see my score on a problem when I answer it and after I reset it
         Given I am viewing a "<ProblemType>" problem with randomization "<Randomization>" with reset button on
