@@ -45,7 +45,7 @@ class WordCloudFields(object):
         display_name=_("Instructions"),
         help=_("Add instructions for this word cloud"),
         scope=Scope.settings,
-        default="List your five favorite foods."
+        default=""
     )
     num_inputs = Integer(
         display_name=_("Inputs"),
