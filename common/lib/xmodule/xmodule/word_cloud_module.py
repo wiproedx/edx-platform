@@ -246,9 +246,11 @@ class WordCloudModule(WordCloudFields, XModule):
             'ajax_url': self.system.ajax_url,
             'num_inputs': self.num_inputs,
             'submitted': self.submitted,
+            'instructions_default': self.instructions.default,
             'instructions': self.instructions,
             'display_name': self.display_name
         }
+        import ipdb; ipdb.set_trace()
         self.content = self.system.render_template('word_cloud.html', context)
         return self.content
 
