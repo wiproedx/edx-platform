@@ -248,7 +248,9 @@ class TestWordCloud(BaseTestXmodule):
             'ajax_url': self.item_descriptor.xmodule_runtime.ajax_url,
             'element_class': self.item_descriptor.location.category,
             'element_id': self.item_descriptor.location.html_id(),
+            'instructions': 'Replace this text with instructions for your word cloud.',
+            'instructions_detault': 'Replace this text with instructions for your word cloud.',
             'num_inputs': 5,  # default value
-            'submitted': False  # default value
+            'submitted': False,  # default value
         }
         self.assertEqual(fragment.content, self.runtime.render_template('word_cloud.html', expected_context))
