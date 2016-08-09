@@ -17,106 +17,107 @@
         'gettext',
         'edx-ui-toolkit/js/utils/html-utils'
     ], function(gettext, HtmlUtils) {
-    /**
-     * @function WordCloudMain
-     *
-     * This function will process all the attributes from the DOM element passed, taking all of
-     * the configuration attributes. It will either then attach a callback handler for the click
-     * event on the button in the case when the user needs to enter words, or it will call the
-     * appropriate mehtod to generate and render a word cloud from user's enetered words along with
-     * all of the other words.
-     *
-     * @constructor
-     *
-     * @param {jQuery} el DOM element where the word cloud will be processed and created.
-     */
-        var WordCloudMain = function(el) {
+        /**
+         * @function WordCloudMain
+         *
+         * This function will process all the attributes from the DOM element passed, taking all of
+         * the configuration attributes. It will either then attach a callback handler for the click
+         * event on the button in the case when the user needs to enter words, or it will call the
+         * appropriate mehtod to generate and render a word cloud from user's enetered words along with
+         * all of the other words.
+         *
+         * @constructor
+         *
+         * @param {jQuery} el DOM element where the word cloud will be processed and created.
+         */
+        var WordCloudMain = function (el) {
             var _this = this;
 
             this.wordCloudEl = $(el).find('.word_cloud');
 
-        // Get the URL to which we will post the users words.
+            // Get the URL to which we will post the users words.
             this.ajax_url = this.wordCloudEl.data('ajax-url');
 
-        // Dimensions of the box where the word cloud will be drawn.
+            // Dimensions of the box where the word cloud will be drawn.
             this.width = 635;
             this.height = 635;
 
-        // Hide WordCloud container before Ajax request done
+            // Hide WordCloud container before Ajax request done
             this.wordCloudEl.hide();
 
-        // Retriveing response from the server as an AJAX request. Attach a callback that will
-        // be fired on server's response.
+            // Retriveing response from the server as an AJAX request. Attach a callback that will
+            // be fired on server's response.
             $.postWithPrefix(
-            _this.ajax_url + '/' + 'get_state', null,
-            function(response) {
-                if (response.status !== 'success') {
-                    console.log('ERROR: ' + response.error);
+                _this.ajax_url + '/' + 'get_state', null,
+                function (response) {
+                    if (response.status !== 'success') {
+                        console.log('ERROR: ' + response.error);
+
+                        return;
+                    }
+
+                    _this.configJson = response;
+                }
+            )
+            .done(function () {
+                // Show WordCloud container after Ajax request done
+                _this.wordCloudEl.show();
+
+                if (_this.configJson && _this.configJson.submitted) {
+                    _this.showWordCloud(_this.configJson);
 
                     return;
                 }
+            });
 
-                _this.configJson = response;
-            }
-        )
-        .done(function() {
-            // Show WordCloud container after Ajax request done
-            _this.wordCloudEl.show();
-
-            if (_this.configJson && _this.configJson.submitted) {
-                _this.showWordCloud(_this.configJson);
-
-                return;
-            }
-        });
-
-            $(el).find('input.save').on('click', function() {
+            $(el).find('input.save').on('click', function () {
                 _this.submitAnswer();
             });
         }; // End-of: var WordCloudMain = function (el) {
 
-    /**
-     * @function submitAnswer
-     *
-     * Callback to be executed when the user eneter his words. It will send user entries to the
-     * server, and upon receiving correct response, will call the function to generate the
-     * word cloud.
-     */
-        WordCloudMain.prototype.submitAnswer = function() {
+        /**
+         * @function submitAnswer
+         *
+         * Callback to be executed when the user eneter his words. It will send user entries to the
+         * server, and upon receiving correct response, will call the function to generate the
+         * word cloud.
+         */
+        WordCloudMain.prototype.submitAnswer = function () {
             var _this = this,
                 data = {'student_words': []};
 
-        // Populate the data to be sent to the server with user's words.
-            this.wordCloudEl.find('input.input-cloud').each(function(index, value) {
+            // Populate the data to be sent to the server with user's words.
+            this.wordCloudEl.find('input.input-cloud').each(function (index, value) {
                 data.student_words.push($(value).val());
             });
 
-        // Send the data to the server as an AJAX request. Attach a callback that will
-        // be fired on server's response.
+            // Send the data to the server as an AJAX request. Attach a callback that will
+            // be fired on server's response.
             $.postWithPrefix(
-            _this.ajax_url + '/' + 'submit', $.param(data),
-            function(response) {
-                if (response.status !== 'success') {
-                    console.log('ERROR: ' + response.error);
+                _this.ajax_url + '/' + 'submit', $.param(data),
+                function (response) {
+                    if (response.status !== 'success') {
+                        console.log('ERROR: ' + response.error);
 
-                    return;
+                        return;
+                    }
+
+                    _this.showWordCloud(response);
                 }
+            );
 
-                _this.showWordCloud(response);
-            }
-        );
         }; // End-of: WordCloudMain.prototype.submitAnswer = function () {
 
-    /**
-     * @function showWordCloud
-     *
-     * @param {object} response The response from the server that contains the user's entered words
-     * along with all of the top words.
-     *
-     * This function will set up everything for d3 and launch the draw method. Among other things,
-     * iw will determine maximum word size.
-     */
-        WordCloudMain.prototype.showWordCloud = function(response) {
+        /**
+         * @function showWordCloud
+         *
+         * @param {object} response The response from the server that contains the user's entered words
+         * along with all of the top words.
+         *
+         * This function will set up everything for d3 and launch the draw method. Among other things,
+         * iw will determine maximum word size.
+         */
+        WordCloudMain.prototype.showWordCloud = function (response) {
             var words,
                 _this = this,
                 maxSize, minSize, scaleFactor, maxFontSize, minFontSize;
@@ -130,8 +131,8 @@
             maxFontSize = 200;
             minFontSize = 16;
 
-        // Find the word with the maximum percentage. I.e. the most popular word.
-            $.each(words, function(index, word) {
+            // Find the word with the maximum percentage. I.e. the most popular word.
+            $.each(words, function (index, word) {
                 if (word.size > maxSize) {
                     maxSize = word.size;
                 }
@@ -140,12 +141,12 @@
                 }
             });
 
-        // Find the longest word, and calculate the scale appropriately. This is
-        // required so that even long words fit into the drawing area.
-        //
-        // This is a fix for: if the word is very long and/or big, it is discarded by
-        // for unknown reason.
-            $.each(words, function(index, word) {
+            // Find the longest word, and calculate the scale appropriately. This is
+            // required so that even long words fit into the drawing area.
+            //
+            // This is a fix for: if the word is very long and/or big, it is discarded by
+            // for unknown reason.
+            $.each(words, function (index, word) {
                 var tempScaleFactor = 1.0,
                     size = ((word.size / maxSize) * maxFontSize);
 
@@ -158,167 +159,166 @@
                 }
             });
 
-        // Update the maximum font size based on the longest word.
+            // Update the maximum font size based on the longest word.
             maxFontSize *= scaleFactor;
 
-        // Generate the word cloud.
+            // Generate the word cloud.
             d3.layout.cloud().size([this.width, this.height])
-            .words(words)
-            .rotate(function() {
-                return Math.floor((Math.random() * 2)) * 90;
-            })
-            .font('Impact')
-            .fontSize(function(d) {
-                var size = (d.size / maxSize) * maxFontSize;
+                .words(words)
+                .rotate(function () {
+                    return Math.floor((Math.random() * 2)) * 90;
+                })
+                .font('Impact')
+                .fontSize(function (d) {
+                    var size = (d.size / maxSize) * maxFontSize;
 
-                size = size >= minFontSize ? size : minFontSize;
+                    size = size >= minFontSize ? size : minFontSize;
 
-                return size;
-            })
-            .on('end', function(words, bounds) {
-                // Draw the word cloud.
-                _this.drawWordCloud(response, words, bounds);
-            })
-            .start();
+                    return size;
+                })
+                .on('end', function (words, bounds) {
+                    // Draw the word cloud.
+                    _this.drawWordCloud(response, words, bounds);
+                })
+                .start();
         }; // End-of: WordCloudMain.prototype.showWordCloud = function (response) {
 
-    /**
-     * @function drawWordCloud
-     *
-     * This function will be called when d3 has finished initing the state for our word cloud,
-     * and it is ready to hand off the process to the drawing routine. Basically set up everything
-     * necessary for the actual drwing of the words.
-     *
-     * @param {object} response The response from the server that contains the user's entered words
-     * along with all of the top words.
-     *
-     * @param {array} words An array of objects. Each object must have two properties. One property
-     * is 'text' (the actual word), and the other property is 'size' which represents the number that the
-     * word was enetered by the students.
-     *
-     * @param {array} bounds An array of two objects. First object is the top-left coordinates of the bounding
-     * box where all of the words fir, second object is the bottom-right coordinates of the bounding box. Each
-     * coordinate object contains two properties: 'x', and 'y'.
-     */
-        WordCloudMain.prototype.drawWordCloud = function(response, words, bounds) {
-            // Color words in different colors.
+        /**
+         * @function drawWordCloud
+         *
+         * This function will be called when d3 has finished initing the state for our word cloud,
+         * and it is ready to hand off the process to the drawing routine. Basically set up everything
+         * necessary for the actual drwing of the words.
+         *
+         * @param {object} response The response from the server that contains the user's entered words
+         * along with all of the top words.
+         *
+         * @param {array} words An array of objects. Each object must have two properties. One property
+         * is 'text' (the actual word), and the other property is 'size' which represents the number that the
+         * word was enetered by the students.
+         *
+         * @param {array} bounds An array of two objects. First object is the top-left coordinates of the bounding
+         * box where all of the words fir, second object is the bottom-right coordinates of the bounding box. Each
+         * coordinate object contains two properties: 'x', and 'y'.
+         */
+        WordCloudMain.prototype.drawWordCloud = function (response, words, bounds) {
+                // Color words in different colors.
             var fill = d3.scale.category20(),
 
-            // Will be populated by words the user enetered.
+                // Will be populated by words the user enetered.
                 studentWordsKeys = [],
 
-            // Comma separated string of user enetered words.
+                // Comma separated string of user enetered words.
                 studentWordsStr,
 
-            // By default we do not scale.
+                // By default we do not scale.
                 scale = 1,
 
-            // Caсhing of DOM element
+                // Caсhing of DOM element
                 cloudSectionEl = this.wordCloudEl.find('.result_cloud_section'),
 
-            // Needed for caсhing of d3 group elements
+                // Needed for caсhing of d3 group elements
                 groupEl;
 
-        // If bounding rectangle is given, scale based on the bounding box of all the words.
+            // If bounding rectangle is given, scale based on the bounding box of all the words.
             if (bounds) {
                 scale = 0.5 * Math.min(
-                this.width / Math.abs(bounds[1].x - this.width / 2),
-                this.width / Math.abs(bounds[0].x - this.width / 2),
-                this.height / Math.abs(bounds[1].y - this.height / 2),
-                this.height / Math.abs(bounds[0].y - this.height / 2)
-            );
+                    this.width / Math.abs(bounds[1].x - this.width / 2),
+                    this.width / Math.abs(bounds[0].x - this.width / 2),
+                    this.height / Math.abs(bounds[1].y - this.height / 2),
+                    this.height / Math.abs(bounds[0].y - this.height / 2)
+                );
             }
 
-            $.each(response.student_words, function(word, stat) {
+            $.each(response.student_words, function (word, stat) {
                 var percent = (response.display_student_percents) ? ' ' + (Math.round(100 * (stat / response.total_count))) + '%' : '';
 
-            studentWordsKeys.push(HtmlUtils.interpolateHtml(
-                '{listStart}{startTag}{word}{endTag}{percent}{listEnd}',
-                {
-                    listStart: HtmlUtils.HTML('<li>'),
-                    startTag: HtmlUtils.HTML('<strong>'),
-                    word: word,
-                    endTag: HtmlUtils.HTML('</strong>'),
-                    percent: percent,
-                    listEnd: HtmlUtils.HTML('</li>')
-                }
-            ).toString());
-        });
+                studentWordsKeys.push(HtmlUtils.interpolateHtml(
+                    '{listStart}{startTag}{word}{endTag}{percent}{listEnd}',
+                    {
+                        listStart: HtmlUtils.HTML('<li>'),
+                        startTag: HtmlUtils.HTML('<strong>'),
+                        word: word,
+                        endTag: HtmlUtils.HTML('</strong>'),
+                        percent: percent,
+                        listEnd: HtmlUtils.HTML('</li>')
+                    }
+                ).toString());
+            });
 
-        studentWordsStr = '' + studentWordsKeys.join('');
+            studentWordsStr = '' + studentWordsKeys.join('');
 
-        cloudSectionEl
-            .addClass('active');
+            cloudSectionEl
+                .addClass('active');
 
-        HtmlUtils.setHtml(
-            cloudSectionEl.find('.your_words'),
-            HtmlUtils.HTML(studentWordsStr)
-        );
+            HtmlUtils.setHtml(
+                cloudSectionEl.find('.your_words'),
+                HtmlUtils.HTML(studentWordsStr)
+            );
 
-        cloudSectionEl.find('.your_words').end().find('.total_num_words')
-            .text(response.total_count);
+            cloudSectionEl.find('.your_words').end().find('.total_num_words')
+                .text(response.total_count);
 
             $(cloudSectionEl.attr('id') + ' .word_cloud').empty();
 
-        // Actual drawing of word cloud.
+            // Actual drawing of word cloud.
             groupEl = d3.select('#' + cloudSectionEl.attr('id') + ' .word_cloud').append('svg')
-                .attr('width', this.width)
-                .attr('height', this.height)
-                .append('g')
-                .attr('transform', 'translate(' + (0.5 * this.width) + ',' + (0.5 * this.height) + ')')
-                .selectAll('text')
-                .data(words)
-                .enter()
-                .append('g')
-                .attr('aria-describedby', function(d) {
-                    return HtmlUtils.interpolateHtml(
-                        gettext('text_word_{word} title_word_{word}'),
-                        {
-                            word: d.text.replace(/\s/g, '_')
+                    .attr('width', this.width)
+                    .attr('height', this.height)
+                    .append('g')
+                    .attr('transform', 'translate(' + (0.5 * this.width) + ',' + (0.5 * this.height) + ')')
+                    .selectAll('text')
+                    .data(words)
+                    .enter()
+                    .append('g')
+                    .attr('aria-describedby', function(d) {
+                        return HtmlUtils.interpolateHtml(
+                            gettext('text_word_{word} title_word_{word}'),
+                            {
+                                word: d.text.replace(/\s/g, '_')
+                            }
+                        );
+                    });
+
+            groupEl
+                .append('title')
+                .attr('id', function(d) {
+                    return 'title_word_' + d.text;
+                })
+                .text(function (d) {
+                    var res = '';
+
+                    $.each(response.top_words, function(index, value){
+                        if (value.text === d.text) {
+                            res = value.percent + '%';
+
+                            return;
                         }
-                    );
+                    });
+
+                    return res;
                 });
 
             groupEl
-            .append('title')
-            .attr('id', function(d) {
-                return 'title_word_' + d.text;
-            })
-            .text(function (d) {
-                var res = '';
-
-                $.each(response.top_words, function(index, value) {
-                    if (value.text === d.text) {
-                        res = value.percent + '%';
-
-                        return;
-                    }
+                .append('text')
+                .attr('id', function(d) {
+                    return 'text_word_' + d.text;
+                })
+                .style('font-size', function (d) {
+                    return d.size + 'px';
+                })
+                .style('font-family', 'Impact')
+                .style('fill', function (d, i) {
+                    return fill(i);
+                })
+                .attr('text-anchor', 'middle')
+                .attr('transform', function (d) {
+                    return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')scale(' + scale + ')';
+                })
+                .text(function (d) {
+                    return d.text;
                 });
-
-                return res;
-            });
-
-            groupEl
-            .append('text')
-            .attr('id', function(d) {
-                return 'text_word_' + d.text;
-            })
-            .style('font-size', function (d) {
-                return d.size + 'px';
-            })
-            .style('font-family', 'Impact')
-            .style('fill', function(d, i) {
-                return fill(i);
-            })
-            .attr('text-anchor', 'middle')
-            .attr('transform', function(d) {
-                return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')scale(' + scale + ')';
-            })
-            .text(function(d) {
-                return d.text;
-            });
         }; // End-of: WordCloudMain.prototype.drawWordCloud = function (words, bounds) {
-
         return WordCloudMain;
     }); // End-of: define('WordCloudMain', [], function () {
 }(RequireJS.requirejs, RequireJS.require, RequireJS.define)); // End-of: (function (requirejs, require, define) {

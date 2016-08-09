@@ -45,7 +45,7 @@ class WordCloudFields(object):
         display_name=_("Instructions"),
         help=_("Add instructions for this word cloud"),
         scope=Scope.settings,
-        default=""
+        default="Replace this text with instructions for your word cloud."
     )
     num_inputs = Integer(
         display_name=_("Inputs"),
