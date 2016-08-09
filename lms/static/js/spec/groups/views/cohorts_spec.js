@@ -352,7 +352,7 @@ define(['backbone', 'jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers
                 return 'Unknown user: ' + name;
             };
 
-            beforeEach(function () {
+            beforeEach(function() {
                 setFixtures('<ul class="instructor-nav">' +
                     '<li class="nav-item"><button type="button" data-section="cohort_management" ' +
                     'class="active-section">Cohort Management</button></li></ul><div></div>' +

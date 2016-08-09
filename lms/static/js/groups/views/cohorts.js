@@ -329,7 +329,7 @@
                     }
                 },
 
-                getSectionCss: function (section) {
+                getSectionCss: function(section) {
                     return ".instructor-nav .nav-item [data-section='" + section + "']";
                 }
             });
