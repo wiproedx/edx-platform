@@ -249,7 +249,7 @@ class TestWordCloud(BaseTestXmodule):
             'element_class': self.item_descriptor.location.category,
             'element_id': self.item_descriptor.location.html_id(),
             'instructions': 'Replace this text with instructions for your word cloud.',
-            'instructions_detault': 'Replace this text with instructions for your word cloud.',
+            'instructions_default': 'Replace this text with instructions for your word cloud.',
             'num_inputs': 5,  # default value
             'submitted': False,  # default value
         }
