@@ -48,7 +48,7 @@
             // Retriveing response from the server as an AJAX request. Attach a callback that will
             // be fired on server's response.
             $.postWithPrefix(
-                _this.ajax_url + '/' + 'get_state', null,
+                _this.ajax_url + '/get_state', null,
                 function(response) {
                     if (response.status !== 'success') {
                         return;
@@ -92,7 +92,7 @@
             // Send the data to the server as an AJAX request. Attach a callback that will
             // be fired on server's response.
             $.postWithPrefix(
-                _this.ajax_url + '/' + 'submit', $.param(data),
+                _this.ajax_url + '/submit', $.param(data),
                 function(response) {
                     if (response.status !== 'success') {
                         return;
@@ -101,7 +101,6 @@
                     _this.showWordCloud(response);
                 }
             );
-
         }; // End-of: WordCloudMain.prototype.submitAnswer = function() {
 
         /**
@@ -172,7 +171,7 @@
 
                     return size;
                 })
-                .on('end', function(words, bounds) {
+                .on('end', function(words, bounds) { // eslint-disable-line no-shadow
                     // Draw the word cloud.
                     _this.drawWordCloud(response, words, bounds);
                 })
