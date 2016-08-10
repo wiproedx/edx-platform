@@ -1222,9 +1222,14 @@
       position: relative;
       display: inline-block;
 
-      a {
+      .toggle-button {
         display: inline-block;
         padding: ($baseline - 5);
+        background: transparent;
+        border-radius: 0;
+        border: 0;
+        box-shadow: none;
+        color: $uxpl-blue-base;
         // These transitions null out previously/globally set transitions
         -webkit-transition: none;
         -moz-transition: none;
@@ -1235,7 +1240,7 @@
 
       &.is-selected { // Active or selected tabs (<li>) get this class. Also useful for aria stuff if ever implemented in the future.
 
-        a {
+        .toggle-button {
           padding-bottom: ($baseline - 5);
           border-style: solid;
           @include border-width(1px 1px 0 1px);

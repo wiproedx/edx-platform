@@ -609,7 +609,7 @@ define(['backbone', 'jquery', 'edx-ui-toolkit/js/utils/spec-helpers/ajax-helpers
 
                 it('can select the Settings tab', function() {
                     createCohortsView(this, {selectCohort: 1});
-                    cohortsView.$('.tab-settings a').click();
+                    cohortsView.$('.tab-settings button').click();
                     expect(cohortsView.$('.tab-manage_students')).not.toHaveClass('is-selected');
                     expect(cohortsView.$('.tab-settings')).toHaveClass('is-selected');
                     expect(cohortsView.$('.tab-content-manage_students')).toHaveClass('is-hidden');

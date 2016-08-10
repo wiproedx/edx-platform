@@ -186,7 +186,6 @@ class StaffDebugTest(CourseWithoutContentGroupsTest):
         """
         staff_page = self._goto_staff_page()
         staff_page.answer_problem()
-
         staff_debug_page = staff_page.open_staff_debug_info()
         staff_debug_page.delete_state('INVALIDUSER')
         msg = staff_debug_page.idash_msg[0]

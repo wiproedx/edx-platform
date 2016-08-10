@@ -1148,6 +1148,9 @@ class CohortContentGroupAssociationTest(UniqueCourseTest, CohortTestMixin):
         """
         self.cohort_management_page.add_cohort(new_cohort, content_group=cohort_group)
         # After adding the cohort, it should automatically be selected
+        print new_cohort
+        print self.cohort_management_page.get_selected_cohort()
+        from nose.tools import set_trace; set_trace()
         EmptyPromise(
             lambda: new_cohort == self.cohort_management_page.get_selected_cohort(), "Waiting for new cohort to appear"
         ).fulfill()

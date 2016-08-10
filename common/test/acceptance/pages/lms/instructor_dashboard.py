@@ -386,7 +386,6 @@ class CohortManagementSection(PageObject):
             lambda: "Add a New Cohort" in self.q(css=self._bounded_selector(".form-title")).text,
             "Create cohort form is visible"
         )
-
         textinput = self.q(css=self._bounded_selector("#cohort-name")).results[0]
         textinput.send_keys(cohort_name)
 
