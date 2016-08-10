@@ -68,12 +68,12 @@ ${block_content}
       </div>
       <div data-location="${location | h}" data-location-name="${location.name | h}">
         [
-        <a href="#" class="staff-debug-reset">${_('Reset Student Attempts')}</a>
+        <button type="button" class="staff-debug-reset">${_('Reset Student Attempts')}</button>
         % if has_instructor_access:
         |
-        <a href="#" class="staff-debug-sdelete">${_('Delete Student State')}</a>
+        <button type="button" class="staff-debug-sdelete">${_('Delete Student State')}</button>
         |
-        <a href="#" class="staff-debug-rescore">${_('Rescore Student Submission')}</a>
+        <button type="button" class="staff-debug-rescore">${_('Rescore Student Submission')}</button>
         % endif
         ]
       </div>
@@ -143,4 +143,3 @@ $(function () {
 });
 </script>
 %endif
-

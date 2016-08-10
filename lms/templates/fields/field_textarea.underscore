@@ -27,7 +27,7 @@
             <% } %>
             ><%- value %></span>
         <% } else { %>
-            ><a href="#"><p class="sr"><%- screenReaderTitle %></p><span class="u-field-value-readonly" aria-hidden="false" aria-describedby="u-field-placeholder-value-<%- id %>"><%- value %></span><span class="sr"><%- gettext('Click to edit') %></span></a>
+            ><button type="button"><p class="sr"><%- screenReaderTitle %></p><span class="u-field-value-readonly" aria-hidden="false" aria-describedby="u-field-placeholder-value-<%- id %>"><%- value %></span><span class="sr"><%- gettext('Click to edit') %></span></button>
             <span class="sr" id="u-field-placeholder-value-<%- id %>"><%- placeholderValue %></span>
         <% } %>
     </div>
