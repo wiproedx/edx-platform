@@ -37,7 +37,7 @@ class SubsectionGrade(object):
         """
         List of all problem scores in the subsection.
         """
-        return [score for score, weight in self.locations_to_scores.itervalues()]
+        return [score for score, _ in self.locations_to_scores.itervalues()]
 
     def compute(self, student, course_structure, scores_client, submissions_scores):
         """
@@ -102,13 +102,13 @@ class SubsectionGrade(object):
         )
 
     def _compute_block_score(
-        self,
-        student,
-        block_key,
-        course_structure,
-        scores_client,
-        submissions_scores,
-        persisted_values = None,
+            self,
+            student,
+            block_key,
+            course_structure,
+            scores_client,
+            submissions_scores,
+            persisted_values=None,
     ):
         """
         Compute score for the given block. If persisted_values is provided, it will be used for possible and weight.
