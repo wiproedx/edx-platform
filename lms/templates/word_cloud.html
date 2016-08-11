@@ -23,7 +23,9 @@
                 ${'style="display: none;"' if submitted else ''}
                 type="text"
                 size="40"
+                % if instructions is not instructions_default:
                 aria-describedby="word_cloud_${element_id}_instructions"
+                % endif
             />
         % endfor
 
