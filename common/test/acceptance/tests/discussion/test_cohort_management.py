@@ -838,6 +838,7 @@ class CohortDiscussionTopicsTest(UniqueCourseTest, CohortTestMixin):
         self.cohort_discussion_topics_are_visible()
 
         # enable always inline discussion topics.
+        # from nose.tools import set_trace; set_trace()
         self.cohort_management_page.select_always_inline_discussion()
 
         self.assertTrue(self.cohort_management_page.inline_discussion_topics_disabled())

@@ -44,7 +44,7 @@
             <p class="reference-title"><%- gettext("Tags:") %></p>
             <% for (var i = 0; i < tags.length; i++) { %>
                 <span class="reference-meta reference-tags">
-                    <%- interpolate_text(_.escape(tags[i]), {
+                    <%= HtmlUtils.HTML(interpolate_text(_.escape(tags[i]), {
                         elasticsearch_highlight_start: '<span class="note-highlight">',
                         elasticsearch_highlight_end: '</span>'
                     })%>
