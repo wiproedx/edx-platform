@@ -30,12 +30,15 @@ define(['js/views/baseview', 'js/views/utils/xblock_utils', 'edx-ui-toolkit/js/u
             },
 
             render: function() {
-                this.$el.append(this.template({
-                    value: this.model.get(this.fieldName),
-                    fieldName: this.fieldName,
-                    fieldDisplayName: this.fieldDisplayName,
-                    HtmlUtils: HtmlUtils
-                }));
+                HtmlUtils.append(
+                    this.$el,
+                    HtmlUtils.template(this.template({
+                        value: this.model.get(this.fieldName),
+                        fieldName: this.fieldName,
+                        fieldDisplayName: this.fieldDisplayName,
+                        HtmlUtils: HtmlUtils
+                    })
+                );
                 return this;
             },
 

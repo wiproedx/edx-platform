@@ -193,9 +193,9 @@ from xmodule.tabs import CourseTabList
         $("#help_wrapper").css("display", "none");
         $("#feedback_form input[name='issue_type']").val(issue_type);
         $("#feedback_form_wrapper").css("display", "block");
-        $("#feedback_form_wrapper header").html("<h2>" + title + "</h2><hr>");
-        $("#feedback_form_wrapper label[data-field='subject']").html(subject_label);
-        $("#feedback_form_wrapper label[data-field='details']").html(details_label);
+        $("#feedback_form_wrapper header").text("<h2>" + title + "</h2><hr>");
+        $("#feedback_form_wrapper label[data-field='subject']").text(subject_label);
+        $("#feedback_form_wrapper label[data-field='details']").text(details_label);
         $("#feedback_form_wrapper .close-modal").focus();
         event.preventDefault();
     };
