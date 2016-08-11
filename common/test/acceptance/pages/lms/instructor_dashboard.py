@@ -508,7 +508,7 @@ class CohortManagementSection(PageObject):
         """
         Selects the settings tab for the cohort currently being edited.
         """
-        self.q(css=self._bounded_selector(".cohort-management-settings li.tab-settings>a")).first.click()
+        self.q(css=self._bounded_selector(".cohort-management-settings li.tab-settings>.toggle-button")).first.click()
 
     # pylint: disable=redefined-builtin
     def get_cohort_settings_messages(self, type="confirmation", wait_for_messages=True):
