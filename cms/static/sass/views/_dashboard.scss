@@ -673,10 +673,18 @@
 
     .new-course-org,
     .new-course-number,
-    .new-course-name,
-    .new-course-run {
+    .new-course-name {
       width: 100%;
     }
+    .new-course-run {
+      width: 100%;
+      direction: ltr;
+      text-align: right;
+    }
+
+    .input-placeholder {
+        direction: rtl;
+      }
 
     .new-course-name {
       @extend %t-title5;
