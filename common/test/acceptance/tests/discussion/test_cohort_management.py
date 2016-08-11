@@ -689,6 +689,13 @@ class CohortConfigurationTest(EventsTestMixin, UniqueCourseTest, CohortTestMixin
         messages = self.cohort_management_page.get_csv_messages()
         self.assertEquals(expected_message, messages[0])
 
+    @attr('a11y')
+    def test_cohorts_management_a11y(self):
+        """
+        Run accessibility audit for cohort management.
+        """
+        self.cohort_management_page.a11y_audit.check_for_accessibility_errors()
+
 
 @attr(shard=6)
 class CohortDiscussionTopicsTest(UniqueCourseTest, CohortTestMixin):
