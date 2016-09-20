@@ -446,6 +446,7 @@ OAUTH2_PROVIDER = {
         'write': 'Write scope',
         'email': 'Email scope',
         'profile': 'Profile scope',
+        'identity-only': 'Ability to link accounts'
     }
 }
 
