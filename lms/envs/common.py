@@ -452,15 +452,10 @@ OAUTH2_PROVIDER = {
         # this is the only scope requested
         'identity': 'Receive basic identity information, such as your public username',
     },
-    # Right now our use of django-authorization-toolkit does not
-    # fully implement scopes, any access tokens acquired
-    # through three-legged oauth2 handshakes should not
-    # have access to the APIs.
-    #
-    # Even with this lack of scopes, if you do want to allow for three-legged OAuth in your
-    # instance of Open edX, set this value below to False
-    'AUTOEXPIRE_AUTHORIZATION_CODE_ACCESS_TOKENS': True,
 }
+# This is required for the migrations in oauth_dispatch.models
+# otherwise it fails saying this attribute is not present in Settings
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
 
 ################################## TEMPLATE CONFIGURATION #####################################
 # Mako templating

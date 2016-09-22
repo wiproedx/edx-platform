@@ -15,22 +15,22 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.conf import settings
 
+from .models import RestrictedApplication
+
 
 @receiver(pre_save, sender=AccessToken)
 def on_access_token_presave(sender, instance, *args, **kwargs):
     """
     A hook on the AccessToken. For when we grant authorization-codes,
     since we do not have protected scopes, we must mark all
-    AcessTokens as expired.
+    AcessTokens as expired for 'restricted applications'.
 
     We do this as a pre-save hook on the ORM
     """
-    force_expire = (
-        instance.application.authorization_grant_type == 'authorization-code' and
-        getattr(settings, 'OAUTH2_PROVIDER', {}).get('AUTOEXPIRE_AUTHORIZATION_CODE_ACCESS_TOKENS', True)
-    )
 
-    if force_expire:
+    is_application_restricted = RestrictedApplication.objects.filter(application=instance.application).exists()
+
+    if is_application_restricted:
         # put the expire timestamp into the beginning of the epoch
         instance.expires = datetime(1970, 1, 1, tzinfo=utc)
 
@@ -89,14 +89,11 @@ class EdxOAuth2Validator(OAuth2Validator):
 
         super(EdxOAuth2Validator, self).save_bearer_token(token, request, *args, **kwargs)
 
-        # costumized oauth2 provider behavior for Open edX
-        force_expire = (
-            request.client.authorization_grant_type == 'authorization-code' and
-            getattr(settings, 'OAUTH2_PROVIDER', {}).get('AUTOEXPIRE_AUTHORIZATION_CODE_ACCESS_TOKENS', True)
-        )
-        if force_expire:
+        is_application_restricted = RestrictedApplication.objects.filter(application=request.client).exists()
+
+        if is_application_restricted:
             # For now, since Open edX doesn't have the protection of scopes, any access token
-            # that was generated through three-legged oauth schemes
+            # that was generated for 'restricted applications' (aka external 3rd parties)
             # must be automatically expired. So let's update
             # the token dictionary, so set the expires_in field be
             # on Jan. 1, 1970
