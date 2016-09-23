@@ -3,6 +3,8 @@ Tests for Blocks Views
 """
 
 import json
+from pytz import utc
+from datetime import datetime
 
 import ddt
 from django.test import RequestFactory, TestCase
@@ -19,6 +21,8 @@ from .. import adapters
 from .. import views
 from .. import models
 from . import mixins
+
+from oauth2_provider import models as dot_models
 
 
 class _DispatchingViewTestCase(TestCase):
@@ -107,6 +111,23 @@ class TestAccessTokenView(mixins.AccessTokenMixin, _DispatchingViewTestCase):
         self.assertIn('expires_in', data)
         self.assertIn('scope', data)
         self.assertIn('token_type', data)
+
+    def test_restricted_access_token_fields(self):
+        response = self._post_request(self.user, self.restricted_dot_app)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertIn('access_token', data)
+        self.assertIn('expires_in', data)
+        self.assertIn('scope', data)
+        self.assertIn('token_type', data)
+
+        # Restricted applications have immediately expired tokens
+        self.assertTrue(data['expires_in'] < 0)
+
+        # double check that the token stored in the DB is marked as expired
+        access_token = dot_models.AccessToken.objects.get(token=data['access_token'])
+        self.assertEqual(access_token.expires, datetime(1970, 1, 1, tzinfo=utc))
+
 
     @ddt.data('dop_app', 'dot_app')
     def test_jwt_access_token(self, client_attr):

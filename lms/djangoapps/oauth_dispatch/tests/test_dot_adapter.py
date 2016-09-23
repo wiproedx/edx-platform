@@ -91,7 +91,7 @@ class DOTAdapterTestCase(TestCase):
         )
         self.assertEqual(self.adapter.get_access_token(token_string='token-id'), token)
 
-    def test_get_access_token(self):
+    def test_get_restricted_access_token(self):
         '''
         Make sure when generating an access_token for a restricted client
         that the token is immediately expired
