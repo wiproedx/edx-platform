@@ -7,16 +7,15 @@ import time
 from datetime import datetime
 from pytz import utc
 
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
-from oauth2_provider.oauth2_validators import OAuth2Validator
-
-from oauth2_provider.models import AccessToken
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from django.conf import settings
+
+from oauth2_provider.oauth2_validators import OAuth2Validator
+from oauth2_provider.models import AccessToken
 
 from .models import RestrictedApplication
-
 
 @receiver(pre_save, sender=AccessToken)
 def on_access_token_presave(sender, instance, *args, **kwargs):
