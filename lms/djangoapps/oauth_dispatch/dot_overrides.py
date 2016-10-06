@@ -12,8 +12,8 @@ from django.contrib.auth import authenticate, get_user_model
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
-from oauth2_provider.oauth2_validators import OAuth2Validator
 from oauth2_provider.models import AccessToken
+from oauth2_provider.oauth2_validators import OAuth2Validator
 
 from .models import RestrictedApplication
 
