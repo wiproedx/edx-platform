@@ -18,6 +18,7 @@ Common traits:
 
 import datetime
 import json
+import warnings
 
 import dateutil
 
@@ -170,6 +171,14 @@ EDXMKTG_USER_INFO_COOKIE_NAME = ENV_TOKENS.get('EDXMKTG_USER_INFO_COOKIE_NAME', 
 ENV_FEATURES = ENV_TOKENS.get('FEATURES', {})
 for feature, value in ENV_FEATURES.items():
     FEATURES[feature] = value
+
+# Backward compatibility for deprecated feature names
+if 'ENABLE_S3_GRADE_DOWNLOADS' in FEATURES:
+    warnings.warn(
+        "'ENABLE_S3_GRADE_DOWNLOADS' is deprecated. Please use 'ENABLE_GRADE_DOWNLOADS' instead",
+        DeprecationWarning,
+    )
+    FEATURES['ENABLE_GRADE_DOWNLOADS'] = FEATURES['ENABLE_S3_GRADE_DOWNLOADS']
 
 CMS_BASE = ENV_TOKENS.get('CMS_BASE', 'studio.edx.org')
 
