@@ -16,7 +16,6 @@ from require.storage import OptimizedFilesMixin
 from storages.backends.azure_storage import AzureStorage
 from azure.storage import AccessPolicy, SharedAccessPolicy
 
-
 class ProductionStorage(
         OptimizedFilesMixin,
         PipelineMixin,
