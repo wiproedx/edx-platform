@@ -14,7 +14,6 @@ from openedx.core.djangoapps.theming.storage import (
     ThemePipelineMixin
 )
 
-
 class ProductionStorage(
         PipelineForgivingStorage,
         OptimizedFilesMixin,
