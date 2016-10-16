@@ -110,8 +110,8 @@ class CertificatesDetailView(GenericAPIView):
         #
         # For more information on RestrictedApplications and the
         # permissions model, see openedx/core/lib/api/permissions.py
-        if hasattr(request, 'auth') and hasattr(request.auth, 'org_filter'):
-            if course_key.org not in request.auth.org_filter:
+        if hasattr(request, 'auth') and hasattr(request.auth, 'org_associations'):
+            if course_key.org not in request.auth.org_associations:
                 return Response(
                     status=403,
                     data={'error_code': 'course_org_not_associated_with_calling_application'}

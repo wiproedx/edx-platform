@@ -494,8 +494,8 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
             # For more information on RestrictedApplications and the
             # permissions model, see openedx/core/lib/api/permissions.py
 
-            if hasattr(request, 'auth') and hasattr(request.auth, 'org_filter'):
-              org_filter = request.auth.org_filter
+            if hasattr(request, 'auth') and hasattr(request.auth, 'org_associations'):
+              org_filter = request.auth.org_associations
 
             enrollment_data = api.get_enrollments(username, org_filter=org_filter)
         except CourseEnrollmentError:

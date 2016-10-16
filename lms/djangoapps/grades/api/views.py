@@ -156,9 +156,9 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
         #
         # For more information on RestrictedApplications and the
         # permissions model, see openedx/core/lib/api/permissions.py
-        if hasattr(request, 'auth') and hasattr(request.auth, 'org_filter'):
+        if hasattr(request, 'auth') and hasattr(request.auth, 'org_associations'):
             course_key = CourseKey.from_string(course_id)
-            if course_key.org not in request.auth.org_filter:
+            if course_key.org not in request.auth.org_associations:
                 return self.make_error_response(
                     status_code=status.HTTP_403_FORBIDDEN,
                     developer_message='The OAuth2 RestrictedApplication is not associated with org.',

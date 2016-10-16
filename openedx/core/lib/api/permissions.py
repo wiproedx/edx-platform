@@ -84,7 +84,7 @@ class OAuth2RestrictedApplicatonPermission(TokenHasScope):
             # NOTE: To avoid semantic ambiguity on None values, here we convert a
             # RestrictedApplication's org_association to an empty set if
             # it is None
-            request.auth.org_filter = (
+            request.auth.org_associations = (
                 restrictied_application.org_associations if
                 restrictied_application.org_associations else []
             )
