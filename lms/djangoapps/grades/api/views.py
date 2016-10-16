@@ -32,6 +32,12 @@ class GradeViewMixin(DeveloperErrorViewMixin):
     )
     permission_classes = (IsAuthenticated, OAuth2RestrictedApplicatonPermission,)
 
+    # needed for passing OAuth2RestrictedApplicatonPermission checks
+    # for RestrictedApplications (only). A RestrictedApplication can
+    # only call this method if it is allowed to receive a 'grades:read'
+    # scope
+    required_scopes = ['grades:read']
+
     def _get_course(self, course_key_string, user, access_action):
         """
         Returns the course for the given course_key_string after
@@ -143,6 +149,21 @@ class UserGradeView(GradeViewMixin, GenericAPIView):
                 developer_message='The user requested does not match the logged in user.',
                 error_code='user_mismatch'
             )
+
+        # See if the request has an explicit ORG filter on the request
+        # which limits which OAuth2 clients can see what courses
+        # based on the association with a RestrictedApplication
+        #
+        # For more information on RestrictedApplications and the
+        # permissions model, see openedx/core/lib/api/permissions.py
+        if hasattr(request, 'auth') and hasattr(request.auth, 'org_filter'):
+            course_key = CourseKey.from_string(course_id)
+            if course_key.org not in request.auth.org_filter:
+                return self.make_error_response(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    developer_message='The OAuth2 RestrictedApplication is not associated with org.',
+                    error_code='course_org_not_associated_with_calling_application'
+                )
 
         course = self._get_course(course_id, request.user, 'load')
         if isinstance(course, Response):
