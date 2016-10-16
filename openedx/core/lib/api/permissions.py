@@ -54,7 +54,8 @@ class OAuth2RestrictedApplicatonPermission(TokenHasScope):
         if isinstance(token, DOPAccessToken):
             return True
 
-        if not RestrictedApplication.is_token_a_restricted_application(token.token):
+        restrictied_application = RestrictedApplication.get_restricted_application_from_token(token.token)
+        if not restrictied_application:
             # Application is not a restricted application, therefore it is trusted and can pass
             # this specific check, although the API endpoint might declare other permission
             # checks
@@ -74,7 +75,21 @@ class OAuth2RestrictedApplicatonPermission(TokenHasScope):
         # now call into DOT permissions check which will inspect the view for a
         # 'required_scopes' attribute and continue with the any additional
         # permissions listed on the API endpoint
-        return super(OAuth2RestrictedApplicatonPermission, self).has_permission(request, view)
+        has_permission = super(OAuth2RestrictedApplicatonPermission, self).has_permission(request, view)
+        if has_permission:
+            # Add a new attribute to the Django request which sets an 'org_filter'
+            # which will be used by the view handlers for course filtering
+            # based on the rights declared on the RestrictedApplication
+            #
+            # NOTE: To avoid semantic ambiguity on None values, here we convert a
+            # RestrictedApplication's org_association to an empty set if
+            # it is None
+            request.auth.org_filter = (
+                restrictied_application.org_associations if
+                restrictied_application.org_associations else []
+            )
+
+        return has_permission
 
 
 class ApiKeyHeaderPermission(permissions.BasePermission):

@@ -456,6 +456,12 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
     permission_classes = (ApiKeyHeaderPermissionIsAuthenticated, OAuth2RestrictedApplicatonPermission, )
     throttle_classes = EnrollmentUserThrottle,
 
+    # needed for passing OAuth2RestrictedApplicatonPermission checks
+    # for RestrictedApplications (only). A RestriectedApplication can
+    # only call this method if it is allowed to receive a 'enrollments:read'
+    # scope
+    required_scopes = ['enrollments:read']
+
     # Since the course about page on the marketing site
     # uses this API to auto-enroll users, we need to support
     # cross-domain CSRF.
@@ -479,7 +485,21 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
         """
         username = request.GET.get('user', request.user.username)
         try:
-            enrollment_data = api.get_enrollments(username)
+            org_filter = None
+
+            # See if the request has an explicit ORG filter on the request
+            # which limits which OAuth2 clients can see what courses
+            # based on the association with a RestrictedApplication
+            #
+            # For more information on RestrictedApplications and the
+            # permissions model, see openedx/core/lib/api/permissions.py
+
+            print 'here'
+            if hasattr(request, 'auth') and hasattr(request.auth, 'org_filter'):
+              org_filter = request.auth.org_filter
+
+            print 'org_filter = {}'.format(org_filter)
+            enrollment_data = api.get_enrollments(username, org_filter=org_filter)
         except CourseEnrollmentError:
             return Response(
                 status=status.HTTP_400_BAD_REQUEST,

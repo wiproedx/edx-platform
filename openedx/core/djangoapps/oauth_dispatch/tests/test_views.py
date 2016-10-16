@@ -90,10 +90,14 @@ class _DispatchingViewTestCase(TestCase):
 
         # Create a "restricted" DOT Application which means any AccessToken/JWT
         # generated for this application will be immediately expired
+        all_scopes = u' '.join([
+            scope for scope in settings.OAUTH2_PROVIDER['SCOPES'].keys()
+        ])
+
         self.restricted_dot_app = self._create_restricted_app(
             name='test restricted dot application',
             client_id='dot-restricted-app-client-id',
-            allowed_scopes = u'read write profile email',
+            allowed_scopes = all_scopes,
         )
 
         self.restricted_dot_app_limited_scopes = self._create_restricted_app(

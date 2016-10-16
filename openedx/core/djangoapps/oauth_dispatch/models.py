@@ -23,7 +23,11 @@ class RestrictedApplication(models.Model):
     so that they cannot be used to call into APIs.
     """
 
-    application = models.ForeignKey(oauth2_settings.APPLICATION_MODEL, null=False)
+    application = models.ForeignKey(
+        oauth2_settings.APPLICATION_MODEL,
+        null=False,
+        related_name='restricted_application'
+    )
 
     # a space separated list of scopes that this application can request
     _allowed_scopes = models.TextField(null=True)
@@ -50,9 +54,6 @@ class RestrictedApplication(models.Model):
 
         if isinstance(token, basestring):
             # if string is passed in, do the look up
-            tokens = AccessToken.objects.all()
-            for token in tokens:
-                print token
             token_obj = AccessToken.objects.get(token=token)
         else:
             token_obj = token
@@ -65,6 +66,22 @@ class RestrictedApplication(models.Model):
         For a given application, get the related restricted application
         """
         return RestrictedApplication.objects.filter(application=application.id).first()
+
+    @classmethod
+    def get_restricted_application_from_token(cls, token):
+        """
+        Returns a RestrictedApplication object for a token, None is none exists
+        """
+
+        if isinstance(token, basestring):
+            # if string is passed in, do the look up
+            # TODO: Is there a way to do this with one DB lookup?
+            access_token = AccessToken.objects.select_related('application').filter(token=token).first()
+            application = access_token.application
+        else:
+            application = token.application
+
+        return cls.get_restricted_application(application)
 
     def _get_list_from_delimited_string(self, delimited_string, separator=_DEFAULT_SEPARATOR):
         """
