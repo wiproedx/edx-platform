@@ -16,6 +16,7 @@ from lms.djangoapps.courseware import courses
 from lms.djangoapps.grades.api.serializers import GradingPolicySerializer
 from lms.djangoapps.grades.new.course_grade import CourseGradeFactory
 from openedx.core.lib.api.authentication import OAuth2AuthenticationAllowInactiveUser
+from openedx.core.lib.api.permissions import OAuth2RestrictedApplicatonPermission
 from openedx.core.lib.api.view_utils import DeveloperErrorViewMixin
 
 log = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ class GradeViewMixin(DeveloperErrorViewMixin):
         OAuth2AuthenticationAllowInactiveUser,
         SessionAuthentication,
     )
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, OAuth2RestrictedApplicatonPermission,)
 
     def _get_course(self, course_key_string, user, access_action):
         """

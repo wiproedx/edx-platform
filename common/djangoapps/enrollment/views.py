@@ -11,7 +11,11 @@ from opaque_keys import InvalidKeyError
 from course_modes.models import CourseMode
 from openedx.core.lib.log_utils import audit_log
 from openedx.core.djangoapps.user_api.preferences.api import update_email_opt_in
-from openedx.core.lib.api.permissions import ApiKeyHeaderPermission, ApiKeyHeaderPermissionIsAuthenticated
+from openedx.core.lib.api.permissions import (
+  ApiKeyHeaderPermission,
+  ApiKeyHeaderPermissionIsAuthenticated,
+  OAuth2RestrictedApplicatonPermission
+)
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
@@ -139,7 +143,7 @@ class EnrollmentView(APIView, ApiKeyPermissionMixIn):
    """
 
     authentication_classes = OAuth2AuthenticationAllowInactiveUser, SessionAuthenticationAllowInactiveUser
-    permission_classes = ApiKeyHeaderPermissionIsAuthenticated,
+    permission_classes = (ApiKeyHeaderPermissionIsAuthenticated, OAuth2RestrictedApplicatonPermission, )
     throttle_classes = EnrollmentUserThrottle,
 
     # Since the course about page on the marketing site uses this API to auto-enroll users,
@@ -449,7 +453,7 @@ class EnrollmentListView(APIView, ApiKeyPermissionMixIn):
              * user: The username of the user.
     """
     authentication_classes = OAuth2AuthenticationAllowInactiveUser, EnrollmentCrossDomainSessionAuth
-    permission_classes = ApiKeyHeaderPermissionIsAuthenticated,
+    permission_classes = (ApiKeyHeaderPermissionIsAuthenticated, OAuth2RestrictedApplicatonPermission, )
     throttle_classes = EnrollmentUserThrottle,
 
     # Since the course about page on the marketing site

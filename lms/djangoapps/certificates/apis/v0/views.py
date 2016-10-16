@@ -72,7 +72,8 @@ class CertificatesDetailView(GenericAPIView):
     )
     permission_classes = (
         IsAuthenticated,
-        permissions.IsUserInUrlOrStaff
+        permissions.IsUserInUrlOrStaff,
+        permissions.OAuth2RestrictedApplicatonPermission,
     )
 
     def get(self, request, username, course_id):
