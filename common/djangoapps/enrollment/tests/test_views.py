@@ -28,6 +28,7 @@ from util.models import RateLimitConfiguration
 from util.testing import UrlResetMixin
 from enrollment import api
 from enrollment.errors import CourseEnrollmentError
+from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 from openedx.core.djangoapps.oauth_dispatch.models import RestrictedApplication
 from openedx.core.djangoapps.oauth_dispatch.tests.test_views import _DispatchingViewTestCase
@@ -1229,6 +1230,23 @@ class RestrictedOAuth2ApplicationTests(_DispatchingViewTestCase, ModuleStoreTest
         # does not have any approved ORG associations
         self.assertEqual(len(data), 0)
 
+    def _has_only_orgs_in_enrollments(self, data, expected_orgs):
+        """
+        Helper method to check results from the Enrollment API to
+        see if it contains courses that are only from the expected
+        ORG
+        """
+
+        if len(data) == 0:
+            return False
+
+        for entry in data:
+            course_key = CourseKey.from_string(entry['course_details']['course_id'])
+            if course_key.org not in expected_orgs:
+                return False
+
+        return True
+
     def test_single_org_association(self):
         """
         assert that org associations on a RestrictedApplication causes
@@ -1253,6 +1271,12 @@ class RestrictedOAuth2ApplicationTests(_DispatchingViewTestCase, ModuleStoreTest
         # we should just get back a single enrollment
         self.assertEqual(len(data), 1)
 
+        # make sure we only have the expected ORG course
+        self.assertTrue(self._has_only_orgs_in_enrollments(data, [self.course.id.org]))
+
+        self.assertFalse(self._has_only_orgs_in_enrollments(data, [self.second_org_course.id.org]))
+        self.assertFalse(self._has_only_orgs_in_enrollments(data, [self.not_associated_course.id]))
+
     def test_multi_org_association(self):
         """
         assert that org associations on a RestrictedApplication causes
@@ -1260,8 +1284,12 @@ class RestrictedOAuth2ApplicationTests(_DispatchingViewTestCase, ModuleStoreTest
         two ORGs associated with a RestrictedApplication
         """
 
-        restricted_application = RestrictedApplication.objects.get(application=self.restricted_dot_app)
-        restricted_application.org_associations = [self.course.id.org, self.second_org_course.id.org]
+        restricted_application = RestrictedApplication.objects.get(
+            application=self.restricted_dot_app
+        )
+        restricted_application.org_associations = [
+            self.course.id.org, self.second_org_course.id.org
+        ]
         restricted_application.save()
 
         # call into Enrollments API endpoint with a 'enrollments:read' scoped access_token
@@ -1275,3 +1303,13 @@ class RestrictedOAuth2ApplicationTests(_DispatchingViewTestCase, ModuleStoreTest
         self.assertEqual(response.status_code, 200)
         # we should just get back a single enrollment
         self.assertEqual(len(data), 2)
+
+        # make sure we only have the expected ORG course
+        self.assertTrue(self._has_only_orgs_in_enrollments(
+            data,
+            [self.course.id.org, self.second_org_course.id.org])
+        )
+        self.assertFalse(self._has_only_orgs_in_enrollments(
+            data,
+            [self.not_associated_course.id])
+        )
