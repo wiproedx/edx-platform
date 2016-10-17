@@ -42,7 +42,7 @@ def get_course_enrollments(user_id, org_filter=None):
     ).order_by('created')
 
     # apply ORG filter, if specified
-    # NOTE, do not do a Falsy type check here because and empty list
+    # NOTE, do not do a Falsy type check here because an empty list
     # and None do not have the same semantic meaning. None means no filtering.
     # Empty list means 'filter everything out'
     if org_filter is not None:
