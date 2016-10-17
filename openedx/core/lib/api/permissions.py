@@ -69,7 +69,7 @@ class OAuth2RestrictedApplicatonPermission(TokenHasScope):
             # therefore it is interpreted as not properly supporting scoping and
             # data filtering (aka RestrictedApplication's associated_orgs)
             # thus we must fail the request as that endpoint is not secure
-            # yet for RestriectedApplications to call
+            # yet for RestrictedApplications to call
             return False
 
         # now call into DOT permissions check which will inspect the view for a
