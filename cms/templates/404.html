@@ -11,12 +11,9 @@
       <h1 class="title title-1">${_("Page not found")}</h1>
     </header>
     <article class="content-primary" role="main">
-      <p>${_('The page that you were looking for was not found.')}
-       ${_('Go back to the {homepage} or let us know about any pages that may have been moved at {email}.').format(
-            homepage='<a href="/">homepage</a>',
-            email=u'<a href="mailto:{address}">{address}</a>'.format(
-                address=settings.TECH_SUPPORT_EMAIL,
-            ))}
+      <p>
+         ${_('The page that you were looking for was not found.')}
+	 ${_('Go back to the {homepage} or let us know about any pages that may have been moved by contacting support.')}
       </p>
     </article>
   </section>
