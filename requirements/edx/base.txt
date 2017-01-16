@@ -185,4 +185,4 @@ pynliner==0.5.2
 sailthru-client==2.2.3
 
 # for release_util
-release_util
+edx-django-release-util
