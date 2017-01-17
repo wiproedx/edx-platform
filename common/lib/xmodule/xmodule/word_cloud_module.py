@@ -41,6 +41,11 @@ class WordCloudFields(object):
         scope=Scope.settings,
         default="Word cloud"
     )
+    instructions = String(
+        display_name=_("Instructions"),
+        help=_("Add instructions to help learners understand how to use the word cloud. Clear instructions are important, especially for learners who have accessibility requirements."),  # nopep8 pylint: disable=C0301
+        scope=Scope.settings,
+    )
     num_inputs = Integer(
         display_name=_("Inputs"),
         help=_("Number of text boxes available for students to input words/sentences."),
@@ -235,11 +240,13 @@ class WordCloudModule(WordCloudFields, XModule):
     def get_html(self):
         """Template rendering."""
         context = {
-            'element_id': self.location.html_id(),
-            'element_class': self.location.category,
             'ajax_url': self.system.ajax_url,
+            'display_name': self.display_name,
+            'instructions': self.instructions,
+            'element_class': self.location.category,
+            'element_id': self.location.html_id(),
             'num_inputs': self.num_inputs,
-            'submitted': self.submitted
+            'submitted': self.submitted,
         }
         self.content = self.system.render_template('word_cloud.html', context)
         return self.content
