@@ -834,9 +834,9 @@ INSTALLED_APPS = (
 
     # For CMS
     'contentstore',
-    'openedx.core.djangoapps.contentserver',
+    'contentserver',
     'course_creators',
-    'openedx.core.djangoapps.external_auth',
+    'external_auth',
     'student',  # misleading name due to sharing with lms
     'openedx.core.djangoapps.course_groups',  # not used in cms (yet), but tests run
     'openedx.core.djangoapps.coursetalk',  # not used in cms (yet), but tests run
@@ -850,7 +850,7 @@ INSTALLED_APPS = (
     'eventtracking.django.apps.EventTrackingConfig',
 
     # Monitoring
-    'openedx.core.djangoapps.datadog',
+    'datadog',
 
     # For asset pipelining
     'edxmako',
@@ -874,7 +874,7 @@ INSTALLED_APPS = (
     'course_modes',
 
     # Dark-launching languages
-	'openedx.core.djangoapps.dark_lang',
+    'dark_lang',
 
     # Student identity reverification
     'reverification',
@@ -887,7 +887,7 @@ INSTALLED_APPS = (
     'embargo',
 
     # Monitoring signals
-    'openedx.core.djangoapps.monitoring',
+    'monitoring',
 
     # Course action state
     'course_action_state',
