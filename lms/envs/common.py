@@ -1919,7 +1919,7 @@ INSTALLED_APPS = (
     'config_models',
 
     # Monitor the status of services
-    'openedx.core.djangoapps.service_status',
+    'service_status',
 
     # Display status message to students
     'status',
@@ -1930,7 +1930,7 @@ INSTALLED_APPS = (
     'static_replace',
 
     # For content serving
-    'openedx.core.djangoapps.contentserver',
+    'contentserver',
 
     # Theming
     'openedx.core.djangoapps.theming',
@@ -1949,8 +1949,8 @@ INSTALLED_APPS = (
     'util',
     'certificates',
     'dashboard',
-    'lms.djangoapps.instructor',
-    'lms.djangoapps.instructor_task',
+    'instructor',
+    'instructor_task',
     'openedx.core.djangoapps.course_groups',
     'bulk_email',
     'branding',
@@ -1960,7 +1960,7 @@ INSTALLED_APPS = (
     'support',
 
     # External auth (OpenID, shib)
-    'openedx.core.djangoapps.external_auth',
+    'external_auth',
     'django_openid_auth',
 
     # django-oauth2-provider (deprecated)
@@ -1980,7 +1980,7 @@ INSTALLED_APPS = (
     # defined by oauth_provider.  If those tables don't exist, an error can occur.
     'oauth_provider',
 
-    'openedx.core.djangoapps.auth_exchange',
+    'auth_exchange',
 
     # For the wiki
     'wiki',  # The new django-wiki from benjaoming
@@ -2015,7 +2015,7 @@ INSTALLED_APPS = (
     'splash',
 
     # Monitoring
-    'openedx.core.djangoapps.datadog',
+    'datadog',
 
     # User API
     'rest_framework',
@@ -2039,7 +2039,7 @@ INSTALLED_APPS = (
     'lms.djangoapps.verify_student',
 
     # Dark-launching languages
-    'openedx.core.djangoapps.dark_lang',
+    'dark_lang',
 
     # Microsite configuration
     'microsite_configuration',
@@ -2053,7 +2053,7 @@ INSTALLED_APPS = (
     'embargo',
 
     # Monitoring functionality
-    'openedx.core.djangoapps.monitoring',
+    'monitoring',
 
     # Course action state
     'course_action_state',
