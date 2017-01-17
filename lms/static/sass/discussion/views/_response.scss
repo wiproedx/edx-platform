@@ -165,7 +165,6 @@
     }
 
     .discussion-submit-comment {
-      @include blue-button;
       @include float(left);
       margin-top: 8px;
     }
