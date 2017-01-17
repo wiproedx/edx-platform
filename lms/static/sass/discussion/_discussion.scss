@@ -4,14 +4,17 @@
 
 body.discussion {
 
+  .course-tabs .right {
+    @include float(right);
+  }
+
   .edit-post-form {
     @include clearfix();
     box-sizing: border-box;
     width: 100%;
-    padding-top: 0;
 
     h1 {
-      font-size: $forum-x-large-font-size;
+      font-size: 20px;
     }
 
     .form-row {
@@ -19,13 +22,17 @@ body.discussion {
     }
 
     .post-cancel {
-      @include float(left);
-      @include margin($baseline/2, 0, 0, $baseline*0.75);
+      @include white-button;
+      float: left;
+      margin: ($baseline/2) 0 0 ($baseline*0.75);
     }
 
     .post-update {
-      @include float(left);
+      @include blue-button;
+      float: left;
       margin-top: ($baseline/2);
+      padding-bottom: ($baseline/10);
+      height: 37px;
 
       &:hover, &:focus {
         border-color: #222;
@@ -35,19 +42,19 @@ body.discussion {
     .edit-post-title {
       box-sizing: border-box;
       border: 1px solid $forum-color-border;
-      border-radius: $forum-border-radius;
+      border-radius: 3px;
       padding: 0 ($baseline/2);
       width: 100%;
       height: 40px;
       box-shadow: 0 1px 3px $shadow-l1 inset;
       color: $dark-gray;
-      font-size: $forum-large-font-size;
+      font-size: 16px;
       font-family: $sans-serif;
     }
   }
 
   .comments .edit-post-form h1 {
-    font-size: $forum-large-font-size;
+    @extend %t-title6;
   }
 
   .thread-title {
@@ -55,7 +62,40 @@ body.discussion {
     margin-bottom: $baseline;
     color: $gray-d3;
     font-weight: 700;
-    font-size: $forum-x-large-font-size;
+    font-size: 21px;
+  }
+
+  section.user-profile {
+    // TODO: don't use table-cell for layout purposes as it switches the screenreader mode
+    display: table-cell;
+    border-right: 1px solid #ddd;
+    border-radius: 3px 0 0 3px;
+    background-color: $sidebar-color;
+    box-shadow: none;
+
+    .user-profile {
+      padding: 32px 36px;
+    }
+
+    .sidebar-username {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .sidebar-user-roles {
+      margin-top: 6px;
+      font-style: italic;
+      font-size: 13px;
+    }
+
+    .sidebar-threads-count {
+      margin-top: 14px;
+    }
+
+    .sidebar-threads-count span,
+    .sidebar-comments-count span {
+      font-weight: 700;
+    }
   }
 
   .wmd-panel {
@@ -68,13 +108,13 @@ body.discussion {
   }
 
   .wmd-input {
-    @include border-radius($forum-border-radius, $forum-border-radius, 0, 0);
+    @include border-radius(3px, 3px, 0, 0);
     border: 1px solid $forum-color-border;
     width: 100%;
     height: 150px;
     background-color: $gray-l4;
     font-style: normal;
-    font-size: $forum-base-font-size;
+    font-size: 0.8em;
     font-family: $f-sans-serif;
     line-height: 1.6em;
 
@@ -103,15 +143,15 @@ body.discussion {
   }
 
   .wmd-button {
+    @include padding-right(3px);
+    @include padding-left(3px);
     position: absolute;
     display: inline-block;
     width: 20px;
     height: 20px;
-    border: none;
     background: none;
     list-style: none;
     cursor: pointer;
-    padding: 0;
   }
 
   .wmd-button > span {
@@ -123,18 +163,14 @@ body.discussion {
   }
 
   .wmd-spacer1 {
-    // Note: the WMD toolbar does not support RTL so this is hard-coded to the left
-    left: 50px;
+    @include left(50px);
   }
-
   .wmd-spacer2 {
-    // Note: the WMD toolbar does not support RTL so this is hard-coded to the left
-    left: 175px;
+    @include left(175px);
   }
 
   .wmd-spacer3 {
-    // Note: the WMD toolbar does not support RTL so this is hard-coded to the left
-    left: 300px;
+    @include left(300px);
   }
 
   .wmd-prompt-background {
@@ -150,22 +186,22 @@ body.discussion {
     padding: $baseline;
 
     > div {
-      font-size: $forum-base-font-size;
+      font-size: 0.8em;
       font-family: $sans-serif;
     }
 
     b {
-      font-size: $forum-large-font-size;
+      font-size: 16px;
     }
 
     > form > input[type="text"] {
-      border-radius: $forum-border-radius;
+      border-radius: 3px;
       color: $gray-d3;
     }
 
     > form > input[type="button"] {
       border: 1px solid #888;
-      font-size: $forum-base-font-size;
+      font-size: 14px;
       font-family: $sans-serif;
     }
 
@@ -185,14 +221,25 @@ body.discussion {
 
   .bottom-post-status {
     padding: 30px;
-    font-size: $forum-x-large-font-size;
+    font-size: 20px;
     font-weight: 700;
     color: $gray-l3;
     text-align: center;
   }
 
+  .discussion-column {
+    @include float(right);
+    box-sizing: border-box;
+    padding-left: ($baseline/2);
+    width: 68%;
+    max-width: 800px;
+    min-height: 500px;
+    border-radius: 3px;
+  }
+
   .discussion-article {
     position: relative;
+    min-height: 500px;
 
     a {
       word-wrap: break-word;
@@ -203,15 +250,16 @@ body.discussion {
     }
   }
 
+  .discussion-post header,
   .responses li header {
     margin-bottom: $baseline;
   }
 
   blockquote {
     background: $gray-l5;
-    border-radius: $forum-border-radius;
+    border-radius: 3px;
     padding: ($baseline/4) ($baseline/2);
-    font-size: $forum-base-font-size;
+    font-size: 14px;
   }
 
   .comment-form {
@@ -236,7 +284,7 @@ body.discussion {
     padding: 0 ($baseline/2);
     box-sizing: border-box;
     border: 1px solid $forum-color-border;
-    border-radius: $forum-border-radius;
+    border-radius: 3px;
     box-shadow: 0 1px 3px $shadow-l1 inset;
     @include transition(border-color .1s linear 0s);
 
@@ -256,7 +304,7 @@ body.discussion {
     padding: 0 ($baseline/2);
 
     h4 {
-      font-size: $forum-large-font-size;
+      font-size: 16px;
       font-weight: 700;
     }
   }
@@ -286,52 +334,37 @@ body.discussion {
   }
 
   .discussion-submit-post {
+    @include blue-button;
     @include float(left);
+  }
+
+  .wmd-button {
+    width: 15px;
   }
 }
 
 // ====================
 
-// inline discussion module
+// inline discussion module and profile thread styling
 .discussion-module {
   @extend .discussion-body;
 
   position: relative;
   margin: $baseline 0;
   padding: $baseline;
-  border: 1px solid $forum-color-border !important;
-  border-radius: $forum-border-radius;
+  background: #f6f6f6 !important;
+  border-radius: 3px;
 
   header {
     .anonymous{
-      font-size: $forum-base-font-size;
+      font-size: 15px;
     }
   }
 
-  .inline-discussion-topic {
-    width: flex-grid(12);
-    font-size: $forum-small-font-size;
-
-    .inline-discussion-topic-title {
-      font-weight: bold;
-    }
-  }
-
-  .discussion-module-header {
-    @include float(left);
-    width: flex-grid(7);
-  }
-
-  .add_post_btn_container {
-    @include text-align(right);
-    position: relative;
-    top: -45px;
-  }
-
-  .discussion {
-    &.inline-discussion {
-      padding-top: $baseline * 3;
-    }
+  .new-post-btn {
+    @include float(right);
+    @include margin-right(4px);
+    @include blue-button;
   }
 
   div.add-response.post-extended-content {
@@ -342,65 +375,239 @@ body.discussion {
   .loading-animation {
     background-image: url('#{$static-path}/images/spinner.gif');
   }
-}
 
-.discussion-show {
-  @include float(right);
-  position: relative;
-  top: 3px;
-  font-size: $forum-base-font-size;
-  text-align: center;
+  .discussion-show {
+    position: relative;
+    top: 3px;
+    font-size: 14px;
+    text-align: center;
 
-  &.shown {
-    background-color: $btn-default-background-color;
-    color: $uxpl-primary-blue;
+    &.shown {
+      .show-hide-discussion-icon {
+        background-position: 0 0;
+      }
+    }
+
+    .show-hide-discussion-icon {
+      display: inline-block;
+      position: relative;
+      top: 5px;
+      @include margin-right(6px);
+      width: 21px;
+      height: 19px;
+      background: url('#{$static-path}/images/show-hide-discussion-icon.png') no-repeat;
+      background-position: -21px 0;
+    }
   }
 
-}
+  section.discussion {
+    clear: both;
+    padding-top: $baseline;
 
-section.discussion {
-  @include clearfix();
-}
+    .threads {
+    }
 
-.new-post-article {
-  display: none;
+    .discussion-thread {
+      padding: 0;
+      margin-bottom: $baseline;
+      @include transition(all .25s linear 0s);
 
-  .inner-wrapper {
-    max-width: 1180px;
-    min-width: 760px;
-    margin: auto;
+      p {
+        margin-bottom: 0;
+      }
+
+      .discussion-article {
+        @include transition(all .2s linear 0s);
+        border: 1px solid $forum-color-border;
+        border-radius: 3px;
+        min-height: 0;
+        background: $forum-color-background;
+        box-shadow: 0 1px 0 $shadow;
+        @include transition(all .2s linear 0s);
+
+        .thread-wrapper {
+          @include border-radius(3px, 3px, 0, 0);
+          position: relative;
+          overflow-x: hidden;
+          overflow-y: auto;
+          max-height: 600px;
+          background-color: $forum-color-background;
+
+          .discussion-post {
+
+            .inline-comment-count {
+              @extend %ui-depth2;
+              position: relative;
+              float: right;
+              display: block;
+              height: 27px;
+              margin-top: 6px;
+              margin-right: 8px;
+              padding: 0 8px;
+              border-radius: ($baseline/4);
+              font-size: 12px;
+              font-weight: 400;
+              line-height: 25px;
+              color: #888;
+            }
+          }
+
+          .responses {
+            header {
+              padding-bottom: 0;
+              margin-bottom: ($baseline*0.75);
+
+              .posted-by {
+                float: left;
+                margin-right: ($baseline/4);
+                font-size: 16px;
+              }
+            }
+
+            .response-body {
+              margin-bottom: 0.2em;
+              font-size: 14px;
+            }
+          }
+
+          .discussion-reply-new {
+            .wmd-input {
+              height: 120px;
+            }
+          }
+
+          // Content that is hidden by default in the inline view
+          .post-extended-content{
+            display: none;
+          }
+        }
+
+        .post-tools {
+          box-shadow: 0 1px 1px $shadow inset;
+          background: $gray-l6;
+
+          &:hover {
+            background: #fcfcfc;
+
+            .icon {
+              color: $link-hover;
+            }
+          }
+
+          a {
+            display: block;
+            padding: ($baseline*0.25) $baseline;
+            font-size: 12px;
+            line-height: 30px;
+
+            .icon {
+              color: $link-color;
+              margin-right: ($baseline*0.25);
+            }
+          }
+        }
+      }
+    }
   }
 
-  .thread-title {
-    display: block;
-    margin-bottom: $baseline;
-    font-size: $forum-x-large-font-size;
-    color: $gray-d3;
-    font-weight: 700;
-  }
-}
-
-.edit-post-form {
-  @include clearfix();
-  width: 100%;
-  margin-bottom: $baseline;
-  box-sizing: border-box;
-
-  .form-row {
+  .new-post-article {
+    display: none;
     margin-top: $baseline;
+
+    .inner-wrapper {
+      max-width: 1180px;
+      min-width: 760px;
+      margin: auto;
+    }
+
+    .thread-title {
+      display: block;
+      margin-bottom: $baseline;
+      font-size: 21px;
+      color: $gray-d3;
+      font-weight: 700;
+    }
   }
 
-  .edit-post-title {
+  section.discussion-pagination {
+    margin-top: ($baseline*1.5);
+
+    nav.discussion-paginator {
+      float: right;
+
+      ol {
+        li {
+          list-style: none;
+          display: inline-block;
+          padding-right: 0.5em;
+          a {
+            @include white-button;
+          }
+          &.current-page span {
+            display: inline-block;
+            height: 35px;
+            padding: 0 ($baseline*0.75);
+            border: 1px solid $forum-color-border;
+            border-radius: 3px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 32px;
+            color: $gray-d3;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+          }
+        }
+      }
+    }
+  }
+
+  .edit-post-form {
     width: 100%;
-    height: 40px;
-    padding: 0 ($baseline/2);
+    margin-bottom: $baseline;
+    @include clearfix();
     box-sizing: border-box;
-    border-radius: $forum-border-radius;
-    border: 1px solid $forum-color-border;
-    font-size: $forum-large-font-size;
-    font-family: $sans-serif;
-    color: $gray-d3;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+
+    .form-row {
+      margin-top: $baseline;
+    }
+
+    .post-cancel {
+      @include white-button;
+      float: left;
+      margin: ($baseline/2) 0 0 ($baseline*0.75);
+    }
+
+    .post-update {
+      @include blue-button;
+      float: left;
+      height: 37px;
+      margin-top: ($baseline/2);
+      padding-bottom: 2px;
+
+      &:hover, &:focus {
+        border-color: #222;
+      }
+    }
+
+    .edit-post-title {
+      width: 100%;
+      height: 40px;
+      padding: 0 ($baseline/2);
+      box-sizing: border-box;
+      border-radius: 3px;
+      border: 1px solid $forum-color-border;
+      font-size: 16px;
+      font-family: $sans-serif;
+      color: $gray-d3;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) inset;
+    }
+  }
+}
+
+.discussion-user-threads {
+  @extend .discussion-module;
+
+  .discussion-post {
+    padding-bottom: $baseline !important;
   }
 }
 
@@ -411,35 +618,6 @@ section.discussion {
 // ====================
 
 // post pagination
-section.discussion-pagination {
-  margin-top: ($baseline*1.5);
-
-  nav.discussion-paginator {
-    @include float(right);
-
-    ol {
-      li {
-        @include padding-right($baseline/2);
-        list-style: none;
-        display: inline-block;
-
-        &.current-page span {
-          display: inline-block;
-          height: 35px;
-          padding: 0 ($baseline*0.75);
-          border: 1px solid $forum-color-border;
-          border-radius: $forum-border-radius;
-          font-size: $forum-base-font-size;
-          font-weight: 700;
-          line-height: 32px;
-          color: $gray-d3;
-          text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
-        }
-      }
-    }
-  }
-}
-
 .response-count {
   @include float(right);
 }
@@ -455,14 +633,19 @@ section.discussion-pagination {
   .response-display-count {
     display: block;
     padding: ($baseline/2) 0;
-    color: $forum-color-response-count;
-    font-size: $forum-base-font-size;
+    color: $gray;
+    font-size: 14px;
   }
 
   .load-response-button {
-    @include text-align(left);
+    @include white-button;
+    @include linear-gradient(top, $white 35%, $gray-l4);
     position: relative;
     margin: ($baseline/2) 0;
+    border: 1px solid $forum-color-border;
     width: 100%;
+    box-shadow: 0 1px 1px $shadow-l1;
+    text-align: left;
+    font-weight: normal;
   }
 }
