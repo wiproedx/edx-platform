@@ -5,29 +5,72 @@ Tests for Blocks Views
 import json
 
 import ddt
+from django.conf import settings
 from django.test import RequestFactory, TestCase
 from django.core.urlresolvers import reverse
 import httpretty
+from oauth2_provider import models as dot_models
 from provider import constants
+import unittest
 
 from student.tests.factories import UserFactory
 from third_party_auth.tests.utils import ThirdPartyOAuthTestMixin, ThirdPartyOAuthTestMixinGoogle
 
 from .constants import DUMMY_REDIRECT_URL
-from .. import adapters
-from .. import views
 from . import mixins
+from .. import adapters
+from .. import models
+
+if settings.FEATURES.get("ENABLE_OAUTH2_PROVIDER"):
+    from .. import views
 
 
+class AccessTokenLoginMixin(object):
+    """
+    Shared helper class to assert proper access levels when using access_tokens
+    """
+
+    def setUp(self):
+        """
+        Initialize mixin
+        """
+        super(AccessTokenLoginMixin, self).setUp()
+        self.login_with_access_token_url = reverse("login_with_access_token")
+
+    def login_with_access_token(self, access_token=None):
+        """
+        Login with access token and return response.
+        You can optionally send in an accss_token to override
+        the object's attribute
+        """
+
+        return self.client.post(
+            self.login_with_access_token_url,
+            HTTP_AUTHORIZATION="Bearer {0}".format(access_token if access_token else self.access_token)
+        )
+
+    def _assert_access_token_is_valid(self, access_token=None):
+        """
+        Asserts that oauth assigned access_token is valid and usable
+        """
+        self.assertEqual(self.login_with_access_token(access_token=access_token).status_code, 204)
+
+    def _assert_access_token_invalidated(self, access_token=None):
+        """
+        Asserts that oauth assigned access_token is not valid
+        """
+        self.assertEqual(self.login_with_access_token(access_token=access_token).status_code, 401)
+
+
+@unittest.skipUnless(settings.FEATURES.get("ENABLE_OAUTH2_PROVIDER"), "OAuth2 not enabled")
 class _DispatchingViewTestCase(TestCase):
     """
     Base class for tests that exercise DispatchingViews.
+
+    Subclasses need to define self.url.
     """
     dop_adapter = adapters.DOPAdapter()
     dot_adapter = adapters.DOTAdapter()
-
-    view_class = None
-    url = None
 
     def setUp(self):
         super(_DispatchingViewTestCase, self).setUp()
@@ -45,14 +88,54 @@ class _DispatchingViewTestCase(TestCase):
             client_id='dop-app-client-id',
         )
 
-    def _post_request(self, user, client, token_type=None):
+        # Create a "restricted" DOT Application which means any AccessToken/JWT
+        # generated for this application will be immediately expired
+        all_scopes = u' '.join([
+            scope for scope in settings.OAUTH2_PROVIDER['SCOPES'].keys()
+        ])
+
+        self.restricted_dot_app = self._create_restricted_app(
+            name='test restricted dot application',
+            client_id='dot-restricted-app-client-id',
+            allowed_scopes = all_scopes,
+        )
+
+        self.restricted_dot_app_limited_scopes = self._create_restricted_app(
+            name='test restricted dot application limited scopes',
+            client_id='dot-restricted-app-limited-scopes-client-id',
+            allowed_scopes = u'profile',
+        )
+
+
+    def _create_restricted_app(self, name, client_id, allowed_scopes):
+        """
+        Helper method to create a RestrictedApp
+        """
+
+        restricted_dot_app = self.dot_adapter.create_public_client(
+            name=name,
+            user=self.user,
+            redirect_uri=DUMMY_REDIRECT_URL,
+            client_id=client_id,
+        )
+        restricted_app = models.RestrictedApplication.objects.create(
+            application=restricted_dot_app,
+            _allowed_scopes = allowed_scopes
+        )
+
+        return restricted_dot_app
+
+    def _post_request(self, user, client, token_type=None, scopes=None):
         """
         Call the view with a POST request objectwith the appropriate format,
         returning the response object.
         """
-        return self.client.post(self.url, self._post_body(user, client, token_type))
+        return self.client.post(
+            self.url,
+            self._post_body(user, client, token_type, scopes)
+        )  # pylint: disable=no-member
 
-    def _post_body(self, user, client, token_type=None):
+    def _post_body(self, user, client, token_type=None, scopes=None):
         """
         Return a dictionary to be used as the body of the POST request
         """
@@ -60,15 +143,16 @@ class _DispatchingViewTestCase(TestCase):
 
 
 @ddt.ddt
-class TestAccessTokenView(mixins.AccessTokenMixin, _DispatchingViewTestCase):
+class TestAccessTokenView(AccessTokenLoginMixin, mixins.AccessTokenMixin, _DispatchingViewTestCase):
     """
     Test class for AccessTokenView
     """
+    def setUp(self):
+        super(TestAccessTokenView, self).setUp()
+        self.url = reverse('access_token')
+        self.view_class = views.AccessTokenView
 
-    view_class = views.AccessTokenView
-    url = reverse('access_token')
-
-    def _post_body(self, user, client, token_type=None):
+    def _post_body(self, user, client, token_type=None, scopes=None):
         """
         Return a dictionary to be used as the body of the POST request
         """
@@ -81,6 +165,9 @@ class TestAccessTokenView(mixins.AccessTokenMixin, _DispatchingViewTestCase):
 
         if token_type:
             body['token_type'] = token_type
+
+        if scopes:
+            body['scope'] = scopes
 
         return body
 
@@ -95,6 +182,22 @@ class TestAccessTokenView(mixins.AccessTokenMixin, _DispatchingViewTestCase):
         self.assertIn('scope', data)
         self.assertIn('token_type', data)
 
+    def test_restricted_access_token_fields(self):
+        response = self._post_request(self.user, self.restricted_dot_app)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertIn('access_token', data)
+        self.assertIn('expires_in', data)
+        self.assertIn('scope', data)
+        self.assertIn('token_type', data)
+
+        # Restricted applications have immediately expired tokens
+        self.assertLess(data['expires_in'], 0)
+
+        # double check that the token stored in the DB is marked as expired
+        access_token = dot_models.AccessToken.objects.get(token=data['access_token'])
+        self.assertTrue(models.RestrictedApplication.verify_access_token_as_expired(access_token))
+
     @ddt.data('dop_app', 'dot_app')
     def test_jwt_access_token(self, client_attr):
         client = getattr(self, client_attr)
@@ -104,6 +207,66 @@ class TestAccessTokenView(mixins.AccessTokenMixin, _DispatchingViewTestCase):
         self.assertIn('expires_in', data)
         self.assertEqual(data['token_type'], 'JWT')
         self.assert_valid_jwt_access_token(data['access_token'], self.user, data['scope'].split(' '))
+
+    def test_restricted_jwt_access_token(self):
+        """
+        Verify that when requesting a JWT token from a restricted Application
+        within the DOT subsystem, that our claims is marked as already expired
+        (i.e. expiry set to Jan 1, 1970)
+        """
+        response = self._post_request(self.user, self.restricted_dot_app, token_type='jwt')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertIn('expires_in', data)
+
+        # jwt must indicate that it is already expired
+        self.assertLess(data['expires_in'], 0)
+        self.assertEqual(data['token_type'], 'JWT')
+        self.assert_valid_jwt_access_token(
+            data['access_token'],
+            self.user,
+            data['scope'].split(' '),
+            should_be_expired=True
+        )
+
+    def test_restricted_access_token(self):
+        """
+        Verify that an access_token generated for a RestrictedApplication fails when
+        submitted to an API endpoint
+        """
+
+        response = self._post_request(self.user, self.restricted_dot_app)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+
+        self.assertIn('expires_in', data)
+        self.assertIn('access_token', data)
+
+        # the payload should indicate that the token is expired
+        self.assertLess(data['expires_in'], 0)
+
+        # try submitting this expired access_token to an API,
+        # and assert that it fails
+        self._assert_access_token_invalidated(data['access_token'])
+
+    def test_allowed_scope_access_token(self):
+        """
+        Verify that an access_token generated for a RestrictedApplication fails when
+        submitted to an API endpoint
+        """
+
+        response = self._post_request(self.user, self.restricted_dot_app, scopes='profile')
+        self.assertEqual(response.status_code, 200)
+
+    def test_disallowed_scope_access_token(self):
+        """
+        Verify that an access_token generated for a RestrictedApplication fails when
+        submitted to an API endpoint
+        """
+
+        # now check no access to a scope not allowed on the application
+        response = self._post_request(self.user, self.restricted_dot_app_limited_scopes, scopes='email')
+        self.assertEqual(response.status_code, 401)
 
     def test_dot_access_token_provides_refresh_token(self):
         response = self._post_request(self.user, self.dot_app)
@@ -124,11 +287,12 @@ class TestAccessTokenExchangeView(ThirdPartyOAuthTestMixinGoogle, ThirdPartyOAut
     """
     Test class for AccessTokenExchangeView
     """
+    def setUp(self):
+        self.url = reverse('exchange_access_token', kwargs={'backend': 'google-oauth2'})
+        self.view_class = views.AccessTokenExchangeView
+        super(TestAccessTokenExchangeView, self).setUp()
 
-    view_class = views.AccessTokenExchangeView
-    url = reverse('exchange_access_token', kwargs={'backend': 'google-oauth2'})
-
-    def _post_body(self, user, client, token_type=None):
+    def _post_body(self, user, client, token_type=None, scopes=None):
         return {
             'client_id': client.client_id,
             'access_token': self.access_token,
@@ -143,6 +307,7 @@ class TestAccessTokenExchangeView(ThirdPartyOAuthTestMixinGoogle, ThirdPartyOAut
         self.assertEqual(response.status_code, 200)
 
 
+# pylint: disable=abstract-method
 @ddt.ddt
 class TestAuthorizationView(_DispatchingViewTestCase):
     """
@@ -191,6 +356,47 @@ class TestAuthorizationView(_DispatchingViewTestCase):
         check_response = getattr(self, '_check_{}_response'.format(client_type))
         check_response(response)
 
+    def test_check_dot_authorization_page_get(self):
+        """
+        Make sure we get the overridden Authorization page - not
+        the default django-oauth-toolkit when we perform a page load
+        """
+        self.client.login(username=self.user.username, password='test')
+        response = self.client.get(
+            '/oauth2/authorize/',
+            {
+                'client_id': self.dot_app.client_id,
+                'response_type': 'code',
+                'state': 'random_state_string',
+                'redirect_uri': DUMMY_REDIRECT_URL,
+                'scope': 'profile'
+            },
+            follow=True,
+        )
+
+        # are the requested scopes on the page? We only requested 'profile', lets make
+        # sure the page only lists that one
+        self.assertContains(response, settings.OAUTH2_PROVIDER['SCOPES']['profile'])
+        self.assertNotContains(response, settings.OAUTH2_PROVIDER['SCOPES']['read'])
+        self.assertNotContains(response, settings.OAUTH2_PROVIDER['SCOPES']['write'])
+        self.assertNotContains(response, settings.OAUTH2_PROVIDER['SCOPES']['email'])
+
+        # is the application name specified?
+        self.assertContains(
+            response,
+            "Authorize {name}".format(name=self.dot_app.name)
+        )
+
+        # are the cancel and allow buttons on the page?
+        self.assertContains(
+            response,
+            '<button type="submit" class="btn btn-authorization-cancel" name="cancel"/>Cancel</button>'
+        )
+        self.assertContains(
+            response,
+            '<button type="submit" class="btn btn-authorization-allow" name="allow" value="Authorize"/>Allow</button>'
+        )
+
     def _check_dot_response(self, response):
         """
         Check that django-oauth-toolkit gives an appropriate authorization response.
@@ -231,6 +437,7 @@ class TestAuthorizationView(_DispatchingViewTestCase):
         return response.redirect_chain[-1][0]
 
 
+@unittest.skipUnless(settings.FEATURES.get("ENABLE_OAUTH2_PROVIDER"), "OAuth2 not enabled")
 class TestViewDispatch(TestCase):
     """
     Test that the DispatchingView dispatches the right way.
@@ -318,3 +525,84 @@ class TestViewDispatch(TestCase):
     def test_get_view_for_no_backend(self):
         view_object = views.AccessTokenView()
         self.assertRaises(KeyError, view_object.get_view_for_backend, None)
+
+
+class TestRevokeTokenView(AccessTokenLoginMixin, _DispatchingViewTestCase):  # pylint: disable=abstract-method
+    """
+    Test class for RevokeTokenView
+    """
+    def setUp(self):
+        self.revoke_token_url = reverse('revoke_token')
+        self.access_token_url = reverse('access_token')
+
+        super(TestRevokeTokenView, self).setUp()
+        response = self.client.post(self.access_token_url, self.access_token_post_body_with_password())
+        access_token_data = json.loads(response.content)
+        self.access_token = access_token_data['access_token']
+        self.refresh_token = access_token_data['refresh_token']
+
+    def access_token_post_body_with_password(self):
+        """
+        Returns a dictionary to be used as the body of the access_token
+        POST request with 'password' grant
+        """
+        return {
+            'client_id': self.dot_app.client_id,
+            'grant_type': 'password',
+            'username': self.user.username,
+            'password': 'test',
+        }
+
+    def access_token_post_body_with_refresh_token(self, refresh_token):
+        """
+        Returns a dictionary to be used as the body of the access_token
+        POST request with 'refresh_token' grant
+        """
+        return {
+            'client_id': self.dot_app.client_id,
+            'grant_type': 'refresh_token',
+            'refresh_token': refresh_token,
+        }
+
+    def revoke_token_post_body(self, token):
+        """
+        Returns a dictionary to be used as the body of the revoke_token POST request
+        """
+        return {
+            'client_id': self.dot_app.client_id,
+            'token': token,
+        }
+
+    def _assert_refresh_token_invalidated(self):
+        """
+        Asserts that oauth assigned refresh_token is not valid
+        """
+        response = self.client.post(
+            self.access_token_url,
+            self.access_token_post_body_with_refresh_token(self.refresh_token)
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def verify_revoke_token(self, token):
+        """
+        Verifies access of token before and after revoking
+        """
+        self._assert_access_token_is_valid()
+
+        response = self.client.post(self.revoke_token_url, self.revoke_token_post_body(token))
+        self.assertEqual(response.status_code, 200)
+
+        self._assert_access_token_invalidated()
+        self._assert_refresh_token_invalidated()
+
+    def test_revoke_refresh_token_dot(self):
+        """
+        Tests invalidation/revoke of user tokens against refresh token for django-oauth-toolkit
+        """
+        self.verify_revoke_token(self.refresh_token)
+
+    def test_revoke_access_token_dot(self):
+        """
+        Tests invalidation/revoke of user access token for django-oauth-toolkit
+        """
+        self.verify_revoke_token(self.access_token)
