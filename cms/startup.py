@@ -18,6 +18,7 @@ from openedx.core.lib.xblock_utils import xblock_local_resource_url
 import xmodule.x_module
 import cms.lib.xblock.runtime
 
+from startup_configurations.validate_config import validate_cms_config
 from openedx.core.djangoapps.theming.core import enable_theming
 from openedx.core.djangoapps.theming.helpers import is_comprehensive_theming_enabled
 
@@ -49,6 +50,9 @@ def run():
     # https://openedx.atlassian.net/wiki/display/PLAT/Convert+from+Storage-centric+runtimes+to+Application-centric+runtimes
     xmodule.x_module.descriptor_global_handler_url = cms.lib.xblock.runtime.handler_url
     xmodule.x_module.descriptor_global_local_resource_url = xblock_local_resource_url
+
+    # validate configurations on startup
+    validate_cms_config(settings)
 
 
 def add_mimetypes():

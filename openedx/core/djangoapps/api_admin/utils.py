@@ -7,7 +7,7 @@ from edx_rest_api_client.client import EdxRestApiClient
 
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from student.models import UserProfile, anonymous_id_for_user
-
+from openedx.core.lib.token_utils import JwtBuilder
 
 def get_id_token(user):
     """
@@ -46,4 +46,8 @@ def get_id_token(user):
 
 def course_discovery_api_client(user):
     """ Returns a Course Discovery API client setup with authentication for the specified user. """
-    return EdxRestApiClient(settings.COURSE_CATALOG_API_URL, jwt=get_id_token(user))
+    scopes = ['email', 'profile']
+    expires_in = settings.OAUTH_ID_TOKEN_EXPIRATION
+    jwt = JwtBuilder(user).build_token(scopes, expires_in)
+
+    return EdxRestApiClient(settings.COURSE_CATALOG_API_URL, jwt=jwt)

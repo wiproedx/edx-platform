@@ -10,7 +10,7 @@ file and check it in at the same time as your model changes. To do that,
 2. ./manage.py lms schemamigration student --auto description_of_your_change
 3. Add the migration file created in edx-platform/common/djangoapps/student/migrations/
 """
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict, namedtuple
 from datetime import datetime, timedelta
 from functools import total_ordering
 import hashlib
@@ -34,7 +34,7 @@ from django.db import models, IntegrityError, transaction
 from django.db.models import Count
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver, Signal
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils.translation import ugettext_noop
 from django.core.cache import cache
 from django_countries.fields import CountryField
@@ -54,6 +54,7 @@ from enrollment.api import _default_course_mode
 import lms.lib.comment_client as cc
 from openedx.core.djangoapps.commerce.utils import ecommerce_api_client, ECOMMERCE_DATE_FORMAT
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+import request_cache
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from util.model_utils import emit_field_changed_events, get_changed_fields_dict
 from util.query import use_read_replica_if_available
@@ -973,6 +974,12 @@ class CourseEnrollmentManager(models.Manager):
         )
 
 
+# Named tuple for fields pertaining to the state of
+# CourseEnrollment for a user in a course.  This type
+# is used to cache the state in the request cache.
+CourseEnrollmentState = namedtuple('CourseEnrollmentState', 'mode, is_active')
+
+
 class CourseEnrollment(models.Model):
     """
     Represents a Student's Enrollment record for a single Course. You should
@@ -1119,6 +1126,11 @@ class CourseEnrollment(models.Model):
 
         if activation_changed or mode_changed:
             self.save()
+            self._update_enrollment_in_request_cache(
+                self.user,
+                self.course_id,
+                CourseEnrollmentState(self.mode, self.is_active),
+            )
 
         if activation_changed:
             if self.is_active:
@@ -1284,6 +1296,7 @@ class CourseEnrollment(models.Model):
         # User is allowed to enroll if they've reached this point.
         enrollment = cls.get_or_create_enrollment(user, course_key)
         enrollment.update_enrollment(is_active=True, mode=mode)
+		enrollment.send_signal(EnrollStatusChange.enroll)
         if badges_enabled():
             from lms.djangoapps.badges.events.course_meta import award_enrollment_badge
             award_enrollment_badge(user)
@@ -1503,6 +1516,15 @@ class CourseEnrollment(models.Model):
             attribute = self.attributes.get(namespace='order', name='order_number')
         except ObjectDoesNotExist:
             return None
+        except MultipleObjectsReturned:
+            # If there are multiple attributes then return the last one.
+            enrollment_id = self.get_enrollment(self.user, self.course_id).id
+            log.warning(
+                u"Multiple CourseEnrollmentAttributes found for user %s with enrollment-ID %s",
+                self.user.id,
+                enrollment_id
+            )
+            attribute = self.attributes.filter(namespace='order', name='order_number').last()
 
         order_number = attribute.value
         order = ecommerce_api_client(self.user).orders(order_number).get()
@@ -1582,6 +1604,45 @@ class CourseEnrollment(models.Model):
             Unicode cache key
         """
         return cls.COURSE_ENROLLMENT_CACHE_KEY.format(user_id, unicode(course_key))
+
+    @classmethod
+    def _get_enrollment_state(cls, user, course_key):
+        """
+        Returns the CourseEnrollmentState for the given user
+        and course_key, caching the result for later retrieval.
+        """
+        enrollment_state = cls._get_enrollment_in_request_cache(user, course_key)
+        if not enrollment_state:
+            try:
+                record = cls.objects.get(user=user, course_id=course_key)
+                enrollment_state = CourseEnrollmentState(record.mode, record.is_active)
+            except cls.DoesNotExist:
+                enrollment_state = CourseEnrollmentState(None, None)
+            cls._update_enrollment_in_request_cache(user, course_key, enrollment_state)
+        return enrollment_state
+
+    @classmethod
+    def _get_mode_active_request_cache(cls):
+        """
+        Returns the request-specific cache for CourseEnrollment
+        """
+        return request_cache.get_cache('CourseEnrollment.mode_and_active')
+
+    @classmethod
+    def _get_enrollment_in_request_cache(cls, user, course_key):
+        """
+        Returns the cached value (CourseEnrollmentState) for the user's
+        enrollment in the request cache.  If not cached, returns None.
+        """
+        return cls._get_mode_active_request_cache().get((user.id, course_key))
+
+    @classmethod
+    def _update_enrollment_in_request_cache(cls, user, course_key, enrollment_state):
+        """
+        Updates the cached value for the user's enrollment in the
+        request cache.
+        """
+        cls._get_mode_active_request_cache()[(user.id, course_key)] = enrollment_state
 
 
 @receiver(models.signals.post_save, sender=CourseEnrollment)
