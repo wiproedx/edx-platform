@@ -1,47 +1,105 @@
+"""
+Code used to calculate learner grades.
+"""
+
+from __future__ import division
+
 import abc
 import inspect
 import logging
 import random
 import sys
 
-from collections import namedtuple
 
 log = logging.getLogger("edx.courseware")
 
-# This is a tuple for holding scores, either from problems or sections.
-# Section either indicates the name of the problem or the name of the section
-Score = namedtuple("Score", "earned possible graded section module_id")
 
-
-def aggregate_scores(scores, section_name="summary"):
+class ScoreBase(object):
     """
-    scores: A list of Score objects
+    Abstract base class for encapsulating fields of values scores.
+    Field common to all scores include:
+        display_name (string) - the display name of the module
+        module_id (UsageKey) - the location of the module
+        graded (boolean) - whether or not this module is graded
+    """
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, graded, display_name, module_id):
+        self.graded = graded
+        self.display_name = display_name
+        self.module_id = module_id
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.__dict__ == other.__dict__
+        return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return u"{class_name}({fields})".format(class_name=self.__class__.__name__, fields=self.__dict__)
+
+
+class ProblemScore(ScoreBase):
+    """
+    Encapsulates the fields of a Problem's score.
+    In addition to the fields in ScoreBase, also includes:
+        raw_earned (float) - raw points earned on this problem
+        raw_possible (float) - raw points possible to earn on this problem
+        weighted_earned = earned (float) - weighted value of the points earned
+        weighted_possible = possible (float) - weighted possible points on this problem
+        weight (float) - weight of this problem
+    """
+    def __init__(self, raw_earned, raw_possible, weighted_earned, weighted_possible, weight, *args, **kwargs):
+        super(ProblemScore, self).__init__(*args, **kwargs)
+        self.raw_earned = raw_earned
+        self.raw_possible = raw_possible
+        self.earned = weighted_earned
+        self.possible = weighted_possible
+        self.weight = weight
+
+
+class AggregatedScore(ScoreBase):
+    """
+    Encapsulates the fields of a Subsection's score.
+    In addition to the fields in ScoreBase, also includes:
+        tw_earned = earned - total aggregated sum of all weighted earned values
+        tw_possible = possible - total aggregated sum of all weighted possible values
+    """
+    def __init__(self, tw_earned, tw_possible, *args, **kwargs):
+        super(AggregatedScore, self).__init__(*args, **kwargs)
+        self.earned = tw_earned
+        self.possible = tw_possible
+
+
+def float_sum(iterable):
+    """
+    Sum the elements of the iterable, and return the result as a float.
+    """
+    return float(sum(iterable))
+
+
+def aggregate_scores(scores, display_name="summary", location=None):
+    """
+    scores: A list of ScoreBase objects
+    display_name: The display name for the score object
+    location: The location under which all objects in scores are located
     returns: A tuple (all_total, graded_total).
-        all_total: A Score representing the total score summed over all input scores
-        graded_total: A Score representing the score summed over all graded input scores
+        all_total: A ScoreBase representing the total score summed over all input scores
+        graded_total: A ScoreBase representing the score summed over all graded input scores
     """
-    total_correct_graded = sum(score.earned for score in scores if score.graded)
-    total_possible_graded = sum(score.possible for score in scores if score.graded)
+    total_correct_graded = float_sum(score.earned for score in scores if score.graded)
+    total_possible_graded = float_sum(score.possible for score in scores if score.graded)
 
-    total_correct = sum(score.earned for score in scores)
-    total_possible = sum(score.possible for score in scores)
+    total_correct = float_sum(score.earned for score in scores)
+    total_possible = float_sum(score.possible for score in scores)
 
-    #regardless of whether or not it is graded
-    all_total = Score(
-        total_correct,
-        total_possible,
-        False,
-        section_name,
-        None
-    )
+    #regardless of whether it is graded
+    all_total = AggregatedScore(total_correct, total_possible, False, display_name, location)
+
     #selecting only graded things
-    graded_total = Score(
-        total_correct_graded,
-        total_possible_graded,
-        True,
-        section_name,
-        None
-    )
+    graded_total = AggregatedScore(total_correct_graded, total_possible_graded, True, display_name, location)
 
     return all_total, graded_total
 
@@ -207,7 +265,7 @@ class SingleSectionGrader(CourseGrader):
     If the name is not appropriate for the short short_label or category, they each may
     be specified individually.
     """
-    def __init__(self, type, name, short_label=None, category=None):
+    def __init__(self, type, name, short_label=None, category=None):  # pylint: disable=redefined-builtin
         self.type = type
         self.name = name
         self.short_label = short_label or name
@@ -217,7 +275,7 @@ class SingleSectionGrader(CourseGrader):
         found_score = None
         if self.type in grade_sheet:
             for score in grade_sheet[self.type]:
-                if score.section == self.name:
+                if score.display_name == self.name:
                     found_score = score
                     break
 
@@ -229,7 +287,7 @@ class SingleSectionGrader(CourseGrader):
                 earned = found_score.earned
                 possible = found_score.possible
 
-            percent = earned / float(possible)
+            percent = earned / possible
             detail = u"{name} - {percent:.0%} ({earned:.3n}/{possible:.3n})".format(
                 name=self.name,
                 percent=percent,
@@ -244,10 +302,11 @@ class SingleSectionGrader(CourseGrader):
         breakdown = [{'percent': percent, 'label': self.short_label,
                       'detail': detail, 'category': self.category, 'prominent': True}]
 
-        return {'percent': percent,
-                'section_breakdown': breakdown,
-                #No grade_breakdown here
-                }
+        return {
+            'percent': percent,
+            'section_breakdown': breakdown,
+            #No grade_breakdown here
+        }
 
 
 class AssignmentFormatGrader(CourseGrader):
@@ -284,8 +343,18 @@ class AssignmentFormatGrader(CourseGrader):
     min_count = 2 would produce the labels "Assignment 3", "Assignment 4"
 
     """
-    def __init__(self, type, min_count, drop_count, category=None, section_type=None, short_label=None,
-                 show_only_average=False, hide_average=False, starting_index=1):
+    def __init__(
+            self,
+            type,  # pylint: disable=redefined-builtin
+            min_count,
+            drop_count,
+            category=None,
+            section_type=None,
+            short_label=None,
+            show_only_average=False,
+            hide_average=False,
+            starting_index=1
+    ):
         self.type = type
         self.min_count = min_count
         self.drop_count = drop_count
@@ -328,9 +397,9 @@ class AssignmentFormatGrader(CourseGrader):
                 else:
                     earned = scores[i].earned
                     possible = scores[i].possible
-                    section_name = scores[i].section
+                    section_name = scores[i].display_name
 
-                percentage = earned / float(possible)
+                percentage = earned / possible
                 summary_format = u"{section_type} {index} - {name} - {percent:.0%} ({earned:.3n}/{possible:.3n})"
                 summary = summary_format.format(
                     index=i + self.starting_index,
@@ -341,7 +410,7 @@ class AssignmentFormatGrader(CourseGrader):
                     possible=float(possible)
                 )
             else:
-                percentage = 0
+                percentage = 0.0
                 summary = u"{section_type} {index} Unreleased - 0% (?/?)".format(
                     index=i + self.starting_index,
                     section_type=self.section_type
@@ -358,8 +427,12 @@ class AssignmentFormatGrader(CourseGrader):
         total_percent, dropped_indices = total_with_drops(breakdown, self.drop_count)
 
         for dropped_index in dropped_indices:
-            breakdown[dropped_index]['mark'] = {'detail': u"The lowest {drop_count} {section_type} scores are dropped."
-                                                .format(drop_count=self.drop_count, section_type=self.section_type)}
+            breakdown[dropped_index]['mark'] = {
+                'detail': u"The lowest {drop_count} {section_type} scores are dropped.".format(
+                    drop_count=self.drop_count,
+                    section_type=self.section_type
+                )
+            }
 
         if len(breakdown) == 1:
             # if there is only one entry in a section, suppress the existing individual entry and the average,
@@ -386,7 +459,8 @@ class AssignmentFormatGrader(CourseGrader):
                 breakdown.append({'percent': total_percent, 'label': total_label,
                                   'detail': total_detail, 'category': self.category, 'prominent': True})
 
-        return {'percent': total_percent,
-                'section_breakdown': breakdown,
-                #No grade_breakdown here
-                }
+        return {
+            'percent': total_percent,
+            'section_breakdown': breakdown,
+            # No grade_breakdown here
+        }

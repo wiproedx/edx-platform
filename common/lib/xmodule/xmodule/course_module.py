@@ -830,6 +830,15 @@ class CourseFields(object):
         },
         scope=Scope.settings
     )
+    allow_unsupported_xblocks = Boolean(
+        display_name=_("Add Unsupported Problems and Tools"),
+        help=_(
+            "Enter true or false. If true, you can add unsupported problems and tools to your course in Studio. "
+            "Unsupported problems and tools are not recommended for use in courses due to non-compliance with one or "
+            "more of the base requirements, such as testing, accessibility, internationalization, and documentation."
+        ),
+        scope=Scope.settings, default=False
+    )
 
 
 class CourseModule(CourseFields, SequenceModule):  # pylint: disable=abstract-method
