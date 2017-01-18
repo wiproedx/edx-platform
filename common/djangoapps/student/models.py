@@ -1296,7 +1296,7 @@ class CourseEnrollment(models.Model):
         # User is allowed to enroll if they've reached this point.
         enrollment = cls.get_or_create_enrollment(user, course_key)
         enrollment.update_enrollment(is_active=True, mode=mode)
-		enrollment.send_signal(EnrollStatusChange.enroll)
+
         if badges_enabled():
             from lms.djangoapps.badges.events.course_meta import award_enrollment_badge
             award_enrollment_badge(user)
