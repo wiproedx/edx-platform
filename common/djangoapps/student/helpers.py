@@ -252,3 +252,13 @@ def get_next_url_for_login_page(request):
         # be saved in the session as part of the pipeline state. That URL will take priority
         # over this one.
     return redirect_to
+
+
+def destroy_oauth_tokens(user):
+    """
+    Destroys ALL OAuth access and refresh tokens for the given user.
+    """
+    dop_access_token.objects.filter(user=user).delete()
+    dop_refresh_token.objects.filter(user=user).delete()
+    dot_access_token.objects.filter(user=user).delete()
+    dot_refresh_token.objects.filter(user=user).delete()
