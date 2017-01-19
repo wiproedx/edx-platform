@@ -1548,7 +1548,7 @@ PIPELINE_JS = {
             [
                 'js/sticky_filter.js',
                 'js/query-params.js',
-                'js/vendor/moment.min.js',
+                'js/vendor/moment-with-locales.min.js',
             ]
         ),
         'output_filename': 'js/lms-application.js',
@@ -1696,7 +1696,7 @@ REQUIRE_ENVIRONMENT = "node"
 REQUIRE_JS_PATH_OVERRIDES = {
     'js/bookmarks/views/bookmark_button': 'js/bookmarks/views/bookmark_button.js',
     'js/views/message_banner': 'js/views/message_banner.js',
-    'moment': 'js/vendor/moment.min.js',
+    'moment': 'js/vendor/moment-with-locales.min.js',
     'jquery.url': 'js/vendor/url.min.js',
     'js/courseware/course_home_events': 'js/courseware/course_home_events.js',
     'js/courseware/accordion_events': 'js/courseware/accordion_events.js',
@@ -1710,6 +1710,15 @@ REQUIRE_JS_PATH_OVERRIDES = {
     'edxicons': 'edx-pattern-library/js/edx-icons.js',
     'draggabilly': 'js/vendor/draggabilly.js'
 }
+
+########################## DJANGO DEBUG TOOLBAR ###############################
+
+# We don't enable Django Debug Toolbar universally, but whenever we do, we want
+# to avoid patching settings.  Patched settings can cause circular import
+# problems: http://django-debug-toolbar.readthedocs.org/en/1.0/installation.html#explicit-setup
+
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
+
 ################################# CELERY ######################################
 
 # Celery's task autodiscovery won't find tasks nested in a tasks package.
