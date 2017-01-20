@@ -12,7 +12,7 @@ from opaque_keys.edx.keys import CourseKey
 from provider.oauth2.models import AccessToken as DOPAccessToken
 from student.roles import CourseStaffRole, CourseInstructorRole
 
-from openedx.core.djangoapps.oauth_dispatch.models import RestrictedApplication
+from lms.djangoapps.oauth_dispatch.models import RestrictedApplication
 
 
 class OAuth2RestrictedApplicatonPermission(TokenHasScope):
