@@ -76,6 +76,8 @@ from lms.envs.common import (
     REDIRECT_CACHE_TIMEOUT,
     REDIRECT_CACHE_KEY_PREFIX,
 
+    JWT_AUTH,
+
     # django-debug-toolbar
     DEBUG_TOOLBAR_PATCH_SETTINGS,
 )
@@ -1203,3 +1205,9 @@ PARTNER_SUPPORT_EMAIL = ''
 
 # Affiliate cookie tracking
 AFFILIATE_COOKIE_NAME = 'affiliate_id'
+# This is required for the migrations in oauth_dispatch.models
+# otherwise it fails saying this attribute is not present in Settings
+# Although Studio does not exable OAuth2 Provider capability, the new approach
+# to generating test databases will discover and try to create all tables
+# and this setting needs to be present
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
