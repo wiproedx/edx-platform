@@ -20,7 +20,7 @@ from model_utils.models import TimeStampedModel
 
 from coursewarehistoryextended.fields import UnsignedBigIntAutoField
 from opaque_keys.edx.keys import CourseKey, UsageKey
-from openedx.core.djangoapps.xmodule_django.models import CourseKeyField, UsageKeyField
+from common.djangoapps.xmodule_django.models import CourseKeyField, UsageKeyField
 
 
 log = logging.getLogger(__name__)
