@@ -4,10 +4,15 @@
 #   * @edx/ospr - to check licensing
 #   * @edx/devops - to check system requirements
 
+# <<<<<<< 5f1d7f968f6ce8574efac23c0d35e503a86cce54
 # Packaging pre-requisites.
-pyparsing==2.0.7
-setuptools==34.0.2
-pip==9.0.1
+# pyparsing==2.0.7
+# setuptools==34.0.2
+# pip==9.0.1
+#=======
+# This is an old version of setuptools, and we should upgrade when it is safe.
+setuptools==18.0.1
+#>>>>>>> Pin sandbox packaging tools in sync with edxapp venv
 
 # Numpy and scipy can't be installed in the same pip run.
 # Install numpy before other things to help resolve the problem.

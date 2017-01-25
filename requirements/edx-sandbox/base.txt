@@ -5,9 +5,14 @@
 #   * @edx/devops - to check system requirements
 
 # Pin packaging tools the same as edxapp.  Keep them in sync for our sanity.
-setuptools==34.0.2
-pip==9.0.1
+#<<<<<<< 5f1d7f968f6ce8574efac23c0d35e503a86cce54
+#setuptools==34.0.2
+#pip==9.0.1
 
+#=======
+setuptools==18.0.1
+pip==7.1.2
+#>>>>>>> Pin sandbox packaging tools in sync with edxapp venv
 
 numpy==1.6.2
 networkx==1.7
