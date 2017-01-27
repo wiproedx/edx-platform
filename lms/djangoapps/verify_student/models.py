@@ -793,7 +793,6 @@ class SoftwareSecurePhotoVerification(PhotoVerification):
         # Default to the S3 backend for backward compatibility
         storage_class = config.get("STORAGE_CLASS", "storages.backends.s3boto.S3BotoStorage")
         storage_kwargs = config.get("STORAGE_KWARGS", {})
-<<<<<<< HEAD
 
         # Map old settings to the parameters expected by the storage backend
         if "AWS_ACCESS_KEY" in config:

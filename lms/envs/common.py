@@ -2934,7 +2934,6 @@ CCX_MAX_STUDENTS_ALLOWED = 200
 FINANCIAL_ASSISTANCE_MIN_LENGTH = 800
 FINANCIAL_ASSISTANCE_MAX_LENGTH = 2500
 
-<<<<<<< HEAD
 # Deprecated xblock types
 DEPRECATED_ADVANCED_COMPONENT_TYPES = []
 =======
@@ -2966,13 +2965,10 @@ APP_UPGRADE_CACHE_TIMEOUT = 3600
 # records before you have deployed the app to write to coursewarehistoryextended.StudentModuleHistoryExtended
 # if you want to avoid an overlap in ids while searching for history across the two tables.
 STUDENTMODULEHISTORYEXTENDED_OFFSET = 10000
->>>>>>> origin/master
 
 # Cutoff date for granting audit certificates
 
 AUDIT_CERT_CUTOFF_DATE = None
-<<<<<<< HEAD
-=======
 
 ################################ Settings for Credentials Service ################################
 
@@ -3018,4 +3014,4 @@ REDIRECT_CACHE_KEY_PREFIX = 'redirects'
 ############## Settings for LMS Context Sensitive Help ##############
 
 DOC_LINK_BASE_URL = None
->>>>>>> origin/master
+
