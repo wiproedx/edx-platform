@@ -7,7 +7,8 @@ of a variety of types.
 
 Used by capa_problem.py
 """
-
+# TODO: Refactor this code and fix this issue.
+# pylint: disable=attribute-defined-outside-init
 # standard library imports
 import abc
 import cgi
@@ -50,6 +51,7 @@ from lxml.html.soupparser import fromstring as fromstring_bs     # uses Beautifu
 import capa.xqueue_interface as xqueue_interface
 
 import capa.safe_exec as safe_exec
+from openedx.core.djangolib.markup import HTML, Text
 
 log = logging.getLogger(__name__)
 
@@ -188,7 +190,10 @@ class LoncapaResponse(object):
             raise LoncapaProblemError(msg)
 
         for prop in self.required_attributes:
-            if not xml.get(prop):
+            prop_value = xml.get(prop)
+            if prop_value:  # Stripping off the empty strings
+                prop_value = prop_value.strip()
+            if not prop_value:
                 msg = "Error in problem specification: %s missing required attribute %s" % (
                     unicode(self), prop)
                 msg += "\nSee XML source line %s" % getattr(
@@ -246,8 +251,35 @@ class LoncapaResponse(object):
           - renderer : procedure which produces HTML given an ElementTree
           - response_msg: a message displayed at the end of the Response
         """
-        # render ourself as a <span> + our content
-        tree = etree.Element('span')
+        _ = self.capa_system.i18n.ugettext
+
+        # response_id = problem_id + response index
+        response_id = self.xml.attrib['id']
+
+        response_index = response_id.split('_')[-1]
+        # Translators: index here could be 1,2,3 and so on
+        response_label = _(u'Question {index}').format(index=response_index)
+
+        # wrap the content inside a section
+        tree = etree.Element('div')
+        tree.set('class', 'wrapper-problem-response')
+        tree.set('tabindex', '-1')
+        tree.set('aria-label', response_label)
+        tree.set('role', 'group')
+
+        if self.xml.get('multiple_inputtypes'):
+            # add <div> to wrap all inputtypes
+            content = etree.SubElement(tree, 'div')
+            content.set('class', 'multi-inputs-group')
+            content.set('role', 'group')
+
+            if self.xml.get('multiinput-group-label-id'):
+                content.set('aria-labelledby', self.xml.get('multiinput-group-label-id'))
+
+            if self.xml.get('multiinput-group_description_ids'):
+                content.set('aria-describedby', self.xml.get('multiinput-group_description_ids'))
+        else:
+            content = tree
 
         # problem author can make this span display:inline
         if self.xml.get('inline', ''):
@@ -257,12 +289,12 @@ class LoncapaResponse(object):
             # call provided procedure to do the rendering
             item_xhtml = renderer(item)
             if item_xhtml is not None:
-                tree.append(item_xhtml)
+                content.append(item_xhtml)
         tree.tail = self.xml.tail
 
         # Add a <div> for the message at the end of the response
         if response_msg:
-            tree.append(self._render_response_msg_html(response_msg))
+            content.append(self._render_response_msg_html(response_msg))
 
         return tree
 
@@ -329,9 +361,9 @@ class LoncapaResponse(object):
         # Tricky: label None means output defaults, while '' means output empty label
         if label is None:
             if correct:
-                label = _(u'Correct')
+                label = _(u'Correct:')
             else:
-                label = _(u'Incorrect')
+                label = _(u'Incorrect:')
 
         # self.runtime.track_function('get_demand_hint', event_info)
         # This this "feedback hint" event
@@ -349,15 +381,23 @@ class LoncapaResponse(object):
         self.capa_module.runtime.track_function('edx.problem.hint.feedback_displayed', event_info)
 
         # Form the div-wrapped hint texts
-        hints_wrap = u''.join(
-            [u'<div class="{0}">{1}</div>'.format(QUESTION_HINT_TEXT_STYLE, dct.get('text'))
-             for dct in hint_log]
+        hints_wrap = HTML('').join(
+            [HTML('<div class="{question_hint_text_style}">{hint_content}</div>').format(
+                question_hint_text_style=QUESTION_HINT_TEXT_STYLE,
+                hint_content=HTML(dct.get('text'))
+            ) for dct in hint_log]
         )
         if multiline_mode:
-            hints_wrap = u'<div class="{0}">{1}</div>'.format(QUESTION_HINT_MULTILINE, hints_wrap)
+            hints_wrap = HTML('<div class="{question_hint_multiline}">{hints_wrap}</div>').format(
+                question_hint_multiline=QUESTION_HINT_MULTILINE,
+                hints_wrap=hints_wrap
+            )
         label_wrap = ''
         if label:
-            label_wrap = u'<div class="{0}">{1}: </div>'.format(QUESTION_HINT_LABEL_STYLE, label)
+            label_wrap = HTML('<span class="{question_hint_label_style}">{label} </span>').format(
+                question_hint_label_style=QUESTION_HINT_LABEL_STYLE,
+                label=Text(label)
+            )
 
         # Establish the outer style
         if correct:
@@ -366,7 +406,12 @@ class LoncapaResponse(object):
             style = QUESTION_HINT_INCORRECT_STYLE
 
         # Ready to go
-        return u'<div class="{0}">{1}{2}</div>'.format(style, label_wrap, hints_wrap)
+        return HTML('<div class="{st}"><div class="explanation-title">{text}</div>{lwrp}{hintswrap}</div>').format(
+            st=style,
+            text=Text(_("Answer")),
+            lwrp=label_wrap,
+            hintswrap=hints_wrap
+        )
 
     def get_extended_hints(self, student_answers, new_cmap):
         """
@@ -541,7 +586,7 @@ class LoncapaResponse(object):
 
         # If we can't do that, create the <div> and set the message
         # as the text of the <div>
-        except:
+        except Exception:  # pylint: disable=broad-except
             response_msg_div = etree.Element('div')
             response_msg_div.text = str(response_msg)
 
@@ -828,31 +873,30 @@ class ChoiceResponse(LoncapaResponse):
     def setup_response(self):
         self.assign_choice_names()
 
-        correct_xml = self.xml.xpath(
-            '//*[@id=$id]//choice[@correct="true"]',
-            id=self.xml.get('id')
-        )
+        self.correct_choices = set()
+        self.incorrect_choices = set()
+        for choice in self.get_choices():
 
-        self.correct_choices = set([
-            choice.get('name') for choice in correct_xml
-        ])
+            # contextualize the name and correct attributes
+            name = contextualize_text(choice.get('name'), self.context)
+            correct = contextualize_text(choice.get('correct'), self.context).upper()
 
-        incorrect_xml = self.xml.xpath(
-            '//*[@id=$id]//choice[@correct="false"]',
-            id=self.xml.get('id')
-        )
+            # divide choices into correct and incorrect
+            if correct == 'TRUE':
+                self.correct_choices.add(name)
+            elif correct == 'FALSE':
+                self.incorrect_choices.add(name)
 
-        self.incorrect_choices = set([
-            choice.get('name') for choice in incorrect_xml
-        ])
+    def get_choices(self):
+        """Returns this response's XML choice elements."""
+        return self.xml.xpath('//*[@id=$id]//choice', id=self.xml.get('id'))
 
     def assign_choice_names(self):
         """
         Initialize name attributes in <choice> tags for this response.
         """
 
-        for index, choice in enumerate(self.xml.xpath('//*[@id=$id]//choice',
-                                                      id=self.xml.get('id'))):
+        for index, choice in enumerate(self.get_choices()):
             choice.set("name", "choice_" + str(index))
             # If a choice does not have an id, assign 'A' 'B', .. used by CompoundHint
             if not choice.get('id'):
@@ -1225,7 +1269,6 @@ class MultipleChoiceResponse(LoncapaResponse):
         i = 0
         for response in self.xml.xpath("choicegroup"):
             # Is Masking enabled? -- check for shuffle or answer-pool features
-            ans_str = response.get("answer-pool")
             # Masking (self._has_mask) is off, to be re-enabled with a future PR.
             rtype = response.get('type')
             if rtype not in ["MultipleChoice"]:
@@ -1240,12 +1283,15 @@ class MultipleChoiceResponse(LoncapaResponse):
                     i += 1
                 # If using the masked name, e.g. mask_0, save the regular name
                 # to support unmasking later (for the logs).
-                if self.has_mask():
-                    mask_name = "mask_" + str(mask_ids.pop())
-                    self._mask_dict[mask_name] = name
-                    choice.set("name", mask_name)
-                else:
-                    choice.set("name", name)
+                # Masking is currently disabled so this code is commented, as
+                # the variable `mask_ids` is not defined. (the feature appears to not be fully implemented)
+                # The original work for masking was done by Nick Parlante as part of the OLI Hinting feature.
+                # if self.has_mask():
+                #     mask_name = "mask_" + str(mask_ids.pop())
+                #     self._mask_dict[mask_name] = name
+                #     choice.set("name", mask_name)
+                # else:
+                choice.set("name", name)
 
     def late_transforms(self, problem):
         """
@@ -1338,12 +1384,13 @@ class MultipleChoiceResponse(LoncapaResponse):
         Given a masked name, e.g. mask_2, returns the regular name, e.g. choice_0.
         Fails with LoncapaProblemError if called on a response that is not masking.
         """
-        if not self.has_mask():
-            _ = self.capa_system.i18n.ugettext
-            # Translators: 'unmask_name' is a method name and should not be translated.
-            msg = _("unmask_name called on response that is not masked")
-            raise LoncapaProblemError(msg)
-        return self._mask_dict[name]
+        # if not self.has_mask():
+        #     _ = self.capa_system.i18n.ugettext
+        #     # Translators: 'unmask_name' is a method name and should not be translated.
+        #     msg = "unmask_name called on response that is not masked"
+        #     raise LoncapaProblemError(msg)
+        # return self._mask_dict[name]  # TODO: this is not defined
+        raise NotImplementedError()
 
     def unmask_order(self):
         """
@@ -1750,7 +1797,9 @@ class NumericalResponse(LoncapaResponse):
             student_float = evaluator({}, {}, student_answer)
         except UndefinedVariable as undef_var:
             raise StudentInputError(
-                _(u"You may not use variables ({bad_variables}) in numerical problems.").format(bad_variables=undef_var.message)
+                _(u"You may not use variables ({bad_variables}) in numerical problems.").format(
+                    bad_variables=undef_var.message,
+                )
             )
         except ValueError as val_err:
             if 'factorial' in val_err.message:
@@ -1802,13 +1851,17 @@ class NumericalResponse(LoncapaResponse):
             for inclusion, answer in zip(self.inclusion, self.answer_range):
                 boundary = self.get_staff_ans(answer)
                 if boundary.imag != 0:
-                    # Translators: This is an error message for a math problem. If the instructor provided a boundary
-                    # (end limit) for a variable that is a complex number (a + bi), this message displays.
-                    raise StudentInputError(_("There was a problem with the staff answer to this problem: complex boundary."))
+                    raise StudentInputError(
+                        # Translators: This is an error message for a math problem. If the instructor provided a
+                        # boundary (end limit) for a variable that is a complex number (a + bi), this message displays.
+                        _("There was a problem with the staff answer to this problem: complex boundary.")
+                    )
                 if isnan(boundary):
-                    # Translators: This is an error message for a math problem. If the instructor did not provide
-                    # a boundary (end limit) for a variable, this message displays.
-                    raise StudentInputError(_("There was a problem with the staff answer to this problem: empty boundary."))
+                    raise StudentInputError(
+                        # Translators: This is an error message for a math problem. If the instructor did not
+                        # provide a boundary (end limit) for a variable, this message displays.
+                        _("There was a problem with the staff answer to this problem: empty boundary.")
+                    )
                 boundaries.append(boundary.real)
                 if compare_with_tolerance(
                         student_float,
@@ -1929,7 +1982,7 @@ class NumericalResponse(LoncapaResponse):
 
 @registry.register
 class StringResponse(LoncapaResponse):
-    """
+    r"""
     This response type allows one or more answers.
 
     Additional answers are added by `additional_answer` tag.
@@ -2124,6 +2177,10 @@ class StringResponse(LoncapaResponse):
         Note: for old code, which supports _or_ separator, we add some  backward compatibility handling.
         Should be removed soon. When to remove it, is up to Lyla Fisher.
         """
+        # if given answer is empty.
+        if not given:
+            return False
+
         _ = self.capa_system.i18n.ugettext
         # backward compatibility, should be removed in future.
         if self.backward:
@@ -2164,7 +2221,8 @@ class StringResponse(LoncapaResponse):
 
     def get_answers(self):
         _ = self.capa_system.i18n.ugettext
-        # Translators: Separator used in StringResponse to display multiple answers. Example: "Answer: Answer_1 or Answer_2 or Answer_3".
+        # Translators: Separator used in StringResponse to display multiple answers.
+        # Example: "Answer: Answer_1 or Answer_2 or Answer_3".
         separator = u' <b>{}</b> '.format(_('or'))
         return {self.answer_id: separator.join(self.correct_answer)}
 
@@ -2197,7 +2255,7 @@ class CustomResponse(LoncapaResponse):
 
         # if <customresponse> has an "expect" (or "answer") attribute then save
         # that
-        self.expect = xml.get('expect') or xml.get('answer')
+        self.expect = contextualize_text(xml.get('expect') or xml.get('answer'), self.context)
 
         log.debug('answer_ids=%s', self.answer_ids)
 
@@ -2280,7 +2338,9 @@ class CustomResponse(LoncapaResponse):
             submission = [student_answers[k] for k in idset]
         except Exception as err:
             msg = u"[courseware.capa.responsetypes.customresponse] {message}\n idset = {idset}, error = {err}".format(
-                message=_("error getting student answer from {student_answers}").format(student_answers=student_answers),
+                message=_("error getting student answer from {student_answers}").format(
+                    student_answers=student_answers,
+                ),
                 idset=idset,
                 err=err
             )
@@ -2392,20 +2452,20 @@ class CustomResponse(LoncapaResponse):
                     random_seed=self.context['seed'],
                     unsafely=self.capa_system.can_execute_unsafe_code(),
                 )
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 self._handle_exec_exception(err)
 
         else:
             # self.code is not a string; it's a function we created earlier.
 
             # this is an interface to the Tutor2 check functions
-            fn = self.code
+            tutor_cfn = self.code
             answer_given = submission[0] if (len(idset) == 1) else submission
             kwnames = self.xml.get("cfn_extra_args", "").split()
             kwargs = {n: self.context.get(n) for n in kwnames}
             log.debug(" submission = %s", submission)
             try:
-                ret = fn(self.expect, answer_given, **kwargs)
+                ret = tutor_cfn(self.expect, answer_given, **kwargs)
             except Exception as err:  # pylint: disable=broad-except
                 self._handle_exec_exception(err)
             log.debug(
@@ -2802,6 +2862,7 @@ class CodeResponse(LoncapaResponse):
         student_info = {
             'anonymous_student_id': anonymous_student_id,
             'submission_time': qtime,
+            'random_seed': self.context['seed'],
         }
         contents.update({'student_info': json.dumps(student_info)})
 
@@ -2928,15 +2989,17 @@ class CodeResponse(LoncapaResponse):
 
         # Next, we need to check that the contents of the external grader message is safe for the LMS.
         # 1) Make sure that the message is valid XML (proper opening/closing tags)
-        # 2) If it is not valid XML, make sure it is valid HTML. Note: html5lib parser will try to repair any broken HTML
-        # For example: <aaa></bbb> will become <aaa/>.
+        # 2) If it is not valid XML, make sure it is valid HTML.
+        #    Note: html5lib parser will try to repair any broken HTML
+        #    For example: <aaa></bbb> will become <aaa/>.
         msg = score_result['msg']
 
         try:
             etree.fromstring(msg)
         except etree.XMLSyntaxError as _err:
             # If `html` contains attrs with no values, like `controls` in <audio controls src='smth'/>,
-            # XML parser will raise exception, so wee fallback to html5parser, which will set empty "" values for such attrs.
+            # XML parser will raise exception, so wee fallback to html5parser,
+            # which will set empty "" values for such attrs.
             try:
                 parsed = html5lib.parseFragment(msg, treebuilder='lxml', namespaceHTMLElements=False)
             except ValueError:
@@ -3131,6 +3194,7 @@ class FormulaResponse(LoncapaResponse):
     allowed_inputfields = ['textline', 'formulaequationinput']
     required_attributes = ['answer', 'samples']
     max_inputfields = 1
+    multi_device_support = True
 
     def __init__(self, *args, **kwargs):
         self.correct_answer = ''
@@ -3612,11 +3676,13 @@ class AnnotationResponse(LoncapaResponse):
     def _find_options(self, inputfield):
         """Returns an array of dicts where each dict represents an option. """
         elements = inputfield.findall('./options/option')
-        return [{
+        return [
+            {
                 'id': index,
                 'description': option.text,
                 'choice': option.get('choice')
-                } for (index, option) in enumerate(elements)]
+            } for (index, option) in enumerate(elements)
+        ]
 
     def _find_option_with_choice(self, inputfield, choice):
         """Returns the option with the given choice value, otherwise None. """
@@ -3663,10 +3729,11 @@ class ChoiceTextResponse(LoncapaResponse):
     human_name = _('Checkboxes With Text Input')
     tags = ['choicetextresponse']
     max_inputfields = 1
-    allowed_inputfields = ['choicetextgroup',
-                           'checkboxtextgroup',
-                           'radiotextgroup'
-                           ]
+    allowed_inputfields = [
+        'choicetextgroup',
+        'checkboxtextgroup',
+        'radiotextgroup',
+    ]
 
     def __init__(self, *args, **kwargs):
         self.correct_inputs = {}
@@ -3771,9 +3838,8 @@ class ChoiceTextResponse(LoncapaResponse):
         </radiotextgroup>
         """
 
-        for index, choice in enumerate(
-            self.xml.xpath('//*[@id=$id]//choice', id=self.xml.get('id'))
-        ):
+        choices = self.xml.xpath('//*[@id=$id]//choice', id=self.xml.get('id'))
+        for index, choice in enumerate(choices):
             # Set the name attribute for <choices>
             # "bc" is appended at the end to indicate that this is a
             # binary choice as opposed to a numtolerance_input, this convention

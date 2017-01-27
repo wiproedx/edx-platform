@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
-import ddt
 import json
-import mock
-import requests.exceptions
-import pytz
 
 import boto
 import ddt
 from django.conf import settings
 from django.db import IntegrityError
-from django.test import TestCase
+from freezegun import freeze_time
+import mock
 from mock import patch
 from nose.tools import assert_is_none, assert_equals, assert_raises, assert_true, assert_false  # pylint: disable=no-name-in-module
+import pytz
+import requests.exceptions
 
 from common.test.utils import MockS3Mixin
 from student.tests.factories import UserFactory
@@ -20,6 +19,7 @@ from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from xmodule.modulestore.tests.factories import CourseFactory
 
 from opaque_keys.edx.keys import CourseKey
+from openedx.core.djangolib.testing.utils import CacheIsolationTestCase
 
 from lms.djangoapps.verify_student.models import (
     SoftwareSecurePhotoVerification,
@@ -45,8 +45,9 @@ iwIDAQAB
         "API_URL": "http://localhost/verify_student/fake_endpoint",
         "AWS_ACCESS_KEY": "FAKEACCESSKEY",
         "AWS_SECRET_KEY": "FAKESECRETKEY",
-        "S3_BUCKET": "fake-bucket"
-    }
+        "S3_BUCKET": "fake-bucket",
+    },
+    "DAYS_GOOD_FOR": 10,
 }
 
 
@@ -70,8 +71,8 @@ def mock_software_secure_post(url, headers=None, data=None, **kwargs):
         )
 
     # The keys should be stored as Base64 strings, i.e. this should not explode
-    photo_id_key = data_dict["PhotoIDKey"].decode("base64")
-    user_photo_key = data_dict["UserPhotoKey"].decode("base64")
+    data_dict["PhotoIDKey"].decode("base64")
+    data_dict["UserPhotoKey"].decode("base64")
 
     response = requests.Response()
     response.status_code = 200
@@ -381,8 +382,9 @@ class TestPhotoVerification(MockS3Mixin, ModuleStoreTestCase):
         self.assertTrue(attempt.active_at_datetime(before_expiration))
 
         # Not active after the expiration date
-        after = expiration + timedelta(seconds=1)
-        self.assertFalse(attempt.active_at_datetime(after))
+        attempt.created_at = attempt.created_at - timedelta(days=settings.VERIFY_STUDENT["DAYS_GOOD_FOR"])
+        attempt.save()
+        self.assertFalse(attempt.active_at_datetime(datetime.now(pytz.UTC) + timedelta(days=1)))
 
     def test_verification_for_datetime(self):
         user = UserFactory.create()
@@ -426,7 +428,9 @@ class TestPhotoVerification(MockS3Mixin, ModuleStoreTestCase):
         self.assertEqual(result, attempt)
 
         # Immediately after the expiration date, should not get the attempt
-        after = expiration + timedelta(seconds=1)
+        attempt.created_at = attempt.created_at - timedelta(days=settings.VERIFY_STUDENT["DAYS_GOOD_FOR"])
+        attempt.save()
+        after = datetime.now(pytz.UTC) + timedelta(days=1)
         query = SoftwareSecurePhotoVerification.objects.filter(user=user)
         result = SoftwareSecurePhotoVerification.verification_for_datetime(after, query)
         self.assertIs(result, None)
@@ -494,6 +498,21 @@ class TestPhotoVerification(MockS3Mixin, ModuleStoreTestCase):
         second_result = SoftwareSecurePhotoVerification.get_initial_verification(user=user)
         self.assertIsNotNone(second_result)
         self.assertEqual(second_result, first_result)
+
+        # Test method 'get_initial_verification' returns None after expiration
+        expired_future = datetime.utcnow() + timedelta(days=(FAKE_SETTINGS['DAYS_GOOD_FOR'] + 1))
+        with freeze_time(expired_future):
+            third_result = SoftwareSecurePhotoVerification.get_initial_verification(user)
+            self.assertIsNone(third_result)
+
+        # Test method 'get_initial_verification' returns correct attempt after system expiration,
+        # but within earliest allowed override.
+        expired_future = datetime.utcnow() + timedelta(days=(FAKE_SETTINGS['DAYS_GOOD_FOR'] + 1))
+        earliest_allowed = datetime.utcnow() - timedelta(days=1)
+        with freeze_time(expired_future):
+            fourth_result = SoftwareSecurePhotoVerification.get_initial_verification(user, earliest_allowed)
+            self.assertIsNotNone(fourth_result)
+            self.assertEqual(fourth_result, first_result)
 
 
 @ddt.ddt
@@ -798,10 +817,12 @@ class SkippedReverificationTest(ModuleStoreTestCase):
         )
 
 
-class VerificationDeadlineTest(TestCase):
+class VerificationDeadlineTest(CacheIsolationTestCase):
     """
     Tests for the VerificationDeadline model.
     """
+
+    ENABLED_CACHES = ['default']
 
     def test_caching(self):
         deadlines = {

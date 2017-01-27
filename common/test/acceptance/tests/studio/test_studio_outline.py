@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Acceptance tests for studio related to the outline page.
 """
@@ -8,18 +9,18 @@ from pytz import UTC
 from bok_choy.promise import EmptyPromise
 from nose.plugins.attrib import attr
 
-from ...pages.studio.settings_advanced import AdvancedSettingsPage
-from ...pages.studio.overview import CourseOutlinePage, ContainerPage, ExpandCollapseLinkState
-from ...pages.studio.utils import add_discussion, drag, verify_ordering
-from ...pages.lms.courseware import CoursewarePage
-from ...pages.lms.course_nav import CourseNavPage
-from ...pages.lms.staff_view import StaffPage
-from ...fixtures.config import ConfigModelFixture
-from ...fixtures.course import XBlockFixtureDesc
+from common.test.acceptance.pages.studio.settings_advanced import AdvancedSettingsPage
+from common.test.acceptance.pages.studio.overview import CourseOutlinePage, ContainerPage, ExpandCollapseLinkState
+from common.test.acceptance.pages.studio.utils import add_discussion, drag, verify_ordering
+from common.test.acceptance.pages.lms.courseware import CoursewarePage
+from common.test.acceptance.pages.lms.course_nav import CourseNavPage
+from common.test.acceptance.pages.lms.staff_view import StaffPage
+from common.test.acceptance.fixtures.config import ConfigModelFixture
+from common.test.acceptance.fixtures.course import XBlockFixtureDesc
 
 from base_studio_test import StudioCourseTest
-from ..helpers import load_data_str
-from ...pages.lms.progress import ProgressPage
+from common.test.acceptance.tests.helpers import load_data_str
+from common.test.acceptance.pages.lms.progress import ProgressPage
 
 
 SECTION_NAME = 'Test Section'
@@ -74,7 +75,7 @@ class CourseOutlineTest(StudioCourseTest):
         verify_ordering(self, outline_page, expected_ordering)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class CourseOutlineDragAndDropTest(CourseOutlineTest):
     """
     Tests of drag and drop within the outline page.
@@ -129,7 +130,7 @@ class CourseOutlineDragAndDropTest(CourseOutlineTest):
         self.drag_and_verify(self.seq_1_vert_2_handle, self.chap_1_seq_2_handle, expected_ordering, course_outline_page)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class WarningMessagesTest(CourseOutlineTest):
     """
     Feature: Warning messages on sections, subsections, and units
@@ -337,7 +338,7 @@ class WarningMessagesTest(CourseOutlineTest):
             unit.toggle_staff_lock()
 
 
-@attr('shard_3')
+@attr(shard=3)
 class EditingSectionsTest(CourseOutlineTest):
     """
     Feature: Editing Release date, Due date and grading type.
@@ -493,7 +494,7 @@ class EditingSectionsTest(CourseOutlineTest):
         self.assertIn(release_text, self.course_outline_page.section_at(0).subsection_at(0).release_date)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class StaffLockTest(CourseOutlineTest):
     """
     Feature: Sections, subsections, and units can be locked and unlocked from the course outline.
@@ -875,7 +876,7 @@ class StaffLockTest(CourseOutlineTest):
         self._remove_staff_lock_and_verify_warning(subsection, False)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class EditNamesTest(CourseOutlineTest):
     """
     Feature: Click-to-edit section/subsection names
@@ -991,7 +992,7 @@ class EditNamesTest(CourseOutlineTest):
         self.assertTrue(self.course_outline_page.section_at(0).is_collapsed)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class CreateSectionsTest(CourseOutlineTest):
     """
     Feature: Create new sections/subsections/units
@@ -1078,7 +1079,7 @@ class CreateSectionsTest(CourseOutlineTest):
         self.assertTrue(unit_page.is_inline_editing_display_name())
 
 
-@attr('shard_3')
+@attr(shard=3)
 class DeleteContentTest(CourseOutlineTest):
     """
     Feature: Deleting sections/subsections/units
@@ -1190,7 +1191,7 @@ class DeleteContentTest(CourseOutlineTest):
         self.assertTrue(self.course_outline_page.has_no_content_message)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class ExpandCollapseMultipleSectionsTest(CourseOutlineTest):
     """
     Feature: Courses with multiple sections can expand and collapse all sections.
@@ -1322,7 +1323,7 @@ class ExpandCollapseMultipleSectionsTest(CourseOutlineTest):
         self.verify_all_sections(collapsed=False)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class ExpandCollapseSingleSectionTest(CourseOutlineTest):
     """
     Feature: Courses with a single section can expand and collapse all sections.
@@ -1362,7 +1363,7 @@ class ExpandCollapseSingleSectionTest(CourseOutlineTest):
         self.assertFalse(self.course_outline_page.section_at(0).subsection_at(1).is_collapsed)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class ExpandCollapseEmptyTest(CourseOutlineTest):
     """
     Feature: Courses with no sections initially can expand and collapse all sections after addition.
@@ -1400,7 +1401,7 @@ class ExpandCollapseEmptyTest(CourseOutlineTest):
         self.assertFalse(self.course_outline_page.section_at(0).is_collapsed)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class DefaultStatesEmptyTest(CourseOutlineTest):
     """
     Feature: Misc course outline default states/actions when starting with an empty course
@@ -1425,7 +1426,7 @@ class DefaultStatesEmptyTest(CourseOutlineTest):
         self.assertTrue(self.course_outline_page.bottom_add_section_button.is_present())
 
 
-@attr('shard_3')
+@attr(shard=3)
 class DefaultStatesContentTest(CourseOutlineTest):
     """
     Feature: Misc course outline default states/actions when starting with a course with content
@@ -1450,7 +1451,7 @@ class DefaultStatesContentTest(CourseOutlineTest):
         self.assertEqual(courseware.xblock_component_type(2), 'discussion')
 
 
-@attr('shard_3')
+@attr(shard=3)
 class UnitNavigationTest(CourseOutlineTest):
     """
     Feature: Navigate to units
@@ -1471,7 +1472,7 @@ class UnitNavigationTest(CourseOutlineTest):
         self.assertTrue(unit.is_browser_on_page)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class PublishSectionTest(CourseOutlineTest):
     """
     Feature: Publish sections.
@@ -1546,7 +1547,7 @@ class PublishSectionTest(CourseOutlineTest):
         self.assertTrue(section.publish_action)
         self.courseware.visit()
         self.assertEqual(1, self.courseware.num_xblock_components)
-        self.course_nav.go_to_sequential_position(2)
+        self.courseware.go_to_sequential_position(2)
         self.assertEqual(1, self.courseware.num_xblock_components)
 
     def test_section_publishing(self):
@@ -1571,7 +1572,7 @@ class PublishSectionTest(CourseOutlineTest):
         self.assertFalse(unit.publish_action)
         self.courseware.visit()
         self.assertEqual(1, self.courseware.num_xblock_components)
-        self.course_nav.go_to_sequential_position(2)
+        self.courseware.go_to_sequential_position(2)
         self.assertEqual(1, self.courseware.num_xblock_components)
         self.course_nav.go_to_section(SECTION_NAME, 'Test Subsection 2')
         self.assertEqual(1, self.courseware.num_xblock_components)
@@ -1597,17 +1598,19 @@ class PublishSectionTest(CourseOutlineTest):
         return (section, subsection, unit)
 
 
-@attr('shard_3')
+@attr(shard=3)
 class DeprecationWarningMessageTest(CourseOutlineTest):
     """
     Feature: Verify deprecation warning message.
     """
     HEADING_TEXT = 'This course uses features that are no longer supported.'
     COMPONENT_LIST_HEADING = 'You must delete or replace the following components.'
-    ADVANCE_MODULES_REMOVE_TEXT = ('To avoid errors, edX strongly recommends that you remove unsupported features '
-                                   'from the course advanced settings. To do this, go to the Advanced Settings '
-                                   'page, locate the "Advanced Module List" setting, and then delete the following '
-                                   'modules from the list.')
+    ADVANCE_MODULES_REMOVE_TEXT = (
+        u'To avoid errors, édX strongly recommends that you remove unsupported features '
+        u'from the course advanced settings. To do this, go to the Advanced Settings '
+        u'page, locate the "Advanced Module List" setting, and then delete the following '
+        u'modules from the list.'
+    )
     DEFAULT_DISPLAYNAME = "Deprecated Component"
 
     def _add_deprecated_advance_modules(self, block_types):
@@ -1763,7 +1766,7 @@ class DeprecationWarningMessageTest(CourseOutlineTest):
         )
 
 
-@attr('shard_4')
+@attr(shard=4)
 class SelfPacedOutlineTest(CourseOutlineTest):
     """Test the course outline for a self-paced course."""
 

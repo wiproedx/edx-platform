@@ -4,6 +4,7 @@ Enrollment operations for use by instructor APIs.
 Does not include any access control, be sure to check access before calling.
 """
 
+import crum
 import json
 import logging
 from django.contrib.auth.models import User
@@ -13,16 +14,17 @@ from django.core.mail import send_mail
 from django.utils.translation import override as override_language
 
 from course_modes.models import CourseMode
-from student.models import CourseEnrollment, CourseEnrollmentAllowed
 from courseware.models import StudentModule
+from courseware.model_data import FieldDataCache
+from courseware.module_render import get_module_for_descriptor
 from edxmako.shortcuts import render_to_string
-from lang_pref import LANGUAGE_KEY
-
-from submissions import api as sub_api  # installed from the edx-submissions repository
-from student.models import anonymous_id_for_user
+from lms.djangoapps.grades.scores import weighted_score
+from lms.djangoapps.grades.signals.signals import SCORE_CHANGED
+from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.models import UserPreference
-
-from microsite_configuration import microsite
+from submissions import api as sub_api  # installed from the edx-submissions repository
+from student.models import CourseEnrollment, CourseEnrollmentAllowed, anonymous_id_for_user
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
 
@@ -202,7 +204,7 @@ def send_beta_role_email(action, user, email_params):
     send_mail_to_student(user.email, email_params, language=get_user_email_language(user))
 
 
-def reset_student_attempts(course_id, student, module_state_key, delete_module=False):
+def reset_student_attempts(course_id, student, module_state_key, requesting_user, delete_module=False):
     """
     Reset student attempts for a problem. Optionally deletes all student state for the specified problem.
 
@@ -219,26 +221,43 @@ def reset_student_attempts(course_id, student, module_state_key, delete_module=F
         submissions.SubmissionError: unexpected error occurred while resetting the score in the submissions API.
 
     """
+    user_id = anonymous_id_for_user(student, course_id)
+    requesting_user_id = anonymous_id_for_user(requesting_user, course_id)
+    submission_cleared = False
     try:
         # A block may have children. Clear state on children first.
         block = modulestore().get_item(module_state_key)
         if block.has_children:
             for child in block.children:
                 try:
-                    reset_student_attempts(course_id, student, child, delete_module=delete_module)
+                    reset_student_attempts(course_id, student, child, requesting_user, delete_module=delete_module)
                 except StudentModule.DoesNotExist:
                     # If a particular child doesn't have any state, no big deal, as long as the parent does.
                     pass
+        if delete_module:
+            # Some blocks (openassessment) use StudentModule data as a key for internal submission data.
+            # Inform these blocks of the reset and allow them to handle their data.
+            clear_student_state = getattr(block, "clear_student_state", None)
+            if callable(clear_student_state):
+                clear_student_state(
+                    user_id=user_id,
+                    course_id=unicode(course_id),
+                    item_id=unicode(module_state_key),
+                    requesting_user_id=requesting_user_id
+                )
+                submission_cleared = True
     except ItemNotFoundError:
+        block = None
         log.warning("Could not find %s in modulestore when attempting to reset attempts.", module_state_key)
 
-    # Reset the student's score in the submissions API
-    # Currently this is used only by open assessment (ORA 2)
-    # We need to do this *before* retrieving the `StudentModule` model,
-    # because it's possible for a score to exist even if no student module exists.
-    if delete_module:
+    # Reset the student's score in the submissions API, if xblock.clear_student_state has not done so already.
+    # We need to do this before retrieving the `StudentModule` model, because a score may exist with no student module.
+
+    # TODO: Should the LMS know about sub_api and call this reset, or should it generically call it on all of its
+    # xblock services as well?  See JIRA ARCH-26.
+    if delete_module and not submission_cleared:
         sub_api.reset_score(
-            anonymous_id_for_user(student, course_id),
+            user_id,
             course_id.to_deprecated_string(),
             module_state_key.to_deprecated_string(),
         )
@@ -251,6 +270,7 @@ def reset_student_attempts(course_id, student, module_state_key, delete_module=F
 
     if delete_module:
         module_to_reset.delete()
+        _fire_score_changed_for_block(course_id, student, block, module_state_key)
     else:
         _reset_module_attempts(module_to_reset)
 
@@ -271,6 +291,47 @@ def _reset_module_attempts(studentmodule):
     studentmodule.save()
 
 
+def _fire_score_changed_for_block(course_id, student, block, module_state_key):
+    """
+    Fires a SCORE_CHANGED event for the given module. The earned points are
+    always zero. We must retrieve the possible points from the XModule, as
+    noted below.
+    """
+    if block and block.has_score:
+        cache = FieldDataCache.cache_for_descriptor_descendents(
+            course_id=course_id,
+            user=student,
+            descriptor=block,
+            depth=0
+        )
+        # For implementation reasons, we need to pull the max_score from the XModule,
+        # even though the data is not user-specific.  Here we bind the data to the
+        # current user.
+        request = crum.get_current_request()
+        module = get_module_for_descriptor(
+            user=student,
+            request=request,
+            descriptor=block,
+            field_data_cache=cache,
+            course_key=course_id
+        )
+        max_score = module.max_score()
+        if max_score is None:
+            return
+        else:
+            points_earned, points_possible = weighted_score(0, max_score, getattr(module, 'weight', None))
+    else:
+        points_earned, points_possible = 0, 0
+    SCORE_CHANGED.send(
+        sender=None,
+        points_possible=points_possible,
+        points_earned=points_earned,
+        user_id=student.id,
+        course_id=unicode(course_id),
+        usage_id=unicode(module_state_key)
+    )
+
+
 def get_email_params(course, auto_enroll, secure=True, course_key=None, display_name=None):
     """
     Generate parameters used when parsing email templates.
@@ -281,9 +342,9 @@ def get_email_params(course, auto_enroll, secure=True, course_key=None, display_
 
     protocol = 'https' if secure else 'http'
     course_key = course_key or course.id.to_deprecated_string()
-    display_name = display_name or course.display_name_with_default
+    display_name = display_name or course.display_name_with_default_escaped
 
-    stripped_site_name = microsite.get_value(
+    stripped_site_name = configuration_helpers.get_value(
         'SITE_NAME',
         settings.SITE_NAME
     )
@@ -355,7 +416,7 @@ def send_mail_to_student(student, param_dict, language=None):
     if 'display_name' in param_dict:
         param_dict['course_name'] = param_dict['display_name']
 
-    param_dict['site_name'] = microsite.get_value(
+    param_dict['site_name'] = configuration_helpers.get_value(
         'SITE_NAME',
         param_dict['site_name']
     )
@@ -363,8 +424,8 @@ def send_mail_to_student(student, param_dict, language=None):
     subject = None
     message = None
 
-    # see if we are running in a microsite and that there is an
-    # activation email template definition available as configuration, if so, then render that
+    # see if there is an activation email template definition available as configuration,
+    # if so, then render that
     message_type = param_dict['message']
 
     email_template_dict = {
@@ -410,7 +471,7 @@ def send_mail_to_student(student, param_dict, language=None):
 
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
-        from_address = microsite.get_value(
+        from_address = configuration_helpers.get_value(
             'email_from_address',
             settings.DEFAULT_FROM_EMAIL
         )
@@ -427,6 +488,7 @@ def render_message_to_string(subject_template, message_template, param_dict, lan
     Returns two strings that correspond to the rendered, translated email
     subject and message.
     """
+    language = language or settings.LANGUAGE_CODE
     with override_language(language):
         return get_subject_and_message(subject_template, message_template, param_dict)
 

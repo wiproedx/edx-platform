@@ -44,8 +44,8 @@ from lms.djangoapps.verify_student.ssencrypt import (
 )
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
-from xmodule_django.models import CourseKeyField
-
+from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 
 log = logging.getLogger(__name__)
 
@@ -258,6 +258,28 @@ class PhotoVerification(StatusModel):
         ).order_by('-created_at')
 
     @classmethod
+    def get_expiration_datetime(cls, user, queryset=None):
+        """
+        Check whether the user has an approved verification and return the
+        "expiration_datetime" of most recent "approved" verification.
+
+        Arguments:
+            user (Object): User
+            queryset: If a queryset is provided, that will be used instead
+                of hitting the database.
+
+        Returns:
+            expiration_datetime: expiration_datetime of most recent "approved"
+            verification.
+        """
+        if queryset is None:
+            queryset = cls.objects.filter(user=user)
+
+        photo_verification = queryset.filter(status='approved').first()
+        if photo_verification:
+            return photo_verification.expiration_datetime
+
+    @classmethod
     def user_has_valid_or_pending(cls, user, earliest_allowed_date=None, queryset=None):
         """
         Check whether the user has an active or pending verification attempt
@@ -321,7 +343,9 @@ class PhotoVerification(StatusModel):
             if attempt.created_at < cls._earliest_allowed_date():
                 return (
                     'expired',
-                    _("Your {platform_name} verification has expired.").format(platform_name=settings.PLATFORM_NAME)
+                    _("Your {platform_name} verification has expired.").format(
+                        platform_name=configuration_helpers.get_value('platform_name', settings.PLATFORM_NAME),
+                    )
                 )
 
             # If someone is denied their original verification attempt, they can try to reverify.
@@ -382,7 +406,7 @@ class PhotoVerification(StatusModel):
 
         Arguments:
             deadline (datetime): The date at which the verification was active
-                (created before and expired after).
+                (created before and expiration datetime is after today).
 
         Returns:
             bool
@@ -390,7 +414,7 @@ class PhotoVerification(StatusModel):
         """
         return (
             self.created_at < deadline and
-            self.expiration_datetime > deadline
+            self.expiration_datetime > datetime.now(pytz.UTC)
         )
 
     def parsed_error_msg(self):
@@ -594,18 +618,22 @@ class SoftwareSecurePhotoVerification(PhotoVerification):
     copy_id_photo_from = models.ForeignKey("self", null=True, blank=True)
 
     @classmethod
-    def get_initial_verification(cls, user):
+    def get_initial_verification(cls, user, earliest_allowed_date=None):
         """Get initial verification for a user with the 'photo_id_key'.
 
         Arguments:
             user(User): user object
+            earliest_allowed_date(datetime): override expiration date for initial verification
 
         Return:
-            SoftwareSecurePhotoVerification (object)
+            SoftwareSecurePhotoVerification (object) or None
         """
         init_verification = cls.objects.filter(
             user=user,
-            status__in=["submitted", "approved"]
+            status__in=["submitted", "approved"],
+            created_at__gte=(
+                earliest_allowed_date or cls._earliest_allowed_date()
+            )
         ).exclude(photo_id_key='')
 
         return init_verification.latest('created_at') if init_verification.exists() else None
@@ -765,6 +793,7 @@ class SoftwareSecurePhotoVerification(PhotoVerification):
         # Default to the S3 backend for backward compatibility
         storage_class = config.get("STORAGE_CLASS", "storages.backends.s3boto.S3BotoStorage")
         storage_kwargs = config.get("STORAGE_KWARGS", {})
+<<<<<<< HEAD
 
         # Map old settings to the parameters expected by the storage backend
         if "AWS_ACCESS_KEY" in config:
@@ -780,6 +809,22 @@ class SoftwareSecurePhotoVerification(PhotoVerification):
     def _get_path(self, prefix, override_receipt_id=None):
         """
         Returns the path to a resource with this instance's `receipt_id`.
+
+        # Map old settings to the parameters expected by the storage backend
+        if "AWS_ACCESS_KEY" in config:
+            storage_kwargs["access_key"] = config["AWS_ACCESS_KEY"]
+        if "AWS_SECRET_KEY" in config:
+            storage_kwargs["secret_key"] = config["AWS_SECRET_KEY"]
+        if "S3_BUCKET" in config:
+            storage_kwargs["bucket"] = config["S3_BUCKET"]
+            storage_kwargs["querystring_expire"] = self.IMAGE_LINK_DURATION
+
+        return get_storage(storage_class, **storage_kwargs)
+
+    def _get_path(self, prefix, override_receipt_id=None):
+        """
+        Returns the path to a resource with this instance's `receipt_id`.
+
 
         If `override_receipt_id` is given, the path to that resource will be
         retrieved instead. This allows us to retrieve images submitted in
@@ -937,6 +982,18 @@ class SoftwareSecurePhotoVerification(PhotoVerification):
             return 'Not ID Verified'
         else:
             return 'ID Verified'
+
+    @classmethod
+    def is_verification_expiring_soon(cls, expiration_datetime):
+        """
+        Returns True if verification is expiring within EXPIRING_SOON_WINDOW.
+        """
+        if expiration_datetime:
+            if (expiration_datetime - datetime.now(pytz.UTC)).days <= settings.VERIFY_STUDENT.get(
+                    "EXPIRING_SOON_WINDOW"):
+                return True
+
+        return False
 
 
 class VerificationDeadline(TimeStampedModel):

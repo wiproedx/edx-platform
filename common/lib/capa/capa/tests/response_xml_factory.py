@@ -37,7 +37,7 @@ class ResponseXMLFactory(object):
         For all response types, **kwargs can contain:
 
         *question_text*: The text of the question to display,
-            wrapped in <p> tags.
+            wrapped in <label> tags.
 
         *explanation_text*: The detailed explanation that will
             be shown if the user answers incorrectly.
@@ -72,10 +72,6 @@ class ResponseXMLFactory(object):
             script_element.set("type", "loncapa/python")
             script_element.text = str(script)
 
-        # The problem has a child <p> with question text
-        question = etree.SubElement(root, "p")
-        question.text = question_text
-
         # Add the response(s)
         for __ in range(int(num_responses)):
             response_element = self.create_response_element(**kwargs)
@@ -85,6 +81,10 @@ class ResponseXMLFactory(object):
                 response_element.set('partial_credit', str(credit_type))
 
             root.append(response_element)
+
+            # Add the question label
+            question = etree.SubElement(response_element, "label")
+            question.text = question_text
 
             # Add input elements
             for __ in range(int(num_inputs)):
@@ -113,8 +113,12 @@ class ResponseXMLFactory(object):
         """
         math_display = kwargs.get('math_display', False)
         size = kwargs.get('size', None)
+        input_element_label = kwargs.get('input_element_label', '')
 
         input_element = etree.Element('textline')
+
+        if input_element_label:
+            input_element.set('label', input_element_label)
 
         if math_display:
             input_element.set('math', '1')
@@ -172,6 +176,8 @@ class ResponseXMLFactory(object):
                 correctness = 'false'
             elif 'partial' in correct_val:
                 correctness = 'partial'
+            else:
+                correctness = correct_val
 
             choice_element.set('correct', correctness)
 
@@ -264,11 +270,15 @@ class CustomResponseXMLFactory(ResponseXMLFactory):
         *expect*: The value passed to the function cfn
 
         *answer*: Inline script that calculates the answer
+
+        *answer_attr*: The "answer" attribute on the tag itself (treated as an
+        alias to "expect", though "expect" takes priority if both are given)
         """
 
         # Retrieve **kwargs
         cfn = kwargs.get('cfn', None)
         expect = kwargs.get('expect', None)
+        answer_attr = kwargs.get('answer_attr', None)
         answer = kwargs.get('answer', None)
         options = kwargs.get('options', None)
         cfn_extra_args = kwargs.get('cfn_extra_args', None)
@@ -281,6 +291,9 @@ class CustomResponseXMLFactory(ResponseXMLFactory):
 
         if expect:
             response_element.set('expect', str(expect))
+
+        if answer_attr:
+            response_element.set('answer', str(answer_attr))
 
         if answer:
             answer_element = etree.SubElement(response_element, "answer")
@@ -508,7 +521,6 @@ class FormulaResponseXMLFactory(ResponseXMLFactory):
         # "x,y,z@4,5,3:10,12,8#4" means plug in values for (x,y,z)
         # from within the box defined by points (4,5,3) and (10,12,8)
         # The "#4" means to repeat 4 times.
-        variables = [str(v) for v in sample_dict.keys()]
         low_range_vals = [str(f[0]) for f in sample_dict.values()]
         high_range_vals = [str(f[1]) for f in sample_dict.values()]
         sample_str = (

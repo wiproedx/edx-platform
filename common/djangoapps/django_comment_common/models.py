@@ -7,11 +7,12 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_noop
 
+from config_models.models import ConfigurationModel
 from student.models import CourseEnrollment
 
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
-from xmodule_django.models import CourseKeyField, NoneToEmptyManager
+from openedx.core.djangoapps.xmodule_django.models import CourseKeyField, NoneToEmptyManager
 
 FORUM_ROLE_ADMINISTRATOR = ugettext_noop('Administrator')
 FORUM_ROLE_MODERATOR = ugettext_noop('Moderator')
@@ -45,7 +46,14 @@ def assign_default_role(course_id, user):
     """
     Assign forum default role 'Student' to user
     """
-    role, __ = Role.objects.get_or_create(course_id=course_id, name=FORUM_ROLE_STUDENT)
+    assign_role(course_id, user, FORUM_ROLE_STUDENT)
+
+
+def assign_role(course_id, user, rolename):
+    """
+    Assign forum role `rolename` to user
+    """
+    role, __ = Role.objects.get_or_create(course_id=course_id, name=rolename)
     user.roles.add(role)
 
 
@@ -137,3 +145,14 @@ def all_permissions_for_user_in_course(user, course_id):  # pylint: disable=inva
         if not permission_blacked_out(course, all_roles, permission.name)
     }
     return permissions
+
+
+class ForumsConfig(ConfigurationModel):
+    """Config for the connection to the cs_comments_service forums backend."""
+
+    # For now, just tweak the connection timeout settings. We can add more later.
+    connection_timeout = models.FloatField(default=5.0)
+
+    def __unicode__(self):
+        """Simple representation so the admin screen looks less ugly."""
+        return u"ForumsConfig: timeout={}".format(self.connection_timeout)

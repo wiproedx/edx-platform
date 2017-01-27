@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 source $HOME/jenkins_env
 
 # Clear the mongo database
@@ -11,19 +13,6 @@ mongo --quiet --eval 'db.getMongo().getDBNames().forEach(function(i){db.getSibli
 # depending on how the GitHub plugin refspec is configured, this may
 # not already be fetched.
 git fetch origin master:refs/remotes/origin/master
-
-# Reset the jenkins worker's ruby environment back to
-# the state it was in when the instance was spun up.
-if [ -e $HOME/edx-rbenv_clean.tar.gz ]; then
-    rm -rf $HOME/.rbenv
-    tar -C $HOME -xf $HOME/edx-rbenv_clean.tar.gz
-fi
-
-# Bootstrap Ruby requirements so we can run the tests
-bundle install
-
-# Ensure the Ruby environment contains no stray gems
-bundle clean --force
 
 # Reset the jenkins worker's virtualenv back to the
 # state it was in when the instance was spun up.
@@ -37,3 +26,8 @@ source $HOME/edx-venv/bin/activate
 
 # add the node_js packages dir to PATH
 PATH=$PATH:node_modules/.bin
+
+# Manage the npm cache on Jenkins.
+# (In this case, remove it. That ensures from run-to-run, it is a clean npm environment)
+echo "--> Cleaning npm cache"
+npm cache clean

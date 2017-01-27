@@ -3,12 +3,12 @@
 Teams pages.
 """
 
-from .course_page import CoursePage
-from .discussion import InlineDiscussionPage
-from ..common.paging import PaginatedUIMixin
-from ...pages.common.utils import confirm_prompt
+from common.test.acceptance.pages.lms.course_page import CoursePage
+from common.test.acceptance.pages.lms.discussion import InlineDiscussionPage
+from common.test.acceptance.pages.common.paging import PaginatedUIMixin
+from common.test.acceptance.pages.common.utils import confirm_prompt
 
-from .fields import FieldsMixin
+from common.test.acceptance.pages.lms.fields import FieldsMixin
 
 
 TOPIC_CARD_CSS = 'div.wrapper-card-core'
@@ -285,6 +285,7 @@ class BaseTeamsPage(CoursePage, PaginatedUIMixin, TeamCardsMixin, BreadcrumbsMix
         """
         self.q(css='.search-field').first.fill(string)
         self.q(css='.action-search').first.click()
+        self.wait_for_ajax()
         self.wait_for(
             lambda: self._showing_search_results,
             description="Showing search results"
@@ -568,7 +569,7 @@ class TeamPage(CoursePage, PaginatedUIMixin, BreadcrumbsMixin):
     @property
     def new_post_button_present(self):
         """ Returns True if New Post button is present else False """
-        return self.q(css='.discussion-module .new-post-btn').present
+        return self.q(css='.discussion-module .new-post-btn').visible
 
     @property
     def edit_team_button_present(self):

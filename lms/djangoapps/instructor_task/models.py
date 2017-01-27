@@ -24,7 +24,8 @@ from django.core.files.base import ContentFile
 from django.db import models, transaction
 
 from openedx.core.storage import get_storage
-from xmodule_django.models import CourseKeyField
+from openedx.core.djangoapps.xmodule_django.models import CourseKeyField
+
 
 # define custom states used by InstructorTask
 QUEUING = 'QUEUING'
@@ -53,6 +54,9 @@ class InstructorTask(models.Model):
     `created` stores date that entry was first created
     `updated` stores date that entry was last modified
     """
+    class Meta(object):
+        app_label = "instructor_task"
+
     task_type = models.CharField(max_length=50, db_index=True)
     course_id = CourseKeyField(max_length=255, db_index=True)
     task_key = models.CharField(max_length=255, db_index=True)
@@ -194,6 +198,7 @@ class ReportStore(object):
                 storage_kwargs={
                     'bucket': config['BUCKET'],
                     'location': config['ROOT_PATH'],
+                    'custom_domain': config.get("CUSTOM_DOMAIN", None),
                     'querystring_expire': 300,
                     'gzip': True,
                 },

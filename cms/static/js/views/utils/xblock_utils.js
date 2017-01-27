@@ -1,7 +1,7 @@
 /**
  * Provides utilities for views to work with xblocks.
  */
-define(["jquery", "underscore", "gettext", "common/js/components/utils/view_utils", "js/utils/module"],
+define(['jquery', 'underscore', 'gettext', 'common/js/components/utils/view_utils', 'js/utils/module'],
     function($, _, gettext, ViewUtils, ModuleUtils) {
         var addXBlock, deleteXBlock, createUpdateRequestData, updateXBlockField, VisibilityState,
             getXBlockVisibilityClass, getXBlockListTypeClass, updateXBlockFields;
@@ -31,7 +31,8 @@ define(["jquery", "underscore", "gettext", "common/js/components/utils/view_util
             ready: 'ready',
             unscheduled: 'unscheduled',
             needsAttention: 'needs_attention',
-            staffOnly: 'staff_only'
+            staffOnly: 'staff_only',
+            gated: 'gated'
         };
 
         /**
@@ -73,15 +74,7 @@ define(["jquery", "underscore", "gettext", "common/js/components/utils/view_util
         deleteXBlock = function(xblockInfo, xblockType) {
             var deletion = $.Deferred(),
                 url = ModuleUtils.getUpdateUrl(xblockInfo.id),
-                xblockType = xblockType || gettext('component');
-            ViewUtils.confirmThenRunOperation(
-                interpolate(gettext('Delete this %(xblock_type)s?'), { xblock_type: xblockType }, true),
-                interpolate(
-                    gettext('Deleting this %(xblock_type)s is permanent and cannot be undone.'),
-                    { xblock_type: xblockType }, true
-                ),
-                interpolate(gettext('Yes, delete this %(xblock_type)s'), { xblock_type: xblockType }, true),
-                function() {
+                operation = function() {
                     ViewUtils.runOperationShowingMessage(gettext('Deleting'),
                         function() {
                             return $.ajax({
@@ -90,8 +83,49 @@ define(["jquery", "underscore", "gettext", "common/js/components/utils/view_util
                             }).success(function() {
                                 deletion.resolve();
                             });
-                        });
-                });
+                        }
+                    );
+                },
+                messageBody;
+            xblockType = xblockType || 'component';
+            messageBody = interpolate(
+                    gettext('Deleting this %(xblock_type)s is permanent and cannot be undone.'),
+                    {xblock_type: xblockType},
+                    true
+                );
+
+            if (xblockInfo.get('is_prereq')) {
+                messageBody += ' ' + gettext('Any content that has listed this content as a prerequisite will also have access limitations removed.');   // eslint-disable-line max-len
+                ViewUtils.confirmThenRunOperation(
+                    interpolate(
+                        gettext('Delete this %(xblock_type)s (and prerequisite)?'),
+                        {xblock_type: xblockType},
+                        true
+                    ),
+                    messageBody,
+                    interpolate(
+                        gettext('Yes, delete this %(xblock_type)s'),
+                        {xblock_type: xblockType},
+                        true
+                    ),
+                    operation
+                );
+            } else {
+                ViewUtils.confirmThenRunOperation(
+                    interpolate(
+                        gettext('Delete this %(xblock_type)s?'),
+                        {xblock_type: xblockType},
+                        true
+                    ),
+                    messageBody,
+                    interpolate(
+                        gettext('Yes, delete this %(xblock_type)s'),
+                        {xblock_type: xblockType},
+                        true
+                    ),
+                    operation
+                );
+            }
             return deletion.promise();
         };
 
@@ -114,7 +148,7 @@ define(["jquery", "underscore", "gettext", "common/js/components/utils/view_util
             var requestData = createUpdateRequestData(fieldName, newValue);
             return ViewUtils.runOperationShowingMessage(gettext('Saving'),
                 function() {
-                    return xblockInfo.save(requestData, { patch: true });
+                    return xblockInfo.save(requestData, {patch: true});
                 });
         };
 
@@ -126,7 +160,7 @@ define(["jquery", "underscore", "gettext", "common/js/components/utils/view_util
          * @returns {jQuery promise} A promise representing the updating of the xblock values.
          */
         updateXBlockFields = function(xblockInfo, xblockData, options) {
-            options = _.extend({}, { patch: true }, options);
+            options = _.extend({}, {patch: true}, options);
             return ViewUtils.runOperationShowingMessage(gettext('Saving'),
                 function() {
                     return xblockInfo.save(xblockData, options);
@@ -141,6 +175,9 @@ define(["jquery", "underscore", "gettext", "common/js/components/utils/view_util
             if (visibilityState === VisibilityState.staffOnly) {
                 return 'is-staff-only';
             }
+            if (visibilityState === VisibilityState.gated) {
+                return 'is-gated';
+            }
             if (visibilityState === VisibilityState.live) {
                 return 'is-live';
             }
@@ -153,7 +190,7 @@ define(["jquery", "underscore", "gettext", "common/js/components/utils/view_util
             return '';
         };
 
-        getXBlockListTypeClass = function (xblockType) {
+        getXBlockListTypeClass = function(xblockType) {
             var listType = 'list-unknown';
             if (xblockType === 'course') {
                 listType = 'list-sections';

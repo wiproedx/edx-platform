@@ -6,7 +6,7 @@
   from django.utils.translation import ugettext as _
 %>
 <%block name="title">${_("Video Uploads")}</%block>
-<%block name="bodyclass">is-signedin course view-uploads view-video-uploads</%block>
+<%block name="bodyclass">is-signedin course view-video-uploads</%block>
 
 <%namespace name='static' file='static_content.html'/>
 
@@ -46,7 +46,7 @@
             <h3 class="sr">${_("Page Actions")}</h3>
             <ul>
                 <li class="nav-item">
-                    <a href="#" class="button upload-button new-button"><i class="icon fa fa-plus"></i> ${_("Upload New File")}</a>
+                    <a href="#" class="button upload-button new-button"><span class="icon fa fa-plus" aria-hidden="true"></span> ${_("Upload New File")}</a>
                 </li>
             </ul>
         </nav>

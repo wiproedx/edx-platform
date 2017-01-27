@@ -17,7 +17,7 @@ import mock
 from pytz import UTC
 import requests
 
-from . import new_loncapa_problem, test_capa_system, load_fixture
+from capa.tests.helpers import new_loncapa_problem, test_capa_system, load_fixture
 import calc
 
 from capa.responsetypes import LoncapaProblemError, \
@@ -71,7 +71,7 @@ class ResponseTest(unittest.TestCase):
 
     def assert_answer_format(self, problem):  # pylint: disable=missing-docstring
         answers = problem.get_question_answers()
-        self.assertTrue(answers['1_2_1'] is not None)
+        self.assertIsNotNone(answers['1_2_1'])
 
     def assert_multiple_grade(self, problem, correct_answers, incorrect_answers):  # pylint: disable=missing-docstring
         for input_str in correct_answers:
@@ -168,6 +168,35 @@ class MultiChoiceResponseTest(ResponseTest):  # pylint: disable=missing-docstrin
 
         correct_map = problem.grade_answers({'1_2_1': 'choice_2'})
         self.assertAlmostEqual(correct_map.get_npoints('1_2_1'), 0)
+
+    def test_contextualized_choices(self):
+        script = textwrap.dedent("""
+            a = 2
+            b = 9
+            c = a + b
+
+            ok0 = c % 2 == 0 # check remainder modulo 2
+            text0 = "$a + $b is even"
+
+            ok1 = c % 2 == 1 # check remainder modulo 2
+            text1 = "$a + $b is odd"
+
+            ok2 = "partial"
+            text2 = "infinity may be both"
+        """)
+        choices = ["$ok0", "$ok1", "$ok2"]
+        choice_names = ["$text0 ... (should be $ok0)",
+                        "$text1 ... (should be $ok1)",
+                        "$text2 ... (should be $ok2)"]
+        problem = self.build_problem(script=script,
+                                     choices=choices,
+                                     choice_names=choice_names,
+                                     credit_type='points')
+
+        # Ensure the expected correctness and choice names
+        self.assert_grade(problem, 'choice_2 + 9 is even ... (should be False)', 'incorrect')
+        self.assert_grade(problem, 'choice_2 + 9 is odd ... (should be True)', 'correct')
+        self.assert_grade(problem, 'choice_infinity may be both ... (should be partial)', 'partially-correct')
 
 
 class TrueFalseResponseTest(ResponseTest):  # pylint: disable=missing-docstring
@@ -658,7 +687,7 @@ class StringResponseTest(ResponseTest):  # pylint: disable=missing-docstring
             "Martin Luther King"
         ]
 
-        problem = self.build_problem(answer="\w*\.?.*Luther King\s*.*", case_sensitive=True, regexp=True)
+        problem = self.build_problem(answer=r"\w*\.?.*Luther King\s*.*", case_sensitive=True, regexp=True)
 
         for answer in answers:
             self.assert_grade(problem, answer, "correct")
@@ -699,7 +728,7 @@ class StringResponseTest(ResponseTest):  # pylint: disable=missing-docstring
         self.assert_grade(problem, u"o", "incorrect")
 
     def test_backslash_and_unicode_regexps(self):
-        """
+        r"""
         Test some special cases of [unicode] regexps.
 
         One needs to use either r'' strings or write real `repr` of unicode strings, because of the following
@@ -715,14 +744,14 @@ class StringResponseTest(ResponseTest):  # pylint: disable=missing-docstring
             So  a\d in front-end editor will become a\\\\d in xml,  so it will match a1 as student answer.
         """
         problem = self.build_problem(answer=ur"5\\æ", case_sensitive=False, regexp=True)
-        self.assert_grade(problem, u"5\æ", "correct")
+        self.assert_grade(problem, ur"5\æ", "correct")
 
         problem = self.build_problem(answer=u"5\\\\æ", case_sensitive=False, regexp=True)
-        self.assert_grade(problem, u"5\æ", "correct")
+        self.assert_grade(problem, ur"5\æ", "correct")
 
     def test_backslash(self):
         problem = self.build_problem(answer=u"a\\\\c1", case_sensitive=False, regexp=True)
-        self.assert_grade(problem, u"a\c1", "correct")
+        self.assert_grade(problem, ur"a\c1", "correct")
 
     def test_special_chars(self):
         problem = self.build_problem(answer=ur"a \s1", case_sensitive=False, regexp=True)
@@ -945,6 +974,13 @@ class StringResponseTest(ResponseTest):  # pylint: disable=missing-docstring
         correct_map = problem.grade_answers({'1_2_1': '2'})
         hint = correct_map.get_hint('1_2_1')
         self.assertEqual(hint, self._get_random_number_result(problem.seed))
+
+    def test_empty_answer_problem_creation_not_allowed(self):
+        """
+        Tests that empty answer string is not allowed to create a problem
+        """
+        with self.assertRaises(LoncapaProblemError):
+            self.build_problem(answer=" ", case_sensitive=False, regexp=True)
 
 
 class CodeResponseTest(ResponseTest):  # pylint: disable=missing-docstring
@@ -1284,6 +1320,26 @@ class ChoiceResponseTest(ResponseTest):  # pylint: disable=missing-docstring
 
         correct_map = problem.grade_answers({})
         self.assertEqual(correct_map.get_correctness('1_2_1'), 'incorrect')
+
+    def test_contextualized_choices(self):
+        script = textwrap.dedent("""
+            a = 6
+            b = 4
+            c = a + b
+
+            ok0 = c % 2 == 0 # check remainder modulo 2
+            ok1 = c % 3 == 0 # check remainder modulo 3
+            ok2 = c % 5 == 0 # check remainder modulo 5
+            ok3 = not any([ok0, ok1, ok2])
+        """)
+        choices = ["$ok0", "$ok1", "$ok2", "$ok3"]
+        problem = self.build_problem(script=script,
+                                     choice_type='checkbox',
+                                     choices=choices)
+
+        # Ensure the expected correctness
+        self.assert_grade(problem, ['choice_0', 'choice_2'], 'correct')
+        self.assert_grade(problem, ['choice_1', 'choice_3'], 'incorrect')
 
 
 class JavascriptResponseTest(ResponseTest):  # pylint: disable=missing-docstring
@@ -1798,6 +1854,33 @@ class CustomResponseTest(ResponseTest):  # pylint: disable=missing-docstring
         correct_map = problem.grade_answers(input_dict)
         self.assertEqual(correct_map.get_npoints('1_2_1'), 0.5)
         self.assertEqual(correct_map.get_correctness('1_2_1'), 'partially-correct')
+
+    def test_script_context(self):
+        # Ensure that python script variables can be used in the "expect" and "answer" fields,
+
+        script = script = textwrap.dedent("""
+            expected_ans = 42
+
+            def check_func(expect, answer_given):
+                return answer_given == expect
+        """)
+
+        problems = (
+            self.build_problem(script=script, cfn="check_func", expect="$expected_ans"),
+            self.build_problem(script=script, cfn="check_func", answer_attr="$expected_ans")
+        )
+
+        input_dict = {'1_2_1': '42'}
+
+        for problem in problems:
+            correctmap = problem.grade_answers(input_dict)
+
+            # CustomResponse also adds 'expect' to the problem context; check that directly first:
+            self.assertEqual(problem.context['expect'], '42')
+
+            # Also make sure the problem was graded correctly:
+            correctness = correctmap.get_correctness('1_2_1')
+            self.assertEqual(correctness, 'correct')
 
     def test_function_code_multiple_input_no_msg(self):
 
