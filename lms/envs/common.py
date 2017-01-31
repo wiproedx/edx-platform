@@ -1819,6 +1819,11 @@ BULK_EMAIL_LOG_SENT_EMAILS = False
 # parallel, and what the SES rate is.
 BULK_EMAIL_RETRY_DELAY_BETWEEN_SENDS = 0.02
 
+############################# Persistent Grades ####################################
+
+# Queue to use for updating persistent grades
+RECALCULATE_GRADES_ROUTING_KEY = LOW_PRIORITY_QUEUE
+
 ############################# Email Opt In ####################################
 
 # Minimum age for organization-wide email opt in
@@ -1905,6 +1910,7 @@ INSTALLED_APPS = (
     'openedx.core.djangoapps.course_groups',
     'bulk_email',
     'branding',
+    'lms.djangoapps.grades.apps.GradesConfig',
 
     # Student support tools
     'support',
