@@ -2197,6 +2197,10 @@ INSTALLED_APPS = (
     # additional release utilities to ease automation
     'release_util',
 
+    # Unusual migrations
+    'database_fixups',
+)
+
     # Customized celery tasks, including persisting failed tasks so they can
     # be retried
     'celery_utils',
