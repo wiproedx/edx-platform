@@ -30,33 +30,24 @@ from common.test.acceptance.fixtures.programs import ProgramsConfigMixin
 from common.test.acceptance.tests.helpers import (
     AcceptanceTest,
     assert_nav_help_link,
-    assert_side_bar_help_link
+    assert_side_bar_help_link,
+    url_for_help,
 )
 from common.test.acceptance.pages.studio.import_export import ExportLibraryPage, ImportLibraryPage
 from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
-
-from openedx.core.release import doc_version
-
-DOCUMENTATION_URL_TEMPLATE = (
-    'http://edx.readthedocs.io/projects/open-edx-building-and-running-a-course/en/{doc_version}{path}'
-)
 
 
 def _get_expected_documentation_url(path):
     """
     Returns the expected URL for the building and running a course documentation.
     """
-    return DOCUMENTATION_URL_TEMPLATE.format(
-        doc_version=doc_version(),
-        path=path,
-    )
+    return url_for_help('course_author', path)
 
 
 @attr(shard=10)
 class StudioHelpTest(StudioCourseTest):
     """Tests for Studio help."""
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_studio_help_links(self):
         """Test that the help links are present and have the correct content."""
         page = DashboardPage(self.browser)
@@ -103,7 +94,6 @@ class SignInHelpTest(AcceptanceTest):
         self.index_page = IndexPage(self.browser)
         self.index_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_sign_in_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Sign In' page.
@@ -114,7 +104,7 @@ class SignInHelpTest(AcceptanceTest):
         And help url should be correct
         """
         sign_in_page = self.index_page.click_sign_in()
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/index.html')
 
         # Assert that help link is correct.
         assert_nav_help_link(
@@ -135,7 +125,6 @@ class SignUpHelpTest(AcceptanceTest):
         self.index_page = IndexPage(self.browser)
         self.index_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_sign_up_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Sign Up' page.
@@ -146,7 +135,7 @@ class SignUpHelpTest(AcceptanceTest):
         And help url should be correct
         """
         sign_up_page = self.index_page.click_sign_up()
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/index.html')
 
         # Assert that help link is correct.
         assert_nav_help_link(
@@ -167,7 +156,6 @@ class HomeHelpTest(StudioCourseTest):
         self.home_page = HomePage(self.browser)
         self.home_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_home_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Home'(Courses tab) page.
@@ -177,7 +165,7 @@ class HomeHelpTest(StudioCourseTest):
         Then Help link should open.
         And help url should be correct
         """
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/CA_get_started_Studio.html')
 
         # Assert that help link is correct.
         assert_nav_help_link(
@@ -186,7 +174,6 @@ class HomeHelpTest(StudioCourseTest):
             href=expected_url
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_home_side_bar_help(self):
         """
         Scenario: Help link in sidebar links is working on 'Home'(Courses tab) page.
@@ -196,7 +183,7 @@ class HomeHelpTest(StudioCourseTest):
         Then Help link should open.
         And help url should be correct
         """
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/CA_get_started_Studio.html')
 
         # Assert that help link is correct.
         assert_side_bar_help_link(
@@ -222,7 +209,6 @@ class NewCourseHelpTest(AcceptanceTest):
         self.assertTrue(self.dashboard_page.new_course_button.present)
         self.dashboard_page.click_new_course_button()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_create_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Create a New Course' page in the dashboard.
@@ -232,7 +218,7 @@ class NewCourseHelpTest(AcceptanceTest):
         Then Help link should open.
         And help url should be correct
         """
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/CA_get_started_Studio.html')
 
         # Assert that help link is correct.
         assert_nav_help_link(
@@ -241,7 +227,6 @@ class NewCourseHelpTest(AcceptanceTest):
             href=expected_url
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_create_side_bar_help(self):
         """
         Scenario: Help link in sidebar links is working on 'Create a New Course' page in the dashboard.
@@ -251,7 +236,7 @@ class NewCourseHelpTest(AcceptanceTest):
         Then Help link should open.
         And help url should be correct
         """
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/CA_get_started_Studio.html')
 
         # Assert that help link is correct.
         assert_side_bar_help_link(
@@ -277,7 +262,6 @@ class NewLibraryHelpTest(AcceptanceTest):
         self.assertTrue(self.dashboard_page.has_new_library_button)
         self.dashboard_page.click_new_library()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_create_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Create a New Library' page in the dashboard.
@@ -287,7 +271,7 @@ class NewLibraryHelpTest(AcceptanceTest):
         Then Help link should open.
         And help url should be correct
         """
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/CA_get_started_Studio.html')
 
         # Assert that help link is correct.
         assert_nav_help_link(
@@ -296,7 +280,6 @@ class NewLibraryHelpTest(AcceptanceTest):
             href=expected_url
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_create_side_bar_help(self):
         """
         Scenario: Help link in sidebar links is working on 'Create a New Library' page in the dashboard.
@@ -306,7 +289,7 @@ class NewLibraryHelpTest(AcceptanceTest):
         Then Help link should open.
         And help url should be correct
         """
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/CA_get_started_Studio.html')
 
         # Assert that help link is correct.
         assert_side_bar_help_link(
@@ -330,7 +313,6 @@ class LibraryTabHelpTest(AcceptanceTest):
         self.auth_page.visit()
         self.dashboard_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_tab_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Home'(Courses tab) page.
@@ -342,7 +324,7 @@ class LibraryTabHelpTest(AcceptanceTest):
         """
         self.assertTrue(self.dashboard_page.has_new_library_button)
         click_css(self.dashboard_page, '#course-index-tabs .libraries-tab', 0, False)
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/CA_get_started_Studio.html')
 
         # Assert that help link is correct.
         assert_nav_help_link(
@@ -362,7 +344,6 @@ class LibraryHelpTest(StudioLibraryTest):
         self.library_page = LibraryPage(self.browser, self.library_key)
         self.library_user_page = LibraryUsersPage(self.browser, self.library_key)
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_content_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on content
@@ -383,7 +364,6 @@ class LibraryHelpTest(StudioLibraryTest):
             href=expected_url
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_content_side_bar_help(self):
         """
         Scenario: Help link in sidebar links is working on
@@ -405,7 +385,6 @@ class LibraryHelpTest(StudioLibraryTest):
             help_text='Learn more about content libraries'
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_user_access_setting_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'User Access'
@@ -439,7 +418,6 @@ class LibraryImportHelpTest(StudioLibraryTest):
         self.library_import_page = ImportLibraryPage(self.browser, self.library_key)
         self.library_import_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_import_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on Library import page.
@@ -458,7 +436,6 @@ class LibraryImportHelpTest(StudioLibraryTest):
             href=expected_url
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_import_side_bar_help(self):
         """
         Scenario: Help link in sidebar links is working on Library import page.
@@ -489,7 +466,6 @@ class LibraryExportHelpTest(StudioLibraryTest):
         self.library_export_page = ExportLibraryPage(self.browser, self.library_key)
         self.library_export_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_export_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on Library export page.
@@ -508,7 +484,6 @@ class LibraryExportHelpTest(StudioLibraryTest):
             href=expected_url
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_library_export_side_bar_help(self):
         """
         Scenario: Help link in sidebar links is working on Library export page.
@@ -597,7 +572,6 @@ class CourseOutlineHelpTest(StudioCourseTest):
             href=expected_url
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_outline_side_bar_help(self):
         """
         Scenario: Help link in sidebar links is working on Course Outline page
@@ -634,7 +608,6 @@ class CourseUpdateHelpTest(StudioCourseTest):
         )
         self.course_update_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_update_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Course Update' page
@@ -669,7 +642,6 @@ class AssetIndexHelpTest(StudioCourseTest):
         )
         self.course_asset_index_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_asset_index_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Files & Uploads' page
@@ -688,7 +660,6 @@ class AssetIndexHelpTest(StudioCourseTest):
             href=expected_url,
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_asset_index_side_bar_help(self):
         """
         Scenario: Help link in sidebar links is working on 'Files & Uploads' page
@@ -724,7 +695,6 @@ class CoursePagesHelpTest(StudioCourseTest):
         )
         self.course_pages_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_page_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Pages' page
@@ -759,7 +729,6 @@ class UploadTextbookHelpTest(StudioCourseTest):
         )
         self.course_textbook_upload_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_textbook_upload_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Textbooks' page
@@ -778,7 +747,6 @@ class UploadTextbookHelpTest(StudioCourseTest):
             href=expected_url,
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_textbook_side_bar_help(self):
         """
         Scenario: Help link in sidebar links is working on 'Textbooks' page
@@ -828,7 +796,6 @@ class StudioUnitHelpTest(ContainerBase):
             )
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_unit_page_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on Unit page.
@@ -866,7 +833,6 @@ class SettingsHelpTest(StudioCourseTest):
 
         self.settings_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_settings_page_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on Settings page.
@@ -903,7 +869,6 @@ class GradingPageHelpTest(StudioCourseTest):
 
         self.grading_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_grading_page_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on Grading page.
@@ -940,7 +905,6 @@ class CourseTeamSettingsHelpTest(StudioCourseTest):
 
         self.course_team_settings_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_course_team_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on Course Team settings page
@@ -977,7 +941,6 @@ class CourseGroupConfigurationHelpTest(StudioCourseTest):
 
         self.course_group_configuration_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_group_conf_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on
@@ -997,7 +960,6 @@ class CourseGroupConfigurationHelpTest(StudioCourseTest):
             href=expected_url,
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_group_conf_content_group_side_bar_help(self):
         """
         Scenario: Help link in side bar under the 'content group' is working
@@ -1036,7 +998,6 @@ class AdvancedSettingHelpTest(StudioCourseTest):
 
         self.advanced_settings.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_advanced_settings_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on Advanced Settings page.
@@ -1073,7 +1034,6 @@ class CertificatePageHelpTest(StudioCourseTest):
 
         self.certificates_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_certificate_page_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on Certificate settings page
@@ -1092,7 +1052,6 @@ class CertificatePageHelpTest(StudioCourseTest):
             href=expected_url,
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_certificate_page_side_bar_help(self):
         """
         Scenario: Help link in side bar is working Certificate settings page
@@ -1142,7 +1101,6 @@ class GroupExperimentConfigurationHelpTest(ContainerBase):
             {u"advanced_modules": {"value": ["split_test"]}}
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_course_group_configuration_experiment_side_bar_help(self):
         """
         Scenario: Help link in side bar under the 'Experiment Group Configurations'
@@ -1184,7 +1142,6 @@ class ToolsImportHelpTest(StudioCourseTest):
         )
         self.import_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_tools_import_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on tools Library import page
@@ -1203,7 +1160,6 @@ class ToolsImportHelpTest(StudioCourseTest):
             href=expected_url,
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_tools_import_side_bar_help(self):
         """
         Scenario: Help link in side bar is working on tools Library import page
@@ -1241,7 +1197,6 @@ class ToolsExportHelpTest(StudioCourseTest):
         )
         self.export_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_tools_import_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on tools Library export page
@@ -1260,7 +1215,6 @@ class ToolsExportHelpTest(StudioCourseTest):
             href=expected_url,
         )
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_tools_import_side_bar_help(self):
         """
         Scenario: Help link in side bar is working on tools Library export page
@@ -1291,7 +1245,6 @@ class StudioWelcomeHelpTest(AcceptanceTest):
         self.index_page = IndexPage(self.browser)
         self.index_page.visit()
 
-    @skip("Disabled as edx.org help links are now different than Open edX (@catong can advise)")
     def test_welcome_nav_help(self):
         """
         Scenario: Help link in navigation bar is working on 'Welcome' page (User not logged in).
@@ -1301,7 +1254,7 @@ class StudioWelcomeHelpTest(AcceptanceTest):
         Then Help link should open.
         And help url should be correct
         """
-        expected_url = _get_expected_documentation_url('/get_started.html')
+        expected_url = _get_expected_documentation_url('/getting_started/index.html')
 
         # Assert that help link is correct.
         assert_nav_help_link(
