@@ -1204,6 +1204,8 @@ MIDDLEWARE_CLASSES = (
 
     'waffle.middleware.WaffleMiddleware',
 
+    'openedx.core.djangoapps.site_configuration.middleware.LoginRequiredMiddleware',
+
     # This must be last
     'openedx.core.djangoapps.site_configuration.middleware.SessionCookieDomainOverrideMiddleware',
 )
