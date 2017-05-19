@@ -3,11 +3,14 @@
 End-to-end tests related to the cohort management on the LMS Instructor Dashboard
 """
 
+import os
+import uuid
 from datetime import datetime
 
-from pytz import UTC, utc
+import unicodecsv
 from bok_choy.promise import EmptyPromise
 from nose.plugins.attrib import attr
+<<<<<<< HEAD
 <<<<<<< HEAD
 from common.test.acceptance.tests.discussion.helpers import CohortTestMixin
 from common.test.acceptance.tests.helpers import UniqueCourseTest, EventsTestMixin, create_user_partition_json
@@ -16,10 +19,15 @@ from xmodule.partitions.partitions import Group
 from pytz import UTC, utc
 
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
+=======
+from pytz import UTC, utc
+
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
-from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
-from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage, DataDownloadPage
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
+from common.test.acceptance.pages.lms.instructor_dashboard import DataDownloadPage, InstructorDashboardPage
 from common.test.acceptance.pages.studio.settings_group_configurations import GroupConfigurationsPage
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 import os
@@ -30,6 +38,11 @@ from common.test.acceptance.tests.discussion.helpers import CohortTestMixin
 from common.test.acceptance.tests.helpers import EventsTestMixin, UniqueCourseTest, create_user_partition_json
 from openedx.core.lib.partitions.partitions import Group
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
+=======
+from common.test.acceptance.tests.discussion.helpers import CohortTestMixin
+from common.test.acceptance.tests.helpers import EventsTestMixin, UniqueCourseTest, create_user_partition_json
+from xmodule.partitions.partitions import Group
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
 
 @attr(shard=8)

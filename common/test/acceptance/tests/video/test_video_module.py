@@ -21,8 +21,12 @@ from common.test.acceptance.pages.lms.course_nav import CourseNavPage
 from selenium.webdriver.common.by import By
 
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
+<<<<<<< HEAD
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
+=======
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.lms.course_info import CourseInfoPage
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.tab_nav import TabNavPage

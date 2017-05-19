@@ -8,6 +8,7 @@ from nose.plugins.attrib import attr
 
 from common.test.acceptance.fixtures.course import XBlockFixtureDesc
 <<<<<<< HEAD
+<<<<<<< HEAD
 from common.test.acceptance.tests.studio.base_studio_test import StudioCourseTest, ContainerBase
 from common.test.acceptance.pages.studio.index import DashboardPage, DashboardPageWithPrograms
 from common.test.acceptance.pages.studio.utils import click_studio_help, studio_help_links
@@ -17,6 +18,10 @@ from common.test.acceptance.tests.studio.base_studio_test import StudioLibraryTe
 from common.test.acceptance.pages.studio.asset_index import AssetIndexPage
 from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
+=======
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
+from common.test.acceptance.pages.studio.asset_index import AssetIndexPage
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.studio.course_info import CourseUpdatesPage
 from common.test.acceptance.pages.studio.edit_tabs import PagesPage
 from common.test.acceptance.pages.studio.import_export import (

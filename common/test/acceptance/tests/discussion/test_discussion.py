@@ -24,8 +24,12 @@ from common.test.acceptance.fixtures.discussion import (
     Thread,
     UserProfileViewFixture
 )
+<<<<<<< HEAD
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
+=======
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.discussion import (
     DiscussionSortPreferencePage,

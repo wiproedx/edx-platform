@@ -2,28 +2,31 @@
 Test helper functions and base classes.
 """
 
+import functools
 import inspect
 import json
-import unittest
-import functools
 import operator
-import pprint
-import requests
 import os
+import pprint
+import unittest
 import urlparse
 from contextlib import contextmanager
 from datetime import datetime
-from path import Path as path
+from unittest import TestCase
 
+import requests
 from bok_choy.javascript import js_defined
+<<<<<<< HEAD
 from bok_choy.web_app_test import WebAppTest
 <<<<<<< HEAD
 from bok_choy.promise import EmptyPromise, Promise
+=======
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from bok_choy.page_object import XSS_INJECTION
-from capa.tests.response_xml_factory import MultipleChoiceResponseXMLFactory
-from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
-from common.test.acceptance.fixtures.course import XBlockFixtureDesc
+from bok_choy.promise import EmptyPromise, Promise
+from bok_choy.web_app_test import WebAppTest
 from opaque_keys.edx.locator import CourseLocator
+<<<<<<< HEAD
 from pymongo import MongoClient, ASCENDING
 from openedx.core.lib.tests.assertions.events import assert_event_matches, is_matching_event, EventMatchTolerates
 from xmodule.partitions.partitions import UserPartition
@@ -34,15 +37,24 @@ from path import Path as path
 from pymongo import ASCENDING, MongoClient
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from selenium.common.exceptions import StaleElementReferenceException
+=======
+from path import Path as path
+from pymongo import ASCENDING, MongoClient
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from unittest import TestCase
 
-from openedx.core.release import doc_version, RELEASE_LINE
-
+from capa.tests.response_xml_factory import MultipleChoiceResponseXMLFactory
+from common.test.acceptance.fixtures.course import XBlockFixtureDesc
 from common.test.acceptance.pages.common import BASE_URL
-
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
+from openedx.core.lib.tests.assertions.events import EventMatchTolerates, assert_event_matches, is_matching_event
+from openedx.core.release import RELEASE_LINE, doc_version
+from xmodule.partitions.partitions import UserPartition
 
 from capa.tests.response_xml_factory import MultipleChoiceResponseXMLFactory
 from common.test.acceptance.fixtures.course import XBlockFixtureDesc

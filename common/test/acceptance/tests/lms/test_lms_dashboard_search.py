@@ -5,14 +5,18 @@ import json
 import os
 
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.common.logout import LogoutPage
 from common.test.acceptance.pages.common.utils import click_css
 from common.test.acceptance.pages.lms.dashboard_search import DashboardSearchPage
+<<<<<<< HEAD
 from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
 <<<<<<< HEAD
 from common.test.acceptance.pages.studio.overview import CourseOutlinePage
 =======
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
+=======
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.studio.container import ContainerPage
 from common.test.acceptance.pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
 from common.test.acceptance.pages.studio.utils import add_html_component, type_in_codemirror

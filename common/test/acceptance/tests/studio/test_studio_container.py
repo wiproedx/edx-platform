@@ -3,9 +3,16 @@ Acceptance tests for Studio related to the container page.
 The container page is used both for displaying units, and
 for displaying containers within units.
 """
-from nose.plugins.attrib import attr
+<<<<<<< HEAD
+=======
+import datetime
 from unittest import skip
 
+import ddt
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
+from nose.plugins.attrib import attr
+
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 import ddt
@@ -14,10 +21,18 @@ from nose.plugins.attrib import attr
 from base_studio_test import ContainerBase
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.fixtures.course import XBlockFixtureDesc
+=======
+from base_studio_test import ContainerBase
+from common.test.acceptance.fixtures.course import XBlockFixtureDesc
+from common.test.acceptance.pages.lms.courseware import CoursewarePage
+from common.test.acceptance.pages.lms.create_mode import ModeCreationPage
+from common.test.acceptance.pages.lms.staff_view import StaffCoursewarePage
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.studio.component_editor import ComponentEditorView, ComponentVisibilityEditorView
 from common.test.acceptance.pages.studio.container import ContainerPage
 from common.test.acceptance.pages.studio.html_component_editor import HtmlComponentEditorView
 from common.test.acceptance.pages.studio.utils import add_discussion, drag
+<<<<<<< HEAD
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.staff_view import StaffPage
 from common.test.acceptance.tests.helpers import create_user_partition_json
@@ -30,6 +45,10 @@ from xmodule.partitions.partitions import Group
 =======
 from openedx.core.lib.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID, MINIMUM_STATIC_PARTITION_ID, Group
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
+=======
+from common.test.acceptance.tests.helpers import create_user_partition_json
+from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID, MINIMUM_STATIC_PARTITION_ID, Group
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
 
 class NestedVerticalTest(ContainerBase):

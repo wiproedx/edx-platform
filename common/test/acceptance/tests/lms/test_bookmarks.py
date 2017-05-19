@@ -9,10 +9,11 @@ from nose.plugins.attrib import attr
 
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 from common.test.acceptance.pages.common import BASE_URL
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.common.logout import LogoutPage
-from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage as LmsAutoAuthPage
 from common.test.acceptance.pages.lms.bookmarks import BookmarksPage
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
+<<<<<<< HEAD
 <<<<<<< HEAD
 from common.test.acceptance.pages.lms.course_nav import CourseNavPage
 from common.test.acceptance.pages.studio.overview import CourseOutlinePage
@@ -22,6 +23,8 @@ from common.test.acceptance.pages.common import BASE_URL
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 =======
 from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage as StudioAutoAuthPage
+=======
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.tests.helpers import EventsTestMixin, UniqueCourseTest, is_404_page
@@ -34,6 +37,43 @@ class BookmarksTestMixin(EventsTestMixin, UniqueCourseTest):
     USERNAME = "STUDENT"
     EMAIL = "student@example.com"
 
+<<<<<<< HEAD
+=======
+    def setUp(self):
+        super(BookmarksTestMixin, self).setUp()
+
+        self.studio_course_outline_page = StudioCourseOutlinePage(
+            self.browser,
+            self.course_info['org'],
+            self.course_info['number'],
+            self.course_info['run']
+        )
+
+        self.courseware_page = CoursewarePage(self.browser, self.course_id)
+        self.course_home_page = CourseHomePage(self.browser, self.course_id)
+        self.bookmarks_page = BookmarksPage(self.browser, self.course_id)
+
+        # Get session to be used for bookmarking units
+        self.session = requests.Session()
+        params = {'username': self.USERNAME, 'email': self.EMAIL, 'course_id': self.course_id}
+        response = self.session.get(BASE_URL + "/auto_auth", params=params)
+        self.assertTrue(response.ok, "Failed to get session")
+
+    def setup_test(self, num_chapters=2):
+        """
+        Setup test settings.
+
+        Arguments:
+            num_chapters: number of chapters to create in course
+        """
+        self.create_course_fixture(num_chapters)
+
+        # Auto-auth register for the course.
+        AutoAuthPage(self.browser, username=self.USERNAME, email=self.EMAIL, course_id=self.course_id).visit()
+
+        self.courseware_page.visit()
+
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
     def create_course_fixture(self, num_chapters):
         """
         Create course fixture
@@ -170,7 +210,7 @@ class BookmarksTest(BookmarksTestMixin):
 
         # Logout and login as staff
         LogoutPage(self.browser).visit()
-        StudioAutoAuthPage(
+        AutoAuthPage(
             self.browser, username=self.USERNAME, email=self.EMAIL, course_id=self.course_id, staff=True
         ).visit()
 
@@ -182,7 +222,7 @@ class BookmarksTest(BookmarksTestMixin):
 
         # Logout and login as a student.
         LogoutPage(self.browser).visit()
-        LmsAutoAuthPage(self.browser, username=self.USERNAME, email=self.EMAIL, course_id=self.course_id).visit()
+        AutoAuthPage(self.browser, username=self.USERNAME, email=self.EMAIL, course_id=self.course_id).visit()
 
         # Visit courseware as a student.
         self.courseware_page.visit()
@@ -366,7 +406,7 @@ class BookmarksTest(BookmarksTestMixin):
         self._verify_breadcrumbs(num_units=1)
 
         LogoutPage(self.browser).visit()
-        LmsAutoAuthPage(
+        AutoAuthPage(
             self.browser,
             username=self.USERNAME,
             email=self.EMAIL,
@@ -378,8 +418,12 @@ class BookmarksTest(BookmarksTestMixin):
         self.update_and_publish_block_display_name(modified_name)
 
         LogoutPage(self.browser).visit()
+<<<<<<< HEAD
         LmsAutoAuthPage(self.browser, username=self.USERNAME, email=self.EMAIL, course_id=self.course_id).visit()
         self.courseware_page.visit()
+=======
+        AutoAuthPage(self.browser, username=self.USERNAME, email=self.EMAIL, course_id=self.course_id).visit()
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
         self._navigate_to_bookmarks_list()
         self._verify_breadcrumbs(num_units=1, modified_name=modified_name)

@@ -7,6 +7,7 @@ from flaky import flaky
 from opaque_keys.edx.locator import LibraryLocator
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 from common.test.acceptance.fixtures.catalog import CatalogFixture, CatalogConfigMixin
 from common.test.acceptance.fixtures.programs import ProgramsFixture, ProgramsConfigMixin
 from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
@@ -20,8 +21,10 @@ from common.test.acceptance.tests.helpers import (
 )
 from openedx.core.djangoapps.programs.tests import factories
 =======
+=======
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.lms.account_settings import AccountSettingsPage
-from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.studio.index import DashboardPage
 from common.test.acceptance.pages.studio.library import LibraryEditPage
 from common.test.acceptance.tests.helpers import AcceptanceTest, get_selected_option_text, select_option_by_text

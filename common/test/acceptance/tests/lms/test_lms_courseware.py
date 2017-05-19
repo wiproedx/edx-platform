@@ -11,6 +11,7 @@ from flaky import flaky
 from nose.plugins.attrib import attr
 
 from ...fixtures.course import CourseFixture, XBlockFixtureDesc
+from ...pages.common.auto_auth import AutoAuthPage
 from ...pages.common.logout import LogoutPage
 from ...pages.lms.course_nav import CourseNavPage
 from ...pages.lms.courseware import CoursewarePage, CoursewareSequentialTabPage
@@ -21,10 +22,13 @@ from ...pages.lms.problem import ProblemPage
 from ...pages.lms.progress import ProgressPage
 from ...pages.lms.staff_view import StaffPage
 from ...pages.lms.track_selection import TrackSelectionPage
+<<<<<<< HEAD
 from ...pages.studio.auto_auth import AutoAuthPage
 <<<<<<< HEAD
 from ...pages.studio.overview import CourseOutlinePage
 =======
+=======
+>>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from ...pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
 from ..helpers import EventsTestMixin, UniqueCourseTest, auto_auth, create_multiple_choice_problem
 >>>>>>> 74f9858... Optimized all imports in common.test.acceptance
