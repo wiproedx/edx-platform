@@ -199,6 +199,7 @@ VERIFY_STUDENT["SOFTWARE_SECURE"] = {
     "API_ACCESS_KEY": "BBBBBBBBBBBBBBBBBBBB",
     "API_SECRET_KEY": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
 }
+DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH = "verify_student_disable_account_activation_requirement"
 
 # Skip enrollment start date filtering
 SEARCH_SKIP_ENROLLMENT_START_DATE_FILTERING = True
@@ -260,18 +261,6 @@ JWT_AUTH.update({
     'JWT_ISSUER': 'http://127.0.0.1:8000/oauth2',
     'JWT_AUDIENCE': 'lms-key',
 })
-
-# TODO: TNL-6546: Remove this waffle and flag code.
-from django.db.utils import ProgrammingError
-from waffle.models import Flag
-try:
-    flag, created = Flag.objects.get_or_create(name='unified_course_view')
-    flag.everyone = True
-    flag.save()
-    WAFFLE_OVERRIDE = True
-except ProgrammingError:
-    # during initial reset_db, the table for the flag doesn't yet exist.
-    pass
 
 #####################################################################
 # See if the developer has any local overrides.

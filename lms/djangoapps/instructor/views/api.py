@@ -2118,18 +2118,24 @@ def rescore_problem(request, course_id):
 
     if student:
         response_payload['student'] = student_identifier
-        lms.djangoapps.instructor_task.api.submit_rescore_problem_for_student(
-            request,
-            module_state_key,
-            student,
-            only_if_higher,
-        )
+        try:
+            lms.djangoapps.instructor_task.api.submit_rescore_problem_for_student(
+                request,
+                module_state_key,
+                student,
+                only_if_higher,
+            )
+        except NotImplementedError as exc:
+            return HttpResponseBadRequest(exc.message)
     elif all_students:
-        lms.djangoapps.instructor_task.api.submit_rescore_problem_for_all_students(
-            request,
-            module_state_key,
-            only_if_higher,
-        )
+        try:
+            lms.djangoapps.instructor_task.api.submit_rescore_problem_for_all_students(
+                request,
+                module_state_key,
+                only_if_higher,
+            )
+        except NotImplementedError as exc:
+            return HttpResponseBadRequest(exc.message)
     else:
         return HttpResponseBadRequest()
 
@@ -2523,6 +2529,7 @@ def send_email(request, course_id):
     course_id = CourseKey.from_string(course_id)
 
     if not BulkEmailFlag.feature_enabled(course_id):
+        log.warning(u'Email is not enabled for course %s', course_id)
         return HttpResponseForbidden("Email is not enabled for this course.")
 
     targets = json.loads(request.POST.get("send_to"))
@@ -2564,6 +2571,8 @@ def send_email(request, course_id):
             from_addr=from_addr
         )
     except ValueError as err:
+        log.exception(u'Cannot create course email for course %s requested by user %s for targets %s',
+                      course_id, request.user, targets)
         return HttpResponseBadRequest(repr(err))
 
     # Submit the task, so that the correct InstructorTask object gets created (for monitoring purposes)

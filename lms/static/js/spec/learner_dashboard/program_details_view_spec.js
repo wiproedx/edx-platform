@@ -1,7 +1,7 @@
 define([
     'backbone',
     'jquery',
-    'js/learner_dashboard/views/program_details_view_2017'
+    'js/learner_dashboard/views/program_details_view'
 ], function(Backbone, $, ProgramDetailsView) {
     'use strict';
 
@@ -187,7 +187,8 @@ define([
                                     modified: '2017-03-24T14:22:15.609907Z',
                                     is_enrolled: true,
                                     pacing_type: 'self_paced',
-                                    video: null
+                                    video: null,
+                                    status: 'published'
                                 }
                             ]
                         }
@@ -268,7 +269,8 @@ define([
                                     modified: '2017-03-24T14:16:47.547643Z',
                                     is_enrolled: true,
                                     pacing_type: 'instructor_paced',
-                                    video: null
+                                    video: null,
+                                    status: 'published'
                                 }
                             ]
                         }
@@ -372,7 +374,8 @@ define([
                                     modified: '2017-03-24T14:18:08.693748Z',
                                     is_enrolled: false,
                                     pacing_type: 'instructor_paced',
-                                    video: null
+                                    video: null,
+                                    status: 'published'
                                 },
                                 {
                                     upgrade_url: null,
@@ -445,7 +448,8 @@ define([
                                     modified: '2017-03-23T16:47:37.108260Z',
                                     is_enrolled: false,
                                     pacing_type: 'self_paced',
-                                    video: null
+                                    video: null,
+                                    status: 'published'
                                 }
                             ]
                         }
@@ -460,12 +464,17 @@ define([
                     'pref-lang': 'en'
                 }
             },
-            data = options.programData;
+            data = options.programData,
+            initView;
+
+        initView = function(updates) {
+            var viewOptions = $.extend({}, options, updates);
+
+            return new ProgramDetailsView(viewOptions);
+        };
 
         beforeEach(function() {
             setFixtures('<div class="js-program-details-wrapper"></div>');
-            view = new ProgramDetailsView(options);
-            view.render();
         });
 
         afterEach(function() {
@@ -473,10 +482,14 @@ define([
         });
 
         it('should exist', function() {
+            view = initView();
+            view.render();
             expect(view).toBeDefined();
         });
 
         it('should render the header', function() {
+            view = initView();
+            view.render();
             expect(view.$('.js-program-header h2').html()).toEqual(data.title);
             expect(view.$('.js-program-header .org-logo')[0].src).toEqual(
               data.authoring_organizations[0].logo_image_url
@@ -486,7 +499,9 @@ define([
             );
         });
 
-        it('should render the program heading', function() {
+        it('should render the program heading program journey message if program not completed', function() {
+            view = initView();
+            view.render();
             expect(view.$('.program-heading-title').text()).toEqual('Your Program Journey');
             expect(view.$('.program-heading-message').text().trim()
                        .replace(/\s+/g, ' ')).toEqual(
@@ -495,7 +510,26 @@ define([
             );
         });
 
+        it('should render the program heading congratulations message if all courses completed', function() {
+            view = initView({
+                // Remove remaining courses so all courses are complete
+                courseData: $.extend({}, options.courseData, {
+                    in_progress: [],
+                    not_started: []
+                })
+            });
+            view.render();
+
+            expect(view.$('.program-heading-title').text()).toEqual('Congratulations!');
+            expect(view.$('.program-heading-message').text().trim()
+                       .replace(/\s+/g, ' ')).toEqual(
+              'You have successfully completed all the requirements for the Test Course Title Test.'
+            );
+        });
+
         it('should render the course list headings', function() {
+            view = initView();
+            view.render();
             expect(view.$('.course-list-heading .status').text()).toEqual(
               'COURSES IN PROGRESSREMAINING COURSESCOMPLETED COURSES'
             );
@@ -503,18 +537,24 @@ define([
         });
 
         it('should render the basic course card information', function() {
+            view = initView();
+            view.render();
             expect($(view.$('.course-title')[0]).text().trim()).toEqual('Star Trek: The Next Generation');
             expect($(view.$('.enrolled')[0]).text().trim()).toEqual('Enrolled:');
             expect($(view.$('.run-period')[0]).text().trim()).toEqual('Mar 20, 2017 - Mar 31, 2017');
         });
 
         it('should render certificate information', function() {
+            view = initView();
+            view.render();
             expect($(view.$('.upgrade-message .card-msg')).text().trim()).toEqual('Certificate Status:');
             expect($(view.$('.upgrade-message .price')).text().trim()).toEqual('$10.00');
             expect($(view.$('.upgrade-button')[0]).text().trim()).toEqual('Buy Certificate');
         });
 
         it('should render enrollment information', function() {
+            view = initView();
+            view.render();
             expect(view.$('.run-select')[0].options.length).toEqual(2);
             expect($(view.$('.select-choice')[0]).attr('for')).toEqual($(view.$('.run-select')[0]).attr('id'));
             expect($(view.$('.enroll-button button')[0]).text().trim()).toEqual('Enroll Now');

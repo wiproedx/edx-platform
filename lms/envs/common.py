@@ -290,6 +290,10 @@ FEATURES = {
     # For easily adding modes to courses during acceptance testing
     'MODE_CREATION_FOR_TESTING': False,
 
+    # For caching programs in contexts where the LMS can only
+    # be reached over HTTP.
+    'EXPOSE_CACHE_PROGRAMS_ENDPOINT': False,
+
     # Courseware search feature
     'ENABLE_COURSEWARE_SEARCH': False,
 
@@ -837,6 +841,9 @@ FINANCE_EMAIL = ''
 
 # Platform mailing address
 CONTACT_MAILING_ADDRESS = ''
+
+# Account activation email sender address
+ACTIVATION_EMAIL_FROM_ADDRESS = ''
 
 ADMINS = ()
 MANAGERS = ADMINS
@@ -2389,6 +2396,7 @@ VERIFY_STUDENT = {
     # The variable represents the window within which a verification is considered to be "expiring soon."
     "EXPIRING_SOON_WINDOW": 28,
 }
+DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH = "verify_student_disable_account_activation_requirement"
 
 ### This enables the Metrics tab for the Instructor dashboard ###########
 FEATURES['CLASS_DASHBOARD'] = False
@@ -2443,13 +2451,13 @@ REGISTRATION_EXTRA_FIELDS = {
 }
 
 REGISTRATION_FIELD_ORDER = [
-    "email",
-    "confirm_email",
     "name",
-    "username",
-    "password",
     "first_name",
     "last_name",
+    "username",
+    "email",
+    "confirm_email",
+    "password",
     "city",
     "state",
     "country",
@@ -3110,7 +3118,7 @@ REDIRECT_CACHE_KEY_PREFIX = 'redirects'
 
 ############## Settings for LMS Context Sensitive Help ##############
 
-HELP_TOKENS_INI_FILE = REPO_ROOT / "docs" / "lms_config.ini"
+HELP_TOKENS_INI_FILE = REPO_ROOT / "lms" / "envs" / "help_tokens.ini"
 HELP_TOKENS_BOOKS = {
     'learner': 'http://edx.readthedocs.io/projects/open-edx-learner-guide',
     'course_author': 'http://edx.readthedocs.io/projects/open-edx-building-and-running-a-course',
@@ -3134,6 +3142,26 @@ ENTERPRISE_API_URL = LMS_ROOT_URL + '/enterprise/api/v1/'
 ENTERPRISE_SERVICE_WORKER_USERNAME = 'enterprise_worker'
 ENTERPRISE_API_CACHE_TIMEOUT = 3600  # Value is in seconds
 ENTERPRISE_CUSTOMER_LOGO_IMAGE_SIZE = 512   # Enterprise logo image size limit in KB's
+
+############## ENTERPRISE SERVICE LMS CONFIGURATION ##################################
+# The LMS has some features embedded that are related to the Enterprise service, but
+# which are not provided by the Enterprise service. These settings provide base values
+# for those features.
+
+ENTERPRISE_PLATFORM_WELCOME_TEMPLATE = _(u'Welcome to {platform_name}.')
+ENTERPRISE_SPECIFIC_BRANDED_WELCOME_TEMPLATE = _(
+    u'{start_bold}{enterprise_name}{end_bold} has partnered with {start_bold}'
+    '{platform_name}{end_bold} to offer you high-quality learning opportunities '
+    'from the world\'s best universities.'
+)
+ENTERPRISE_EXCLUDED_REGISTRATION_FIELDS = {
+    'age',
+    'level_of_education',
+    'gender',
+    'goals',
+    'year_of_birth',
+    'mailing_address',
+}
 
 ############## Settings for Course Enrollment Modes ######################
 COURSE_ENROLLMENT_MODES = {

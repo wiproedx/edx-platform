@@ -94,6 +94,10 @@ from lms.envs.common import (
     HELP_TOKENS_BOOKS,
 
     SUPPORT_SITE_LINK,
+
+    CONTACT_EMAIL,
+
+    DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH,
 )
 from path import Path as path
 from warnings import simplefilter
@@ -362,6 +366,9 @@ simplefilter('ignore')
 MIDDLEWARE_CLASSES = (
     'crum.CurrentRequestUserMiddleware',
     'request_cache.middleware.RequestCache',
+
+    'openedx.core.djangoapps.monitoring_utils.middleware.MonitoringMemoryMiddleware',
+
     'openedx.core.djangoapps.header_control.middleware.HeaderControlMiddleware',
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -745,6 +752,15 @@ REQUIRE_EXCLUDE = ("build.txt",)
 # returns a list with the command arguments to execute.
 REQUIRE_ENVIRONMENT = "node"
 
+########################## DJANGO WEBPACK LOADER ##############################
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(STATIC_ROOT, 'webpack-stats.json')
+    }
+}
+
 ################################# CELERY ######################################
 
 # Message configuration
@@ -854,7 +870,8 @@ INSTALLED_APPS = (
     'django_nose',
 
     # For CMS
-    'contentstore',
+    'contentstore.apps.ContentstoreConfig',
+
     'openedx.core.djangoapps.contentserver',
     'course_creators',
     'openedx.core.djangoapps.external_auth',
@@ -879,6 +896,7 @@ INSTALLED_APPS = (
     'pipeline',
     'static_replace',
     'require',
+    'webpack_loader',
 
     # Theming
     'openedx.core.djangoapps.theming',
@@ -1252,7 +1270,7 @@ AFFILIATE_COOKIE_NAME = 'affiliate_id'
 
 ############## Settings for Studio Context Sensitive Help ##############
 
-HELP_TOKENS_INI_FILE = REPO_ROOT / "docs" / "cms_config.ini"
+HELP_TOKENS_INI_FILE = REPO_ROOT / "cms" / "envs" / "help_tokens.ini"
 
 # Theme directory locale paths
 COMPREHENSIVE_THEME_LOCALE_PATHS = []

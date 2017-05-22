@@ -11,6 +11,7 @@ from ipware.ip import get_ip
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -26,8 +27,9 @@ import analytics
 from eventtracking import tracker
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
+import waffle
 
-from commerce.utils import EcommerceService
+from commerce.utils import EcommerceService, is_account_activation_requirement_disabled
 from course_modes.models import CourseMode
 from edx_rest_api_client.exceptions import SlumberBaseException
 from edxmako.shortcuts import render_to_response, render_to_string
@@ -52,8 +54,6 @@ from lms.djangoapps.verify_student.image import decode_image_data, InvalidImageD
 from util.json_request import JsonResponse
 from util.db import outer_atomic
 from xmodule.modulestore.django import modulestore
-from django.contrib.staticfiles.storage import staticfiles_storage
-
 
 log = logging.getLogger(__name__)
 
@@ -194,6 +194,16 @@ class PayAndVerifyView(View):
     # Deadline types
     VERIFICATION_DEADLINE = "verification"
     UPGRADE_DEADLINE = "upgrade"
+
+    def _get_user_active_status(self, user):
+        """
+        Returns the user's active status to the caller
+        Overrides the actual value if account activation has been disabled via waffle switch
+
+        Arguments:
+            user (User): Current user involved in the onboarding/verification flow
+        """
+        return user.is_active or is_account_activation_requirement_disabled()
 
     @method_decorator(login_required)
     def get(
@@ -348,7 +358,11 @@ class PayAndVerifyView(View):
             already_paid,
             relevant_course_mode
         )
-        requirements = self._requirements(display_steps, request.user.is_active)
+
+        # Override the actual value if account activation has been disabled
+        # Also see the reference to this parameter in context dictionary further down
+        user_is_active = self._get_user_active_status(request.user)
+        requirements = self._requirements(display_steps, user_is_active)
 
         if current_step is None:
             current_step = display_steps[0]['name']
@@ -408,7 +422,7 @@ class PayAndVerifyView(View):
             'current_step': current_step,
             'disable_courseware_js': True,
             'display_steps': display_steps,
-            'is_active': json.dumps(request.user.is_active),
+            'is_active': json.dumps(user_is_active),
             'user_email': request.user.email,
             'message_key': message,
             'platform_name': configuration_helpers.get_value('PLATFORM_NAME', settings.PLATFORM_NAME),
@@ -486,7 +500,7 @@ class PayAndVerifyView(View):
             else:
                 url = reverse('verify_student_start_flow', kwargs=course_kwargs)
 
-        if user_is_trying_to_pay and user.is_active and not already_paid:
+        if user_is_trying_to_pay and self._get_user_active_status(user) and not already_paid:
             # If the user is trying to pay, has activated their account, and the ecommerce service
             # is enabled redirect him to the ecommerce checkout page.
             ecommerce_service = EcommerceService()
@@ -593,6 +607,10 @@ class PayAndVerifyView(View):
             self.PHOTO_ID_REQ: False,
             self.WEBCAM_REQ: False,
         }
+
+        # Remove the account activation requirement if disabled via waffle
+        if is_account_activation_requirement_disabled():
+            all_requirements.pop(self.ACCOUNT_ACTIVATION_REQ)
 
         display_steps = set(step['name'] for step in display_steps)
 

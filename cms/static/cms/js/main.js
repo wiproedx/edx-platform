@@ -2,10 +2,15 @@
 
 (function(AjaxPrefix) {
     'use strict';
-    define(['domReady', 'jquery', 'underscore.string', 'backbone', 'gettext',
-            'common/js/components/views/feedback_notification', 'coffee/src/ajax_prefix',
-            'jquery.cookie'],
-    function(domReady, $, str, Backbone, gettext, NotificationView) {
+    define([
+        'domReady',
+        'jquery',
+        'underscore.string',
+        'backbone',
+        'gettext',
+        '../../common/js/components/views/feedback_notification',
+        'jquery.cookie'
+    ], function(domReady, $, str, Backbone, gettext, NotificationView) {
         var main, sendJSON;
         main = function() {
             AjaxPrefix.addAjaxPrefix(jQuery, function() {
@@ -22,7 +27,10 @@
                 headers: {
                     'X-CSRFToken': $.cookie('csrftoken')
                 },
-                dataType: 'json'
+                dataType: 'json',
+                content: {
+                    script: false
+                }
             });
             $(document).ajaxError(function(event, jqXHR, ajaxSettings) {
                 var msg, contentType,

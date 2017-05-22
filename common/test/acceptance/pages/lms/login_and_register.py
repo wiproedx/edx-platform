@@ -220,7 +220,7 @@ class CombinedLoginAndRegisterPage(PageObject):
         if favorite_movie:
             self.q(css="#register-favorite_movie").fill(favorite_movie)
         if terms_of_service:
-            self.q(css="#register-honor_code").click()
+            self.q(css="label[for='register-honor_code']").click()
 
         # Submit it
         self.q(css=".register-button").click()
@@ -353,7 +353,7 @@ class CombinedLoginAndRegisterPage(PageObject):
         """Wait for a status message to be visible following third_party registration, then return it."""
         def _check_func():
             """Return third party auth status notice message."""
-            selector = '.js-auth-warning p'
+            selector = '.js-auth-warning div'
             msg_element = self.q(css=selector)
             if msg_element.visible:
                 return (True, msg_element.text[0])

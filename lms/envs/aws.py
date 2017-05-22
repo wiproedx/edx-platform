@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 This is the default template for our main set of AWS servers. This does NOT
 cover the content machines, which use content.py
@@ -233,6 +235,9 @@ UNIVERSITY_EMAIL = ENV_TOKENS.get('UNIVERSITY_EMAIL', UNIVERSITY_EMAIL)
 PRESS_EMAIL = ENV_TOKENS.get('PRESS_EMAIL', PRESS_EMAIL)
 
 CONTACT_MAILING_ADDRESS = ENV_TOKENS.get('CONTACT_MAILING_ADDRESS', CONTACT_MAILING_ADDRESS)
+
+# Account activation email sender address
+ACTIVATION_EMAIL_FROM_ADDRESS = ENV_TOKENS.get('ACTIVATION_EMAIL_FROM_ADDRESS', ACTIVATION_EMAIL_FROM_ADDRESS)
 
 # Currency
 PAID_COURSE_REGISTRATION_CURRENCY = ENV_TOKENS.get('PAID_COURSE_REGISTRATION_CURRENCY',
@@ -624,6 +629,10 @@ TRACKING_SEGMENTIO_SOURCE_MAP = ENV_TOKENS.get("TRACKING_SEGMENTIO_SOURCE_MAP", 
 
 # Student identity verification settings
 VERIFY_STUDENT = AUTH_TOKENS.get("VERIFY_STUDENT", VERIFY_STUDENT)
+DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH = ENV_TOKENS.get(
+    "DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH",
+    DISABLE_ACCOUNT_ACTIVATION_REQUIREMENT_SWITCH
+)
 
 # Grades download
 GRADES_DOWNLOAD_ROUTING_KEY = ENV_TOKENS.get('GRADES_DOWNLOAD_ROUTING_KEY', HIGH_MEM_QUEUE)
@@ -946,6 +955,25 @@ ENTERPRISE_API_CACHE_TIMEOUT = ENV_TOKENS.get(
     ENTERPRISE_API_CACHE_TIMEOUT
 )
 
+############## ENTERPRISE SERVICE LMS CONFIGURATION ##################################
+# The LMS has some features embedded that are related to the Enterprise service, but
+# which are not provided by the Enterprise service. These settings override the
+# base values for the parameters as defined in common.py
+
+ENTERPRISE_PLATFORM_WELCOME_TEMPLATE = ENV_TOKENS.get(
+    'ENTERPRISE_PLATFORM_WELCOME_TEMPLATE',
+    ENTERPRISE_PLATFORM_WELCOME_TEMPLATE
+)
+ENTERPRISE_SPECIFIC_BRANDED_WELCOME_TEMPLATE = ENV_TOKENS.get(
+    'ENTERPRISE_SPECIFIC_BRANDED_WELCOME_TEMPLATE',
+    ENTERPRISE_SPECIFIC_BRANDED_WELCOME_TEMPLATE
+)
+ENTERPRISE_EXCLUDED_REGISTRATION_FIELDS = set(
+    ENV_TOKENS.get(
+        'ENTERPRISE_EXCLUDED_REGISTRATION_FIELDS',
+        ENTERPRISE_EXCLUDED_REGISTRATION_FIELDS
+    )
+)
 
 ############## CATALOG/DISCOVERY SERVICE API CLIENT CONFIGURATION ######################
 # The LMS communicates with the Catalog service via the EdxRestApiClient class
@@ -953,3 +981,6 @@ ENTERPRISE_API_CACHE_TIMEOUT = ENV_TOKENS.get(
 # the service, and override the default parameters which are defined in common.py
 
 COURSES_API_CACHE_TIMEOUT = ENV_TOKENS.get('COURSES_API_CACHE_TIMEOUT', COURSES_API_CACHE_TIMEOUT)
+
+# Add an ICP license for serving content in China if your organization is registered to do so
+ICP_LICENSE = ENV_TOKENS.get('ICP_LICENSE', None)
