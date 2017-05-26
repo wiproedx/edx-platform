@@ -10,6 +10,14 @@ from selenium.webdriver.support.ui import Select
 from xmodule.partitions.partitions import Group
 from bok_choy.promise import Promise, EmptyPromise
 
+<<<<<<< HEAD
+=======
+from bok_choy.promise import Promise
+from nose.plugins.attrib import attr
+from selenium.webdriver.support.ui import Select
+
+from base_studio_test import StudioCourseTest
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.fixtures.course import XBlockFixtureDesc
 from common.test.acceptance.pages.studio.component_editor import ComponentEditorView
 from common.test.acceptance.pages.studio.overview import CourseOutlinePage, CourseOutlineUnit
@@ -19,9 +27,13 @@ from common.test.acceptance.pages.studio.utils import add_advanced_component
 from common.test.acceptance.pages.xblock.utils import wait_for_xblock_initialization
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.tests.helpers import create_user_partition_json
+<<<<<<< HEAD
 
 from base_studio_test import StudioCourseTest
 
+=======
+from openedx.core.lib.partitions.partitions import Group
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from test_studio_container import ContainerBase
 
 

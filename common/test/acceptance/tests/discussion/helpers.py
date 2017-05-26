@@ -2,17 +2,21 @@
 Helper functions and classes for discussion tests.
 """
 
-from uuid import uuid4
 import json
+from uuid import uuid4
 
 from common.test.acceptance.fixtures import LMS_BASE_URL
+<<<<<<< HEAD
 from common.test.acceptance.fixtures.course import CourseFixture
+=======
+from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.fixtures.discussion import (
-    SingleThreadViewFixture,
-    Thread,
-    Response,
     ForumsConfigMixin,
     MultipleThreadFixture,
+    Response,
+    SingleThreadViewFixture,
+    Thread
 )
 from common.test.acceptance.pages.lms.discussion import DiscussionTabSingleThreadPage
 from common.test.acceptance.tests.helpers import UniqueCourseTest

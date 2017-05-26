@@ -3,15 +3,17 @@
 End-to-end tests for the LMS that utilize the
 progress page.
 """
+<<<<<<< HEAD
 import ddt
 
 from bok_choy.javascript import js_defined
+=======
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from contextlib import contextmanager
+
+import ddt
 from nose.plugins.attrib import attr
 
-from ..helpers import (
-    UniqueCourseTest, auto_auth, create_multiple_choice_problem, create_multiple_choice_xml, get_modal_alert
-)
 from ...fixtures.course import CourseFixture, XBlockFixtureDesc
 from ...pages.common.logout import LogoutPage
 from ...pages.lms.courseware import CoursewarePage
@@ -19,8 +21,20 @@ from ...pages.lms.instructor_dashboard import InstructorDashboardPage, StudentSp
 from ...pages.lms.problem import ProblemPage
 from ...pages.lms.progress import ProgressPage
 from ...pages.studio.component_editor import ComponentEditorView
+<<<<<<< HEAD
 from ...pages.studio.utils import type_in_codemirror
 from ...pages.studio.overview import CourseOutlinePage
+=======
+from ...pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
+from ...pages.studio.utils import type_in_codemirror
+from ..helpers import (
+    UniqueCourseTest,
+    auto_auth,
+    create_multiple_choice_problem,
+    create_multiple_choice_xml,
+    get_modal_alert
+)
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 class ProgressPageBaseTest(UniqueCourseTest):

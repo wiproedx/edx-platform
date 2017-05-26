@@ -5,12 +5,12 @@ End-to-end tests for the LMS.
 
 from unittest import expectedFailure
 
-from common.test.acceptance.tests.helpers import UniqueCourseTest
+from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.lms.course_info import CourseInfoPage
 from common.test.acceptance.pages.lms.tab_nav import TabNavPage
 from common.test.acceptance.pages.xblock.acid import AcidView
-from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
+from common.test.acceptance.tests.helpers import UniqueCourseTest
 
 
 class XBlockAcidBase(UniqueCourseTest):

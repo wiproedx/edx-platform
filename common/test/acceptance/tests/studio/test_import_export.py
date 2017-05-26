@@ -1,23 +1,34 @@
 """
 Acceptance tests for the Import and Export pages
 """
-from nose.plugins.attrib import attr
+from abc import abstractmethod
 from datetime import datetime
 
+<<<<<<< HEAD
 from flaky import flaky
 
 from abc import abstractmethod
+=======
+from nose.plugins.attrib import attr
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
-from common.test.acceptance.tests.studio.base_studio_test import StudioLibraryTest, StudioCourseTest
+from common.test.acceptance.pages.lms.course_home import CourseHomePage
+from common.test.acceptance.pages.lms.courseware import CoursewarePage
+from common.test.acceptance.pages.lms.staff_view import StaffCoursewarePage
 from common.test.acceptance.pages.studio.import_export import (
-    ExportLibraryPage,
     ExportCoursePage,
-    ImportLibraryPage,
-    ImportCoursePage)
+    ExportLibraryPage,
+    ImportCoursePage,
+    ImportLibraryPage
+)
 from common.test.acceptance.pages.studio.library import LibraryEditPage
 from common.test.acceptance.pages.studio.overview import CourseOutlinePage
+<<<<<<< HEAD
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.staff_view import StaffPage
+=======
+from common.test.acceptance.tests.studio.base_studio_test import StudioCourseTest, StudioLibraryTest
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 class ExportTestMixin(object):

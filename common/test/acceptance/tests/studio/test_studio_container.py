@@ -6,6 +6,13 @@ for displaying containers within units.
 from nose.plugins.attrib import attr
 from unittest import skip
 
+<<<<<<< HEAD
+=======
+import ddt
+from nose.plugins.attrib import attr
+
+from base_studio_test import ContainerBase
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.fixtures.course import XBlockFixtureDesc
 from common.test.acceptance.pages.studio.component_editor import ComponentEditorView, ComponentVisibilityEditorView
 from common.test.acceptance.pages.studio.container import ContainerPage
@@ -14,11 +21,15 @@ from common.test.acceptance.pages.studio.utils import add_discussion, drag
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.staff_view import StaffPage
 from common.test.acceptance.tests.helpers import create_user_partition_json
+<<<<<<< HEAD
 
 import datetime
 from bok_choy.promise import Promise, EmptyPromise
 from base_studio_test import ContainerBase
 from xmodule.partitions.partitions import Group
+=======
+from openedx.core.lib.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID, MINIMUM_STATIC_PARTITION_ID, Group
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 class NestedVerticalTest(ContainerBase):

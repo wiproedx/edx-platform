@@ -8,8 +8,11 @@ import os
 from mock import patch
 from nose.plugins.attrib import attr
 
-from base_studio_test import StudioCourseTest
 from bok_choy.promise import EmptyPromise
+from mock import patch
+from nose.plugins.attrib import attr
+
+from base_studio_test import StudioCourseTest
 from common.test.acceptance.fixtures.course import XBlockFixtureDesc
 from common.test.acceptance.tests.helpers import create_user_partition_json, element_has_text
 from common.test.acceptance.pages.studio.overview import CourseOutlinePage
@@ -18,8 +21,13 @@ from common.test.acceptance.pages.studio.settings_advanced import AdvancedSettin
 from common.test.acceptance.pages.studio.settings_group_configurations import GroupConfigurationsPage
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.studio.utils import get_input_value
+<<<<<<< HEAD
 from textwrap import dedent
 from xmodule.partitions.partitions import Group
+=======
+from common.test.acceptance.tests.helpers import create_user_partition_json, element_has_text
+from openedx.core.lib.partitions.partitions import Group
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 @attr(shard=8)

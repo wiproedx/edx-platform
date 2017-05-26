@@ -1,7 +1,13 @@
 from bok_choy.page_object import PageObject
 from selenium.webdriver.common.keys import Keys
+<<<<<<< HEAD
 from common.test.acceptance.pages.common.utils import click_css
+=======
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from selenium.webdriver.support.ui import Select
+
+from common.test.acceptance.pages.common.utils import click_css
+from common.test.acceptance.tests.helpers import get_selected_option_text, select_option_by_text
 
 
 class BaseComponentEditorView(PageObject):

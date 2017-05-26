@@ -17,6 +17,7 @@ from path import Path as path
 
 from bok_choy.javascript import js_defined
 from bok_choy.web_app_test import WebAppTest
+<<<<<<< HEAD
 from bok_choy.promise import EmptyPromise, Promise
 from bok_choy.page_object import XSS_INJECTION
 from capa.tests.response_xml_factory import MultipleChoiceResponseXMLFactory
@@ -27,6 +28,11 @@ from pymongo import MongoClient, ASCENDING
 from openedx.core.lib.tests.assertions.events import assert_event_matches, is_matching_event, EventMatchTolerates
 from xmodule.partitions.partitions import UserPartition
 from xmodule.partitions.tests.test_partitions import MockUserPartitionScheme
+=======
+from opaque_keys.edx.locator import CourseLocator
+from path import Path as path
+from pymongo import ASCENDING, MongoClient
+>>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
@@ -37,6 +43,14 @@ from openedx.core.release import doc_version, RELEASE_LINE
 
 from common.test.acceptance.pages.common import BASE_URL
 
+
+from capa.tests.response_xml_factory import MultipleChoiceResponseXMLFactory
+from common.test.acceptance.fixtures.course import XBlockFixtureDesc
+from common.test.acceptance.pages.common import BASE_URL
+from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
+from openedx.core.lib.partitions.partitions import UserPartition
+from openedx.core.lib.tests.assertions.events import EventMatchTolerates, assert_event_matches, is_matching_event
+from openedx.core.release import RELEASE_LINE, doc_version
 
 MAX_EVENTS_IN_FAILURE_OUTPUT = 20
 
