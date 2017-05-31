@@ -23,7 +23,9 @@ branches:
   # - master
   # - oxa/master.fic
   # - oxa/devfic
+  - oxa/ci
   - oxa/ci-m
+  - oxa/ci-mm
 
 before_install: 
   - docker build -t edxapp .
