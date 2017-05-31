@@ -5,5 +5,6 @@ FROM edxops/edxapp:latest
 # RUN mkdir /edx/app/edxapp/edx-platform
 WORKDIR /edx/app/edxapp/edx-platform
 # ADD . /edx/app/edxapp/edx-platform
-# RUN bash ./scripts/travis-install.sh
+RUN git status
+RUN bash ./scripts/travis-install.sh
 RUN paver test_system -s lms -v
