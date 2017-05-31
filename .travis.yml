@@ -29,6 +29,8 @@ branches:
 
 before_install: 
   - docker build -t edxapp .
+  - docker run edxapp
+  - docker ps -a
 
 # command to install dependencies
 # install: ./scripts/travis-install.sh   
