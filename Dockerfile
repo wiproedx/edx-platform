@@ -6,5 +6,5 @@ FROM edxops/edxapp:latest
 WORKDIR /edx/app/edxapp/edx-platform
 # ADD . /edx/app/edxapp/edx-platform
 RUN git status
-RUN bash ./scripts/travis-install.sh
+RUN ./scripts/travis-install.sh
 RUN paver test_system -s lms -v
