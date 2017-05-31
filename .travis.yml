@@ -10,8 +10,8 @@ services:
 env:
   # - TEST_SUITE="quality"
   - TEST_SUITE="lib"
-  # - TEST_SUITE="cms-unit"
-  # - TEST_SUITE="lms-unit"
+  - TEST_SUITE="cms-unit"
+  - TEST_SUITE="lms-unit"
 
 cache:
   - npm
