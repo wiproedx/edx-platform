@@ -19,9 +19,10 @@ cache:
 
 branches:
   only:
-  - master
-  - oxa/master.fic
-  - oxa/devfic
+  # - master
+  # - oxa/master.fic
+  # - oxa/devfic
+  - oxa/ci-mm
 
 # command to install dependencies
 install:   
