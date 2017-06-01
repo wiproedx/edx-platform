@@ -46,7 +46,7 @@ os.environ['EDXAPP_TEST_MONGO_HOST'] = os.environ.get('EDXAPP_TEST_MONGO_HOST', 
 
 # mongo connection settings
 MONGO_PORT_NUM = int(os.environ.get('EDXAPP_TEST_MONGO_PORT', '27017'))
-MONGO_HOST = os.environ.get('EDXAPP_TEST_MONGO_HOST', 'localhost')
+MONGO_HOST = os.environ.get('EDXAPP_TEST_MONGO_HOST', 'edx.devstack.mongo')
 
 os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = 'localhost:8000-9000'
 
