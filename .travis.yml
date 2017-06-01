@@ -29,7 +29,7 @@ branches:
 
 before_install: 
   # - docker build -t edxapp .
-  - docker run --net="host" -d edxops/edxapp
+  - docker compose up --build -d
   - docker ps -a
 
 # command to install dependencies
