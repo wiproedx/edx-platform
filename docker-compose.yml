@@ -1,12 +1,26 @@
 version: '2'
 
 services:
+
+  mongo:
+    # We use WiredTiger in all environments. In development environments we use small files
+    # to conserve disk space, and disable the journal for a minor performance gain.
+    # See https://docs.mongodb.com/v3.0/reference/program/mongod/#options for complete details.
+    command: mongod --smallfiles --nojournal --storageEngine wiredTiger
+    container_name: edx.devstack.mongo
+    image: mongo:3.0.14
+    # ports:
+    #  - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
   lms:
     command: bash -c 'source /edx/app/edxapp/edxapp_env && python /edx/app/edxapp/edx-platform/manage.py lms runserver 0.0.0.0:18000 --settings devstack_docker'
     container_name: edx.devstack.lms
     environment:
       NO_PYTHON_UNINSTALL: 1
-    # image: edxops/edxapp:latest
+    depends_on: 
+      - mongo
     build: .
     network_mode: host
     ports:
