@@ -28,8 +28,8 @@ branches:
   - oxa/ci-mm
 
 before_install: 
-  - docker build -t edxapp .
-  - docker run edxapp
+  # - docker build -t edxapp .
+  - docker run --net="host" -d edxops/edxapp
   - docker ps -a
 
 # command to install dependencies
