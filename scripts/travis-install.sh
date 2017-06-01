@@ -1,5 +1,5 @@
 rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && . ~/.nvm/nvm.sh && nvm install 6.9.4
-sudo apt-get install npm
+sudo apt-get install npm -y
 npm install
 pip install setuptools
 pip install --exists-action w -r requirements/edx/paver.txt
@@ -18,7 +18,7 @@ pip install --exists-action w -r requirements/edx/local.txt
 # Install a version which falls within that range.
 pip install --exists-action w pbr==0.9.0
 pip install --exists-action w -r requirements/edx/base.txt
-sudo apt-get update
-sudo apt-get install libxmlsec1-dev
-sudo apt-get install swig
+sudo apt-get update -y
+sudo apt-get install libxmlsec1-dev -y
+sudo apt-get install swig -y
 if [ -e requirements/edx/post.txt ]; then pip install --exists-action w -r requirements/edx/post.txt ; fi
