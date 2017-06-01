@@ -25,7 +25,9 @@ services:
     network_mode: host
     ports:
       - "18000:18000"
-
+      
+volumes:
+  mongo_data:
 
   # studio:
   #   command: bash -c 'source /edx/app/edxapp/edxapp_env && python /edx/app/edxapp/edx-platform/manage.py cms runserver 0.0.0.0:18010 --settings devstack_docker'
