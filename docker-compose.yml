@@ -18,11 +18,12 @@ services:
     command: bash -c 'source /edx/app/edxapp/edxapp_env && python /edx/app/edxapp/edx-platform/manage.py lms runserver 0.0.0.0:18000 --settings devstack_docker'
     container_name: edx.devstack.lms
     environment:
-      NO_PYTHON_UNINSTALL: 1
+      NO_PYTHON_UNINSTALL: 1      
+      EDXAPP_TEST_MONGO_HOST: "mongo"
     depends_on: 
       - mongo
     build: .
-    network_mode: host
+    #network_mode: host
     ports:
       - "18000:18000"
       
