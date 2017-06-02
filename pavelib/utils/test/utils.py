@@ -65,6 +65,14 @@ def clean_mongo():
     """
     Clean mongo test databases
     """
+
+    print "CLEANING MONGO RIGHT NOW: "
+    print "=============================================="
+    print MONGO_HOST
+    print MONGO_PORT_NUM
+    print "=============================================="
+    print "=============================================="
+    print "=============================================="
     sh("mongo {host}:{port} {repo_root}/scripts/delete-mongo-test-dbs.js".format(
         host=MONGO_HOST,
         port=MONGO_PORT_NUM,
