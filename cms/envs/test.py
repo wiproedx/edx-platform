@@ -40,7 +40,7 @@ from lms.envs.test import (
 
 # mongo connection settings
 MONGO_PORT_NUM = int(os.environ.get('EDXAPP_TEST_MONGO_PORT', '27017'))
-MONGO_HOST = os.environ.get('EDXAPP_TEST_MONGO_HOST', 'localhost')
+MONGO_HOST = os.environ.get('EDXAPP_TEST_MONGO_HOST', 'mongo')
 
 THIS_UUID = uuid4().hex[:5]
 
