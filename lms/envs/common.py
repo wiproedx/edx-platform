@@ -2210,9 +2210,6 @@ INSTALLED_APPS = (
     # Ability to detect and special-case crawler behavior
     'openedx.core.djangoapps.crawlers',
 
-    # Unusual migrations
-    'database_fixups',
-
     # Features
     'openedx.features.course_bookmarks',
     'openedx.features.course_experience',
