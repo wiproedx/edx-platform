@@ -2202,7 +2202,6 @@ INSTALLED_APPS = (
 
     # Unusual migrations
     'database_fixups',
-)
 
     # Customized celery tasks, including persisting failed tasks so they can
     # be retried
