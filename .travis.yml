@@ -22,7 +22,7 @@ branches:
   # - master
   # - oxa/master.fic
   # - oxa/devfic
-  - oxa/ci-mm
+  - oxa/devfic_merge
 
 # command to install dependencies
 install:   
