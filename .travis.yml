@@ -60,6 +60,6 @@ before_install:
   # - if [ -e requirements/edx/post.txt ]; then pip install --exists-action w -r requirements/edx/post.txt ; fi
 
 # command to run tests
-script: ./scripts/travis-tests.sh
+script: docker run edx.devstack.lms /bin/bash -c "source /edx/app/edxapp/edxapp_env && export EDXAPP_TEST_MONGO_HOST='mongo' && paver test_system -s lms -v --fail-fast"
 
 dist: trusty
