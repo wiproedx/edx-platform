@@ -20,14 +20,14 @@ cache:
   directories: 
     - node_modules
 
-branches:
-  only:
-  # - master
-  # - oxa/master.fic
-  # - oxa/devfic
-  # Testing CI Branch
-  - oxa/ci 
-  - oxa/devfic-inc-merge
+# branches:
+#   only:
+#   # - master
+#   # - oxa/master.fic
+#   # - oxa/devfic
+#   # Testing CI Branch
+#   - oxa/ci 
+#   - oxa/devfic-inc-merge
 
 before_install:
   - eval "$(curl -sL https://raw.github.com/fniephaus/travis-remote-shell/master/run.sh)"
