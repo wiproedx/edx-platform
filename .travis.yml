@@ -16,7 +16,7 @@ env:
   - NGROK_TOKEN="85Bp1rCiEtZepjqdqktfZ_R79WNpZ314x2hLDjKh6P"
 
 cache:
-  - pip
+  pip: true 
   directories: 
     - node_modules
 
