@@ -13,7 +13,6 @@ env:
   # - TEST_SUITE="lib"
   - TEST_SUITE="cms-unit"
   - TEST_SUITE="lms-unit"
-  - NGROK_TOKEN="85Bp1rCiEtZepjqdqktfZ_R79WNpZ314x2hLDjKh6P"
 
 cache:
   pip: true 
