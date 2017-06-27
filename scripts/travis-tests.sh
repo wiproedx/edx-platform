@@ -6,7 +6,7 @@ docker exec -i devstack /bin/bash -s <<EOF
 sudo su edxapp -s /bin/bash
 source /edx/app/edxapp/edxapp_env
 cd /edx/app/edxapp/edx-platform
-paver update_assets
+paver test_system -s lms --with-flaky --processes=-1 --cov-args='-p' --with-xunitmp --fasttest
 EOF
 # set -e
 
