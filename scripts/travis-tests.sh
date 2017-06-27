@@ -6,6 +6,10 @@ docker exec -i devstack /bin/bash -s <<EOF
 sudo su edxapp -s /bin/bash
 source /edx/app/edxapp/edxapp_env
 cd /edx/app/edxapp/edx-platform
+sudo rm /edx/var/mongo/mongodb/mongod.lock
+sudo mongod -repair --config /etc/mongod.conf
+sudo chown -R mongodb:mongodb /edx/var/mongo/.
+sudo service mongod start
 paver test_system -s lms --with-flaky --processes=-1 --cov-args='-p' --with-xunitmp --fasttest
 EOF
 # set -e
