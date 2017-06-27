@@ -19,6 +19,7 @@ sudo su edxapp -s /bin/bash
 source /edx/app/edxapp/edxapp_env
 cd /edx/app/edxapp/edx-platform
 paver test_system -s lms --with-flaky --processes=-1 --cov-args='-p' --with-xunitmp
+echo 'running'
 EOF
 
 case "$TEST_SUITE" in
