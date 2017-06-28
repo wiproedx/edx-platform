@@ -19,7 +19,7 @@ source /edx/app/edxapp/edxapp_env
 cd /edx/app/edxapp/edx-platform
 echo 'Restarting Mongo'
 echo 'Running Tests'
-paver test_system -s lms --with-flaky --processes=-1 --cov-args='-p' --with-xunitmp --fasttest
+paver test_system -s lms --with-flaky --processes=-1 --cov-args='-p' --with-xunitmp --fasttest -v
 EOF
 # set -e
 
