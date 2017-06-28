@@ -56,9 +56,6 @@ install:
   - docker --version  
   - docker ps -a
   
-
-docker exec -i devstack /bin/bash -s
-
 # command to run tests
 script: 
   # Fix an issue caused by /var/lib/mongodb/mongod.lock (Exception in initAndListen: 12596 old lock file)
