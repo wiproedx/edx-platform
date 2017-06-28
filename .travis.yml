@@ -48,7 +48,7 @@ branches:
 before_install:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - docker pull btelnes/devstack
-  - docker run -d --name devstack --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v -e TEST_SUITE="$TEST_SUITE" -e SHARD="$SHARD" -t btelnes/devstack
+  - docker run -d --name devstack --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -e TEST_SUITE="$TEST_SUITE" -e SHARD="$SHARD" -t btelnes/devstack
   #- docker ps
 
 # command to install dependencies
