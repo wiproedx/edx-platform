@@ -10,18 +10,18 @@ services:
   # - memcached
   - docker
   
-# env:
-#   - TEST_SUITE="lms-unit"
-#     SHARD=1
-#   - TEST_SUITE="lms-unit"
-#     SHARD=2
-#   - TEST_SUITE="lms-unit"
-#     SHARD=3
-#   - TEST_SUITE="lms-unit"
-#     SHARD=4
-#   - TEST_SUITE="cms-unit"
-#   - TEST_SUITE="lib"  
-#   - TEST_SUITE="js-unit"
+env:
+  - TEST_SUITE="lms-unit"
+    SHARD=1
+  - TEST_SUITE="lms-unit"
+    SHARD=2
+  - TEST_SUITE="lms-unit"
+    SHARD=3
+  - TEST_SUITE="lms-unit"
+    SHARD=4
+  - TEST_SUITE="cms-unit"
+  - TEST_SUITE="lib"  
+  - TEST_SUITE="js-unit"
   
 # cache:
 #   pip: true
@@ -48,17 +48,29 @@ branches:
 before_install:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - docker pull btelnes/devstack
-  - docker run -d --name devstack --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -t btelnes/devstack
+  - docker run -d --name devstack --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v -t btelnes/devstack
   #- docker ps
 
 # command to install dependencies
 install:
-  # Fix an issue caused by /var/lib/mongodb/mongod.lock (Exception in initAndListen: 12596 old lock file)
-  - sudo -u mongodb mongod --repair --dbpath /var/lib/mongodb/
-  - sudo service mongod start
+  - docker --version  
+  - docker ps -a
+  
+
+docker exec -i devstack /bin/bash -s
 
 # command to run tests
-script: ./scripts/travis-tests.sh
+script: 
+  # Fix an issue caused by /var/lib/mongodb/mongod.lock (Exception in initAndListen: 12596 old lock file)
+  - |
+    docker exec -i devstack /bin/bash -s <<EOF
+    echo 'Restarting Mongo'
+    sudo -S rm /edx/var/mongo/mongodb/mongod.lock
+    sudo -S mongod -repair --config /etc/mongod.conf
+    sudo -S chown -R mongodb:mongodb /edx/var/mongo/.
+    sudo -S service mongod start
+    EOF
+  - docker exec -i devstack /bin/bash ./scripts/travis-tests.sh
 
 addons:
   firefox: "45.0"
