@@ -4,6 +4,12 @@ docker ps -a
 docker --version
 
 docker exec -i devstack /bin/bash -s <<EOF
+wget https://github.com/ghaering/pysqlite/archive/2.8.3.tar.gz
+wget https://www.sqlite.org/2016/sqlite-autoconf-3140100.tar.gz
+tar -xzvf sqlite-autoconf-3140100.tar.gz
+tar -xzvf 2.8.3.tar.gz
+cp -av sqlite-autoconf-3140100/. pysqlite-2.8.3/
+cd ./pysqlite-2.8.3 && python setup.py build_static install
 echo '' | sudo -S rm /edx/var/mongo/mongodb/mongod.lock
 echo '' | sudo -S mongod -repair --config /etc/mongod.conf
 echo '' | sudo -S chown -R mongodb:mongodb /edx/var/mongo/.
