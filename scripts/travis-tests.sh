@@ -8,10 +8,10 @@ sudo su edxapp -s /bin/bash
 source /edx/app/edxapp/edxapp_env
 cd /edx/app/edxapp/edx-platform
 echo 'Restarting Mongo'
-sudo rm /edx/var/mongo/mongodb/mongod.lock
-sudo mongod -repair --config /etc/mongod.conf
-sudo chown -R mongodb:mongodb /edx/var/mongo/.
-sudo service mongod start
+echo '' | sudo -S rm /edx/var/mongo/mongodb/mongod.lock
+echo '' | sudo -S mongod -repair --config /etc/mongod.conf
+echo '' | sudo -S chown -R mongodb:mongodb /edx/var/mongo/.
+echo '' | sudo -S service mongod start
 echo 'Running Tests'
 paver test_system -s lms --with-flaky --processes=-1 --cov-args='-p' --with-xunitmp --fasttest
 EOF
