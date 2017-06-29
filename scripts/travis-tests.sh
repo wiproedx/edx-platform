@@ -8,7 +8,7 @@ set -e
 
 # Return status is that of the last command to fail in a
 # piped command, or a zero if they all succeed.
-set -o pipefail
+# set -o pipefail
 
 # There is no need to install the prereqs, as this was already
 # just done via the dependencies override section of circle.yml.
