@@ -12,5 +12,6 @@ cd /edx/app/edxapp/edx-platform
 echo 'Running Tests'
 echo $TEST_SUITE 
 echo $SHARD 
-./scripts/travis-tests.sh
+cat ./scripts/travis-tests.sh
+sh ./scripts/travis-tests.sh
 EOF
