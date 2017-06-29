@@ -30,6 +30,7 @@ branches:
   - oxa/master.fic
   - oxa/devfic
   - oxa/dev.fic
+  - oxa/dev.fic-hotfix
   - oxa/ci
 
 # command to install dependencies
@@ -71,7 +72,7 @@ before_script:
   - sleep 3
 
 # command to run tests
-script: ./scripts/travis-tests.sh
+script: ./scripts/generic-ci-tests.sh
 
 addons:
   firefox: "45.0"
