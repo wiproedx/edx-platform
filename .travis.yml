@@ -17,7 +17,7 @@ env:
   - TEST_SUITE="lms-unit"
     SHARD=4
   - TEST_SUITE="cms-unit"
-  - TEST_SUITE="lib"  
+  - TEST_SUITE="commonlib-unit"
   - TEST_SUITE="js-unit"
   
 cache:
