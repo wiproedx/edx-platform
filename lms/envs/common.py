@@ -2463,9 +2463,9 @@ TIME_ZONE_DISPLAYED_FOR_DEADLINES = 'UTC'
 # Note that this is used as the set of choices to the `code` field of the
 # `LanguageProficiency` model.
 ALL_LANGUAGES = (
- [u"aa",u"Afar"],
- [u"af",u"Afrikaans"],
- [u"agq",u"Aghem"],
+   [u"aa",u"Afar"],
+   [u"af",u"Afrikaans"],
+   [u"agq",u"Aghem"],
 	[u"ak",u"Akan"],
 	[u"sq",u"Albanian"],
 	[u"am",u"Amharic"],
