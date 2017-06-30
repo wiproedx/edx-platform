@@ -21,7 +21,9 @@ env:
   - TEST_SUITE="commonlib-unit"
   - TEST_SUITE="js-unit"
   - TEST_SUITE="lms-acceptance"
+    LETTUCE_BROWSER = 'firefox'
   - TEST_SUITE="cms-acceptance"
+    LETTUCE_BROWSER = 'firefox'
   - TEST_SUITE="bok-choy"
     SHARD=1
   - TEST_SUITE="bok-choy"
