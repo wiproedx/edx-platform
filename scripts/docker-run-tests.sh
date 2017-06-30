@@ -13,5 +13,5 @@ echo 'Running Tests'
 echo $TEST_SUITE 
 echo $SHARD 
 cat ./scripts/travis-tests.sh
-sh ./scripts/travis-tests.sh
+bash ./scripts/travis-tests.sh
 EOF
