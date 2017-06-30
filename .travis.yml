@@ -72,7 +72,7 @@ before_script:
   - sleep 3
 
 # command to run tests
-script: ./scripts/generic-ci-tests.sh
+script: ./scripts/travis-tests.sh
 
 addons:
   firefox: "45.0"
