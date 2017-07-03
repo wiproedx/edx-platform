@@ -107,6 +107,8 @@ after_failure:
 
 after_success: 
   - ls /home/travis/build/Microsoft/edx-platform/reports/
+  - pip install codecov==2.0.5
+  - codecov
 
 addons:
   firefox: "45.0"
