@@ -13,6 +13,7 @@ echo 'Running Tests'
 echo $TEST_SUITE 
 echo $SHARD 
 cat ./scripts/travis-tests.sh
+sh ./generic-ci-tests.sh
 EOF
 
 docker exec -it devstack env TERM=xterm /edx/app/edxapp/edx-platform/scripts/generic-ci-tests.sh
