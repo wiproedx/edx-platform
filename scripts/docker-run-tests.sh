@@ -15,4 +15,4 @@ echo $SHARD
 cat ./scripts/travis-tests.sh
 EOF
 
-docker exec -it devstack env TERM=$(TERM) /edx/app/edxapp/edx-platform/scripts.travis-tests.sh
+docker exec -it devstack env TERM=$(TERM) /edx/app/edxapp/edx-platform/scripts/generic-ci-tests.sh
