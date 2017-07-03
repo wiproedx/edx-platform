@@ -99,6 +99,9 @@ before_script:
 # command to run tests
 script: ./scripts/generic-ci-tests.sh
 
+after_failure: 
+  - ls /home/travis/build/Microsoft/edx-platform/reports/
+
 after_success: 
   - ls /home/travis/build/Microsoft/edx-platform/reports/
 
