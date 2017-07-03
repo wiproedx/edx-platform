@@ -56,6 +56,7 @@ branches:
   - oxa/devfic
   - oxa/dev.fic
   - oxa/dev.fic-hotfix
+  - oxa/dev.fic-quality
   - oxa/ci
 
 # command to install dependencies
