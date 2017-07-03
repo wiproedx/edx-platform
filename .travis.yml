@@ -97,7 +97,7 @@ before_script:
   - sleep 3
 
 # command to run tests
-script: ./scripts/generic-ci-tests.sh
+script: ./scripts/all-tests.sh
 
 after_failure: 
   - ls /home/travis/build/Microsoft/edx-platform/reports/
