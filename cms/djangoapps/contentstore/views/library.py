@@ -26,10 +26,11 @@ from xmodule.modulestore.django import modulestore
 from .user import user_with_role
 
 from .component import get_component_templates, CONTAINER_TEMPLATES
+from student import auth
 from student.auth import (
     STUDIO_VIEW_USERS, STUDIO_EDIT_ROLES, get_user_permissions, has_studio_read_access, has_studio_write_access
 )
-from student.roles import CourseInstructorRole, CourseStaffRole, LibraryUserRole
+from student.roles import CourseInstructorRole, CourseStaffRole, LibraryUserRole, LibraryCreatorRole
 from util.json_request import expect_json, JsonResponse, JsonResponseBadRequest
 
 __all__ = ['library_handler', 'manage_library_users']
@@ -113,6 +114,8 @@ def _create_library(request):
     """
     Helper method for creating a new library.
     """
+    if not auth.user_has_role(request.user, LibraryCreatorRole()):
+        raise PermissionDenied()
     display_name = None
     try:
         display_name = request.json['display_name']
