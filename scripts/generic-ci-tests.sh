@@ -52,6 +52,7 @@ set -e
 # jenkins and do not define 'SHARD' in your multi-config project.
 # Note that you will still need to pass a value for 'TEST_SUITE'
 # or else no tests will be executed.
+TEST_SUITE=${TEST_SUITE:="lms-unit"}
 SHARD=${SHARD:="all"}
 NUMBER_OF_BOKCHOY_THREADS=${NUMBER_OF_BOKCHOY_THREADS:=1}
 

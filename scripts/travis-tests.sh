@@ -26,6 +26,9 @@ EXIT=0
 # echo 'running'
 # EOF
 
+echo "TEST_SUITE:"
+echo $TEST_SUITE
+
 case "$TEST_SUITE" in
 
     "quality")
@@ -116,4 +119,6 @@ case "$TEST_SUITE" in
     "cms-acceptance")
         paver test_acceptance -s cms -vvv --with-xunit
         ;;
+    *)
+        echo "TEST_SUITE not set"
 esac
