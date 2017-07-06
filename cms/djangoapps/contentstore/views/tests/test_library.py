@@ -88,7 +88,7 @@ class UnitTestLibraries(ModuleStoreTestCase):
     def test_lib_create_permission_denied(self):
         """
         Users who are not given course creator roles and not given staff access
-        should not be  be able to create libraries.
+        should not be able to create libraries.
         """
         self.client.logout()
         ns_user, password = self.create_non_staff_user()
