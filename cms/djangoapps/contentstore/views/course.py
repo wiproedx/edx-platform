@@ -100,7 +100,7 @@ from xmodule.modulestore import EdxJSONEncoder
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError, DuplicateCourseError
 from xmodule.tabs import CourseTab, CourseTabList, InvalidTabsException
-
+from .library import get_library_creator_status 
 
 log = logging.getLogger(__name__)
 
@@ -518,7 +518,7 @@ def course_listing(request):
         'in_process_course_actions': in_process_course_actions,
         'libraries_enabled': LIBRARIES_ENABLED,
         'libraries': [format_library_for_view(lib) for lib in libraries],
-        'show_new_library_button': LIBRARIES_ENABLED and _get_library_creator_status(request.user),
+        'show_new_library_button': get_library_creator_status(request.user),
         'user': request.user,
         'request_course_creator_url': reverse('contentstore.views.request_course_creator'),
         'course_creator_status': _get_course_creator_status(request.user),
@@ -1648,15 +1648,3 @@ def _get_course_creator_status(user):
     return course_creator_status
 
 
-def _get_library_creator_status(user):
-    """
-    Helper method for returning the library creator status for a user
-    """
-    if user.is_active and (user.is_staff or user.is_superuser):
-        library_creator_status = True
-    elif settings.FEATURES.get('DISABLE_LIBRARY_CREATION', False):
-        library_creator_status = False
-    else:
-        library_creator_status = True
-
-    return library_creator_status

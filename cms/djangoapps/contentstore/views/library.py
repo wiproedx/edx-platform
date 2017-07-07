@@ -39,6 +39,22 @@ log = logging.getLogger(__name__)
 
 LIBRARIES_ENABLED = settings.FEATURES.get('ENABLE_CONTENT_LIBRARIES', False)
 
+def get_library_creator_status(user):
+    """
+    Helper method for returning the library creation status for a particular user,
+    taking into account the value LIBRARIES_ENABLED.
+    """
+ 
+    if not LIBRARIES_ENABLED:
+        library_creater_status = False
+    elif user.is_staff and (user.is_staff or user.is_superuser):   
+        library_creater_status = True
+    elif settings.FEATURES.get('DISABLE_LIBRARY_CREATION', False):
+        library_creater_status = False
+    else:
+        library_creater_status = True
+
+    return library_creater_status
 
 @login_required
 @ensure_csrf_cookie
