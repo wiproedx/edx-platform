@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 # Determine the appropriate github branch to clone using Travis environment variables
 BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
 echo "BRANCH=$BRANCH"
@@ -34,5 +33,3 @@ export TEST_SUITE=$TEST_SUITE
 export SHARD=$SHARD
 ./scripts/generic-ci-tests.sh
 EOF
-
-docker exec -it devstack env TERM=xterm /edx/app/edxapp/edx-platform/scripts/generic-ci-tests.sh
