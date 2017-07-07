@@ -53,7 +53,7 @@ def get_library_creator_status(user):
     elif settings.FEATURES.get('DISABLE_LIBRARY_CREATION', False):
         library_creater_status = False
     else:
-        library_creater_status =  False
+        library_creater_status =  True
 
     return library_creater_status
 
