@@ -2651,7 +2651,7 @@ ALL_LANGUAGES = (
     [u"zu", u"Zulu"]
 )
 
-
+ALL_LANGUAGES_DICT = dict(ALL_LANGUAGES)
 ### Apps only installed in some instances
 OPTIONAL_APPS = (
     'mentoring',
