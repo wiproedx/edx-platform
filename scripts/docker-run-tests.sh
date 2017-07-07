@@ -20,7 +20,8 @@ sudo -S service mongod start
 
 # Get the latest code
 cd /edx/app/edxapp/edx-platform
-sudo git pull origin $BRANCH
+git checkout $BRANCH
+git pull
 
 # Elevate priveleges to edxapp user
 sudo su edxapp -s /bin/bash
@@ -30,8 +31,8 @@ echo 'Running Tests'
 echo $TEST_SUITE 
 echo $SHARD 
 export TEST_SUITE=$TEST_SUITE
-export TEST_SUITE=$SHARD
-bash ./scripts/generic-ci-tests.sh
+export SHARD=$SHARD
+./scripts/generic-ci-tests.sh
 EOF
 
-# docker exec -it devstack env TERM=xterm /edx/app/edxapp/edx-platform/scripts/generic-ci-tests.sh
+docker exec -it devstack env TERM=xterm /edx/app/edxapp/edx-platform/scripts/generic-ci-tests.sh
