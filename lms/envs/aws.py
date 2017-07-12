@@ -18,6 +18,7 @@ Common traits:
 
 import datetime
 import json
+import logging
 import warnings
 
 import dateutil
@@ -29,6 +30,8 @@ import os
 from path import Path as path
 from xmodule.modulestore.modulestore_settings import convert_module_store_setting_if_needed
 
+
+log = logging.getLogger("edx.envs")
 # SERVICE_VARIANT specifies name of the variant used, which decides what JSON
 # configuration files are read during startup.
 SERVICE_VARIANT = os.environ.get('SERVICE_VARIANT', None)
@@ -909,8 +912,12 @@ if _COUNTRIES_OVERRIDE:
 # all-languages overrides
 ALL_LANGUAGES_OVERRIDE = ENV_TOKENS.get('ALL_LANGUAGES_OVERRIDE', None)
 if ALL_LANGUAGES_OVERRIDE:
-    import collections
+    from collections import OrderedDict
+    from operator import itemgetter
     for code, language in ALL_LANGUAGES_OVERRIDE.iteritems():
-        ALL_LANGUAGES_DICT[code] = language
-    ALL_LANGUAGES_DICT = collections.OrderedDict(sorted(ALL_LANGUAGES_DICT.items()))
-
+         if language is None or language == "null":
+              del ALL_LANGUAGES_DICT[code]
+         elif code not in ALL_LANGUAGES_DICT:
+              ALL_LANGUAGES_DUPLICATE = ALL_LANGUAGES_DUPLICATE + ([code, language],)
+              ALL_LANGUAGES_DICT[code] = language
+    ALL_LANGUAGES_DICT = OrderedDict(sorted(ALL_LANGUAGES_DICT.items(),key=itemgetter(1)))
