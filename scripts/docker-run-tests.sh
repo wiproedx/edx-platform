@@ -18,6 +18,14 @@ sudo -S mongod -repair --config /etc/mongod.conf
 sudo -S chown -R mongodb:mongodb /edx/var/mongo/.
 sudo -S service mongod start
 
+sudo apt install locales
+locale-gen en_US.UTF-8
+
+# dpkg-reconfigure locales
+echo "export LC_ALL=en_US.utf8" >> ~/.bashrc
+echo "export LANG=en_US.utf8" >> ~/.bashrc
+echo "export LANGUAGE=en_US.utf8" >> ~/.bashrc
+
 export LC_ALL=en_US.utf8
 export LANG=en_US.utf8
 export LANGUAGE=en_US.utf8
