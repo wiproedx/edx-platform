@@ -18,7 +18,7 @@ sudo -S mongod -repair --config /etc/mongod.conf
 sudo -S chown -R mongodb:mongodb /edx/var/mongo/.
 sudo -S service mongod start
 export LC_ALL=C
-
+export PYTHONIOENCODING=UTF-8
 
 # Get the latest code
 cd /edx/app/edxapp/edx-platform
