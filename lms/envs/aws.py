@@ -18,7 +18,6 @@ Common traits:
 
 import datetime
 import json
-import logging
 import warnings
 
 import dateutil
@@ -31,7 +30,6 @@ from path import Path as path
 from xmodule.modulestore.modulestore_settings import convert_module_store_setting_if_needed
 
 
-log = logging.getLogger("edx.envs")
 # SERVICE_VARIANT specifies name of the variant used, which decides what JSON
 # configuration files are read during startup.
 SERVICE_VARIANT = os.environ.get('SERVICE_VARIANT', None)
