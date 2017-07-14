@@ -87,7 +87,7 @@ script:
   - ./scripts/docker-run-tests.sh
 
 after_success:
-  - docker exec -i devstack /bin/bash -c "pip install codecov==2.0.5; codecov"
+  - docker exec -i devstack /bin/bash -c "sudo su edxapp -s /bin/bash; source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; export TRAVIS=true; pip install codecov==2.0.5; codecov"
 
 addons:
   firefox: "45.0"
