@@ -118,10 +118,13 @@ class DiscussionThreadPage(PageObject, DiscussionPageMixin):
         yield
         if self.is_element_visible(ancestor_selector + " .actions-dropdown"):
             self._find_within(ancestor_selector + " .action-more").click()
-            EmptyPromise(
+            promise = EmptyPromise(
                 lambda: not self.is_element_visible(ancestor_selector + " .actions-dropdown"),
                 "Secondary action menu closed"
-            ).fulfill()
+            )
+            print(promise._check_fulfilled())
+            promise.fulfill()
+
 
     def get_group_visibility_label(self):
         """

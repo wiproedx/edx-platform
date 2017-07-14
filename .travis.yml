@@ -85,7 +85,9 @@ script:
   #   sudo -S service mongod start
   #   EOF
   - ./scripts/docker-run-tests.sh
-  
+
+after_success:
+  - docker exec -i devstack /bin/bash -c "pip install codecov==2.0.5; codecov"
 
 addons:
   firefox: "45.0"
