@@ -52,8 +52,9 @@ echo $SHARD
 # These variables are becoming unset inside docker container
 export TEST_SUITE=$TEST_SUITE
 export SHARD=$SHARD
+export TRAVIS=true
 
 # Run Firefox with xvfb on DISPLAY :1
 export DISPLAY=:1
-./scripts/generic-ci-tests.sh
+./scripts/all-tests.sh
 EOF
