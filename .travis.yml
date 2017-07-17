@@ -65,15 +65,12 @@ branches:
 before_install:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - docker pull btelnes/devstack
-  - docker run -d --name devstack --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -e TEST_SUITE="$TEST_SUITE" -e SHARD="$SHARD" -t btelnes/devstack
-  #- docker ps
 
-# command to install dependencies
 install:
+  - docker run -d --name devstack --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -e TEST_SUITE="$TEST_SUITE" -e SHARD="$SHARD" -e CODE_COV_TOKEN="$CODE_COV_TOKEN" -t btelnes/devstack
   - docker --version  
   - docker ps -a
   
-# command to run tests
 script: 
   # Fix an issue caused by /var/lib/mongodb/mongod.lock (Exception in initAndListen: 12596 old lock file)
   # - >

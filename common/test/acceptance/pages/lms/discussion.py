@@ -122,7 +122,6 @@ class DiscussionThreadPage(PageObject, DiscussionPageMixin):
                 lambda: not self.is_element_visible(ancestor_selector + " .actions-dropdown"),
                 "Secondary action menu closed"
             )
-            print(promise._check_fulfilled())
             promise.fulfill()
 
 

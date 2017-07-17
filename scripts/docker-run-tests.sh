@@ -52,11 +52,12 @@ echo $SHARD
 # These variables are becoming unset inside docker container
 export TEST_SUITE=$TEST_SUITE
 export SHARD=$SHARD
+export CODE_COV_TOKEN=$CODE_COV_TOKEN
 export TRAVIS=true
 
 # Run Firefox with xvfb on DISPLAY :1
 export DISPLAY=:1
 ./scripts/all-tests.sh
 pip install codecov==2.0.5
-codecov
+codecov --token=$CODE_COV_TOKEN --branch=$BRANCH
 EOF
