@@ -58,6 +58,4 @@ export TRAVIS=true
 # Run Firefox with xvfb on DISPLAY :1
 export DISPLAY=:1
 ./scripts/all-tests.sh
-pip install codecov==2.0.5
-codecov --token=$CODE_COV_TOKEN --branch=$BRANCH
 EOF
