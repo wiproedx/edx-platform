@@ -4,10 +4,6 @@ language: python
 python:
   - "2.7"
 services:
-  # - mongodb
-  # - mysql
-  # - rabbitmq
-  # - memcached
   - docker
   
 env:
@@ -53,14 +49,11 @@ branches:
   - master
   - oxa/master.fic
   - oxa/dev.fic
+  - oxa/dev.fic-hotfix
+  - oxa/dev.fic-quality
   - oxa/ci
   - oxa/ci-docker
-  
-# before_script:
-#   - "export PATH=$PATH:$PWD/node_modules/.bin"
-#   - "export DISPLAY=:99.0"
-#   - "sh -e /etc/init.d/xvfb start"
-#   - sleep 3
+  - oxa/ci-docker-quality
 
 before_install:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
@@ -70,6 +63,11 @@ install:
   - docker run -d --name devstack --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -e TEST_SUITE="$TEST_SUITE" -e SHARD="$SHARD" -e CODE_COV_TOKEN="$CODE_COV_TOKEN" -t btelnes/devstack
   - docker --version  
   - docker ps -a
+  
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3
   
 script: 
   - ./scripts/docker-run-tests.sh
