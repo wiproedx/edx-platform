@@ -27,7 +27,6 @@ doCheckVars() {
     
     elif [ -n "$TRAVIS" ] ; then 
         SCRIPT_TO_RUN=scripts/generic-ci-tests.sh
-        
     fi
 }
 
