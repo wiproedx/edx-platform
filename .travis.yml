@@ -53,7 +53,7 @@ branches:
   - oxa/dev.fic-quality
   - oxa/ci
   - oxa/ci-docker
-  - oxa/ci-docker-quality
+  - oxa/ci-docker-qual
 
 before_install:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
