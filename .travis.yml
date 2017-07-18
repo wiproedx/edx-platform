@@ -72,19 +72,10 @@ install:
   - docker ps -a
   
 script: 
-  # Fix an issue caused by /var/lib/mongodb/mongod.lock (Exception in initAndListen: 12596 old lock file)
-  # - >
-  #   docker exec -i devstack /bin/bash -s <<EOF
-  #   echo 'Restarting Mongo'
-  #   sudo -S rm /edx/var/mongo/mongodb/mongod.lock
-  #   sudo -S mongod -repair --config /etc/mongod.conf
-  #   sudo -S chown -R mongodb:mongodb /edx/var/mongo/.
-  #   sudo -S service mongod start
-  #   EOF
   - ./scripts/docker-run-tests.sh
 
-# after_success:
-#   - docker exec -i devstack /bin/bash -c "sudo su edxapp -s /bin/bash; source /edx/app/edxapp/edxapp_env; cd /edx/app/edxapp/edx-platform; export TRAVIS=true; pip install codecov==2.0.5; codecov"
+after_success:
+  - ./scripts/docker-report.sh
 
 addons:
   firefox: "45.0"
