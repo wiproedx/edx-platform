@@ -34,6 +34,9 @@ locale
 
 # Get the latest code
 cd /edx/app/edxapp/edx-platform
+git fetch origin master:refs/remotes/origin/master
+git branch -a 
+echo $BRANCH
 git checkout $BRANCH
 git pull
 
