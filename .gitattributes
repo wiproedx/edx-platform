@@ -16,9 +16,34 @@
 *.png  binary
 *.psb  binary
 *.psd  binary
-*.svg  text
+*.svg  binary
 *.svgz binary
 *.tif  binary
 *.tiff binary
 *.wbmp binary
 *.webp binary
+
+## VIDEO
+*.3gpp binary
+*.3gp  binary
+*.as   binary
+*.asf  binary
+*.asx  binary
+*.fla  binary
+*.flv  binary
+*.m4v  binary
+*.mng  binary
+*.mov  binary
+*.mp4  binary
+*.mpeg binary
+*.mpg  binary
+*.swc  binary
+*.swf  binary
+*.webm binary
+
+## ARCHIVES
+*.7z  binary
+*.gz  binary
+*.rar binary
+*.tar binary
+*.zip binary
