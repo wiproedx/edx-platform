@@ -1,4 +1,8 @@
+## Default
 * text eol=lf
+
+## Video transcripts
+*.srt   text eol=crlf
 
 ## Python Binary files
 *.db    binary
