@@ -124,7 +124,6 @@ class DiscussionThreadPage(PageObject, DiscussionPageMixin):
             )
             promise.fulfill()
 
-
     def get_group_visibility_label(self):
         """
         Returns the group visibility label shown for the thread.
