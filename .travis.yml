@@ -84,20 +84,19 @@ addons:
 dist: trusty
 
 allow_failures:
-  - env: 
-    - TEST_SUITE="lms-acceptance"
-    - TEST_SUITE="cms-acceptance"
-    - TEST_SUITE="bok-choy"
-      SHARD=3
-    - TEST_SUITE="bok-choy"
-      SHARD=4
-    - TEST_SUITE="bok-choy"
-      SHARD=7
-    - TEST_SUITE="bok-choy"
-      SHARD=8
-    - TEST_SUITE="bok-choy"
-      SHARD=9
-    - TEST_SUITE="bok-choy"
-      SHARD=10
-    - TEST_SUITE="bok-choy"
-      SHARD=11     
+  - env: TEST_SUITE="lms-acceptance"
+    # - TEST_SUITE="cms-acceptance"
+    # - TEST_SUITE="bok-choy"
+    #   SHARD=3
+    # - TEST_SUITE="bok-choy"
+    #   SHARD=4
+    # - TEST_SUITE="bok-choy"
+    #   SHARD=7
+    # - TEST_SUITE="bok-choy"
+    #   SHARD=8
+    # - TEST_SUITE="bok-choy"
+    #   SHARD=9
+    # - TEST_SUITE="bok-choy"
+    #   SHARD=10
+    # - TEST_SUITE="bok-choy"
+    #   SHARD=11     
