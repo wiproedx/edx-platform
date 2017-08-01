@@ -35,9 +35,12 @@ matrix:
   allow_failures:
     - env: TEST_SUITE="lms-acceptance"
     - env: TEST_SUITE="cms-acceptance"
+    - env: TEST_SUITE="bok-choy" SHARD=1
     - env: TEST_SUITE="bok-choy" SHARD=2
     - env: TEST_SUITE="bok-choy" SHARD=3
     - env: TEST_SUITE="bok-choy" SHARD=4
+    - env: TEST_SUITE="bok-choy" SHARD=5
+    - env: TEST_SUITE="bok-choy" SHARD=6
     - env: TEST_SUITE="bok-choy" SHARD=7
     - env: TEST_SUITE="bok-choy" SHARD=8
     - env: TEST_SUITE="bok-choy" SHARD=9
