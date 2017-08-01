@@ -54,6 +54,7 @@ branches:
   - oxa/ci
   - oxa/ci-docker
   - oxa/ci-docker-qual
+  - oxa/ci-docker-build-stages
 
 before_install:
 # Login and fetch container from Azure container registry
@@ -73,6 +74,23 @@ before_script:
   
 script: 
   - ./scripts/docker-run-tests.sh
+
+
+stages:
+  - 'test'
+  - 'acceptance test'
+
+jobs:
+  allow_failures:
+    - env: ACCEPTANCE_TESTS=true
+  include:
+    - stage: 'test'
+    - stage: 'acceptance'
+      script: echo 'Running acceptance tests'
+    - stage: 'deploy'
+      script: echo 'deploying'
+      
+
 
 after_success:
   - ./scripts/docker-report.sh
