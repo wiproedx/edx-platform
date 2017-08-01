@@ -39,14 +39,15 @@ branches:
 
 before_install:
 # Login and fetch container from Azure container registry
-- docker login oxacontainerregistry.azurecr.io -u $DOCKER_USERNAME2 -p $DOCKER_PASSWORD2
-- docker pull oxacontainerregistry.azurecr.io/ci/devstack
+- if [ -f ${CACHE_FILE_DEVSTACK} ]; then gunzip -c ${CACHE_FILE_DEVSTACK} | docker load; else docker login oxacontainerregistry.azurecr.io -u $DOCKER_USERNAME2 -p $DOCKER_PASSWORD2; docker pull oxacontainerregistry.azurecr.io/ci/devstack
 
 install:
   - docker run -d --name devstack --add-host "localhost preview.localhost":127.0.0.1 --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -e TEST_SUITE="$TEST_SUITE" -e SHARD="$SHARD" -e CODE_COV_TOKEN="$CODE_COV_TOKEN" -t oxacontainerregistry.azurecr.io/ci/devstack
   - docker ps -a
   # Prepare cgroup on the host at /tmp/cgroup to avoid error: "failed to connect to bus: no such file or directory"
   - sudo mkdir -p /tmp/cgroup/systemd && sudo mount -t cgroup systemd /tmp/cgroup/systemd -o ro,noexec,nosuid,nodev,none,name=systemd
+  - sudo mkdir -p $CACHE_DIR
+  - if [ ! -f ${CACHE_FILE_DEVSTACK} ]; then docker save oxacontainerregistry.azurecr.io/ci/devstack | gzip > ${CACHE_FILE_DEVSTACK}; fi
   
 before_script:
   - "export DISPLAY=:99.0"

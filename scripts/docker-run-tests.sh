@@ -34,11 +34,10 @@ locale
 
 # Get the latest code
 cd /edx/app/edxapp/edx-platform
-git fetch origin master:refs/remotes/origin/master
 git branch -a 
 echo $BRANCH
 git checkout -b $BRANCH
-git pull
+git pull origin $BRANCH
 
 
 # Elevate priveleges to edxapp user
