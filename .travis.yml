@@ -11,15 +11,15 @@ env:
   global:
     - CACHE_DIR=$HOME/.cache/docker
     - CACHE_FILE_DEVSTACK=$CACHE_DIR/devstack.tar.gz
-  matrix:
-    - TEST_SUITE="quality"
-    - TEST_SUITE="lms-unit" SHARD=1
-    - TEST_SUITE="lms-unit" SHARD=2
-    - TEST_SUITE="lms-unit" SHARD=3
-    - TEST_SUITE="lms-unit" SHARD=4
-    - TEST_SUITE="cms-unit"
-    - TEST_SUITE="commonlib-unit"
-    - TEST_SUITE="js-unit"
+  # matrix:
+  #   - TEST_SUITE="quality"
+  #   - TEST_SUITE="lms-unit" SHARD=1
+  #   - TEST_SUITE="lms-unit" SHARD=2
+  #   - TEST_SUITE="lms-unit" SHARD=3
+  #   - TEST_SUITE="lms-unit" SHARD=4
+  #   - TEST_SUITE="cms-unit"
+  #   - TEST_SUITE="commonlib-unit"
+  #   - TEST_SUITE="js-unit"
 
 cache:
   directories:
@@ -53,8 +53,8 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3
   
-script: 
-  - ./scripts/docker-run-tests.sh
+# script: 
+#   - ./scripts/docker-run-tests.sh
 
 
 stages:
@@ -69,6 +69,29 @@ jobs:
     - stage: precache
       script: true
     - stage: test
+      env: TEST_SUITE="quality"
+      script: ./scripts/docker-run-tests.sh
+    - stage: test
+      env: TEST_SUITE="lms-unit" SHARD=1
+      script: ./scripts/docker-run-tests.sh
+    - stage: test
+      env: TEST_SUITE="lms-unit" SHARD=2
+      script: ./scripts/docker-run-tests.sh
+    - stage: test
+      env: TEST_SUITE="lms-unit" SHARD=3
+      script: ./scripts/docker-run-tests.sh
+    - stage: test
+      env: TEST_SUITE="lms-unit" SHARD=4
+      script: ./scripts/docker-run-tests.sh
+    - stage: test
+      env: TEST_SUITE="cms-unit"
+      script: ./scripts/docker-run-tests.sh
+    - stage: test
+      env: TEST_SUITE="commonlib-unit"
+      script: ./scripts/docker-run-tests.sh
+    - stage: test
+      env: TEST_SUITE="js-unit"
+      script: ./scripts/docker-run-tests.sh
     - stage: 'acceptance'
       env: TEST_SUITE="lms-acceptance"
       script: ./scripts/docker-run-tests.sh
