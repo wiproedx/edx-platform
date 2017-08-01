@@ -8,6 +8,9 @@ services:
   - docker
   
 env:
+  global:
+    - CACHE_DIR=$HOME/.cache/docker
+    - CACHE_FILE_DEVSTACK=$CACHE_DIR/devstack.tar.gz
   matrix:
     - TEST_SUITE="quality"
     - TEST_SUITE="lms-unit" SHARD=1
@@ -18,19 +21,9 @@ env:
     - TEST_SUITE="commonlib-unit"
     - TEST_SUITE="js-unit"
 
-# matrix:
-#   fast_finish: true
-#   allow_failures:
-    # - env: TEST_SUITE="lms-acceptance"
-    # - env: TEST_SUITE="cms-acceptance"
-    # - env: TEST_SUITE="bok-choy" SHARD=2
-    # - env: TEST_SUITE="bok-choy" SHARD=3
-    # - env: TEST_SUITE="bok-choy" SHARD=4
-    # - env: TEST_SUITE="bok-choy" SHARD=7
-    # - env: TEST_SUITE="bok-choy" SHARD=8
-    # - env: TEST_SUITE="bok-choy" SHARD=9
-    # - env: TEST_SUITE="bok-choy" SHARD=10
-    # - env: TEST_SUITE="bok-choy" SHARD=11
+cache:
+  directories:
+  - $CACHE_DIR
 
 branches:
   only:
@@ -50,7 +43,7 @@ before_install:
 - docker pull oxacontainerregistry.azurecr.io/ci/devstack
 
 install:
-  - docker run -d --name devstack --add-host "localhost preview.localhost":127.0.0.1 --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -t oxacontainerregistry.azurecr.io/ci/devstack
+  - docker run -d --name devstack --add-host "localhost preview.localhost":127.0.0.1 --security-opt seccomp=unconfined --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -e TEST_SUITE="$TEST_SUITE" -e SHARD="$SHARD" -e CODE_COV_TOKEN="$CODE_COV_TOKEN" -t oxacontainerregistry.azurecr.io/ci/devstack
   - docker ps -a
   # Prepare cgroup on the host at /tmp/cgroup to avoid error: "failed to connect to bus: no such file or directory"
   - sudo mkdir -p /tmp/cgroup/systemd && sudo mount -t cgroup systemd /tmp/cgroup/systemd -o ro,noexec,nosuid,nodev,none,name=systemd
@@ -72,6 +65,8 @@ jobs:
   allow_failures:
     - env: ACCEPTANCE_TESTS=true
   include:
+    - stage: 'precache'
+      script: true
     - stage: 'test'
     - stage: 'acceptance'
       env: TEST_SUITE="lms-acceptance"
@@ -105,8 +100,6 @@ jobs:
       script: ./scripts/docker-run-tests.sh
     - stage: 'deploy'
       script: echo 'deploying'
-      
-
 
 after_success:
   - ./scripts/docker-report.sh
