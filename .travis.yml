@@ -11,15 +11,15 @@ env:
   global:
     - CACHE_DIR=$HOME/.cache/docker
     - CACHE_FILE_DEVSTACK=$CACHE_DIR/devstack.tar.gz
-  # matrix:
-  #   - TEST_SUITE="quality"
-  #   - TEST_SUITE="lms-unit" SHARD=1
-  #   - TEST_SUITE="lms-unit" SHARD=2
-  #   - TEST_SUITE="lms-unit" SHARD=3
-  #   - TEST_SUITE="lms-unit" SHARD=4
-  #   - TEST_SUITE="cms-unit"
-  #   - TEST_SUITE="commonlib-unit"
-  #   - TEST_SUITE="js-unit"
+  matrix:
+    - TEST_SUITE="quality"
+    - TEST_SUITE="lms-unit" SHARD=1
+    - TEST_SUITE="lms-unit" SHARD=2
+    - TEST_SUITE="lms-unit" SHARD=3
+    - TEST_SUITE="lms-unit" SHARD=4
+    - TEST_SUITE="cms-unit"
+    - TEST_SUITE="commonlib-unit"
+    - TEST_SUITE="js-unit"
 
 cache:
   directories:
@@ -39,7 +39,7 @@ branches:
 
 before_install:
 # Login and fetch container from Azure container registry
-- docker login oxacontainerregistry.azurecr.io -u $DOCKER_USERNAME2 -p $DOCKER_PASSWORD2
+- docker login oxacontainerregistry.atestzurecr.io -u $DOCKER_USERNAME2 -p $DOCKER_PASSWORD2
 - docker pull oxacontainerregistry.azurecr.io/ci/devstack
 
 install:
@@ -58,68 +58,69 @@ before_script:
 
 
 stages:
-  - 'prepare cache'
-  - 'test'
-  - 'acceptance test'
+  - "prepare cache"
+  - "test"
+  - "acceptance tests"
 
 jobs:
   allow_failures:
     - env: ACCEPTANCE_TESTS=true
   include:
-    - stage: precache
+    - stage: "prepare cache"
       script: true
-    - stage: test
-      env: TEST_SUITE="quality"
-      script: ./scripts/docker-run-tests.sh
-    - stage: test
-      env: TEST_SUITE="lms-unit" SHARD=1
-      script: ./scripts/docker-run-tests.sh
-    - stage: test
-      env: TEST_SUITE="lms-unit" SHARD=2
-      script: ./scripts/docker-run-tests.sh
-    - stage: test
-      env: TEST_SUITE="lms-unit" SHARD=3
-      script: ./scripts/docker-run-tests.sh
-    - stage: test
-      env: TEST_SUITE="lms-unit" SHARD=4
-      script: ./scripts/docker-run-tests.sh
-    - stage: test
-      env: TEST_SUITE="cms-unit"
-      script: ./scripts/docker-run-tests.sh
-    - stage: test
-      env: TEST_SUITE="commonlib-unit"
-      script: ./scripts/docker-run-tests.sh
-    - stage: test
-      env: TEST_SUITE="js-unit"
-      script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "test"
+      # env:
+    #   env: TEST_SUITE="quality"
+    #   script: ./scripts/docker-run-tests.sh
+    # - stage: "test"
+    #   env: TEST_SUITE="lms-unit" SHARD=1
+    #   script: ./scripts/docker-run-tests.sh
+    # - stage: "test"
+    #   env: TEST_SUITE="lms-unit" SHARD=2
+    #   script: ./scripts/docker-run-tests.sh
+    # - stage: "test"
+    #   env: TEST_SUITE="lms-unit" SHARD=3
+    #   script: ./scripts/docker-run-tests.sh
+    # - stage: test
+    #   env: TEST_SUITE="lms-unit" SHARD=4
+    #   script: ./scripts/docker-run-tests.sh
+    # - stage: test
+    #   env: TEST_SUITE="cms-unit"
+    #   script: ./scripts/docker-run-tests.sh
+    # - stage: test
+    #   env: TEST_SUITE="commonlib-unit"
+    #   script: ./scripts/docker-run-tests.sh
+    # - stage: test
+    #   env: TEST_SUITE="js-unit"
+    #   script: ./scripts/docker-run-tests.sh
+    - stage: "acceptance"
       env: TEST_SUITE="lms-acceptance"
       script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "acceptance"
       env: TEST_SUITE="cms-acceptance"
       script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "acceptance"
       env: TEST_SUITE="bok-choy" SHARD=2
       script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "acceptance"
       env: TEST_SUITE="bok-choy" SHARD=3
       script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "acceptance"
       env: TEST_SUITE="bok-choy" SHARD=4
       script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "acceptance"
       env: TEST_SUITE="bok-choy" SHARD=7
       script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "acceptance"
       env: TEST_SUITE="bok-choy" SHARD=8
       script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "acceptance"
       env: TEST_SUITE="bok-choy" SHARD=9
       script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "acceptance"
       env: TEST_SUITE="bok-choy" SHARD=10
       script: ./scripts/docker-run-tests.sh
-    - stage: 'acceptance'
+    - stage: "acceptance"
       env: TEST_SUITE="bok-choy" SHARD=11
       script: ./scripts/docker-run-tests.sh
     - stage: 'deploy'
