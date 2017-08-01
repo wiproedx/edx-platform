@@ -37,7 +37,7 @@ cd /edx/app/edxapp/edx-platform
 git fetch origin master:refs/remotes/origin/master
 git branch -a 
 echo $BRANCH
-git checkout $BRANCH
+git checkout -b $BRANCH
 git pull
 
 

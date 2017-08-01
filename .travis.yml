@@ -58,6 +58,7 @@ script:
 
 
 stages:
+  - 'precache'
   - 'test'
   - 'acceptance test'
 
