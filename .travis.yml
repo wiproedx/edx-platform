@@ -58,7 +58,7 @@ script:
 
 
 stages:
-  - 'precache'
+  - 'prepare cache'
   - 'test'
   - 'acceptance test'
 
@@ -66,9 +66,9 @@ jobs:
   allow_failures:
     - env: ACCEPTANCE_TESTS=true
   include:
-    - stage: 'precache'
+    - stage: precache
       script: true
-    - stage: 'test'
+    - stage: test
     - stage: 'acceptance'
       env: TEST_SUITE="lms-acceptance"
       script: ./scripts/docker-run-tests.sh
