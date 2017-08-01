@@ -74,17 +74,34 @@ jobs:
   include:
     - stage: 'test'
     - stage: 'acceptance'
-      matrix:
-        - env: TEST_SUITE="lms-acceptance"
-        - env: TEST_SUITE="cms-acceptance"
-        - env: TEST_SUITE="bok-choy" SHARD=2
-        - env: TEST_SUITE="bok-choy" SHARD=3
-        - env: TEST_SUITE="bok-choy" SHARD=4
-        - env: TEST_SUITE="bok-choy" SHARD=7
-        - env: TEST_SUITE="bok-choy" SHARD=8
-        - env: TEST_SUITE="bok-choy" SHARD=9
-        - env: TEST_SUITE="bok-choy" SHARD=10
-        - env: TEST_SUITE="bok-choy" SHARD=11bok-choy" SHARD=11
+      env: TEST_SUITE="lms-acceptance"
+      script: ./scripts/docker-run-tests.sh
+    - stage: 'acceptance'
+      env: TEST_SUITE="cms-acceptance"
+      script: ./scripts/docker-run-tests.sh
+    - stage: 'acceptance'
+      env: TEST_SUITE="bok-choy" SHARD=2
+      script: ./scripts/docker-run-tests.sh
+    - stage: 'acceptance'
+      env: TEST_SUITE="bok-choy" SHARD=3
+      script: ./scripts/docker-run-tests.sh
+    - stage: 'acceptance'
+      env: TEST_SUITE="bok-choy" SHARD=4
+      script: ./scripts/docker-run-tests.sh
+    - stage: 'acceptance'
+      env: TEST_SUITE="bok-choy" SHARD=7
+      script: ./scripts/docker-run-tests.sh
+    - stage: 'acceptance'
+      env: TEST_SUITE="bok-choy" SHARD=8
+      script: ./scripts/docker-run-tests.sh
+    - stage: 'acceptance'
+      env: TEST_SUITE="bok-choy" SHARD=9
+      script: ./scripts/docker-run-tests.sh
+    - stage: 'acceptance'
+      env: TEST_SUITE="bok-choy" SHARD=10
+      script: ./scripts/docker-run-tests.sh
+    - stage: 'acceptance'
+      env: TEST_SUITE="bok-choy" SHARD=11
       script: ./scripts/docker-run-tests.sh
     - stage: 'deploy'
       script: echo 'deploying'
