@@ -38,7 +38,6 @@ branches:
   - oxa/ci-docker-build-stages
 
 before_install:
-  - sudo apt-get update && sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-engine
   - export REPO=oxacontainerregistry.azurecr.io/ci/devstack
   - docker pull $(REPO):$(TRAVIS_BRANCH)
 
@@ -55,15 +54,15 @@ before_script:
   - sleep 3
 
 stages:
-  - 'prepare cache'
-  - 'test'
-  - 'acceptance test'
+  - "prepare cache"
+  - "test"
+  - "acceptance"
 
 jobs:
   allow_failures:
     - env: ACCEPTANCE_TESTS=true
   include:
-    - stage: precache
+    - stage: "prepare cache"
       script: true
     - stage: test
       env: TEST_SUITE="quality"
