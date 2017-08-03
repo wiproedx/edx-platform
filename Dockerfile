@@ -1,0 +1,1 @@
+FROM oxacontainerregistry.azurecr.io/ci/devstack
