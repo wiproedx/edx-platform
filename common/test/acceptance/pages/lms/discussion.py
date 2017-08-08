@@ -121,7 +121,8 @@ class DiscussionThreadPage(PageObject, DiscussionPageMixin):
             self._find_within(ancestor_selector + " .action-more").click()
             promise = EmptyPromise(
                 lambda: not self.is_element_visible(ancestor_selector + " .actions-dropdown"),
-                "Secondary action menu closed"
+                "Secondary action menu closed",
+                timeout=60
             )
             promise.fulfill()
 
