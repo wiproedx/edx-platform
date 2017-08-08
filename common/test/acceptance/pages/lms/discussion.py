@@ -113,7 +113,8 @@ class DiscussionThreadPage(PageObject, DiscussionPageMixin):
         self._find_within(ancestor_selector + " .action-more").click()
         opened_promise = EmptyPromise(
             lambda: self.is_element_visible(ancestor_selector + " .actions-dropdown"),
-            "Secondary action menu opened"
+            "Secondary action menu opened",
+            timeout=60
         )
         opened_promise.fulfill()
         yield
