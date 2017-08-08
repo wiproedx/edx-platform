@@ -20,7 +20,7 @@ env:
   # - TEST_SUITE="cms-acceptance"
   # - TEST_SUITE="bok-choy" SHARD=1
   - TEST_SUITE="bok-choy" SHARD=2
-  # - TEST_SUITE="bok-choy" SHARD=3
+  - TEST_SUITE="bok-choy" SHARD=3
   # - TEST_SUITE="bok-choy" SHARD=4
   # - TEST_SUITE="bok-choy" SHARD=5
   # - TEST_SUITE="bok-choy" SHARD=6
