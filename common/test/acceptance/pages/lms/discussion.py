@@ -114,7 +114,7 @@ class DiscussionThreadPage(PageObject, DiscussionPageMixin):
         opened_promise = EmptyPromise(
             lambda: self.is_element_visible(ancestor_selector + " .actions-dropdown"),
             "Secondary action menu opened",
-            timeout=300
+            timeout=360
         )
         opened_promise.fulfill()
         yield
