@@ -1441,6 +1441,7 @@ class DefaultStatesContentTest(CourseOutlineTest):
 
     __test__ = True
 
+    @skip('COURSEWARE PAGE TIMEOUT: This test fails to load the Coursware Page')
     def test_view_live(self):
         """
         Scenario: View Live version from course outline

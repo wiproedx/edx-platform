@@ -5,6 +5,7 @@ from nose.plugins.attrib import attr
 from datetime import datetime
 
 from flaky import flaky
+from unittest import skip
 
 from abc import abstractmethod
 
