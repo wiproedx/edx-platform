@@ -6,10 +6,7 @@ import datetime
 from bok_choy.javascript import js_defined, wait_for_js
 from bok_choy.page_object import PageObject
 from bok_choy.promise import EmptyPromise
-<<<<<<< HEAD
 
-=======
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select

@@ -5,42 +5,23 @@ End-to-end test for cohorted courseware. This uses both Studio and LMS.
 import json
 from nose.plugins.attrib import attr
 
-<<<<<<< HEAD
-from studio.base_studio_test import ContainerBase
-
 from common.test.acceptance.pages.studio.settings_group_configurations import GroupConfigurationsPage
-=======
 from bok_choy.page_object import XSS_INJECTION
 from nose.plugins.attrib import attr
 
 from common.test.acceptance.fixtures import LMS_BASE_URL
-from common.test.acceptance.fixtures.course import XBlockFixtureDesc
 from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.common.utils import add_enrollment_course_modes, enroll_user_track
-from common.test.acceptance.pages.lms.courseware import CoursewarePage
-from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage
-<<<<<<< HEAD
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
-from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage as StudioAutoAuthPage
 from common.test.acceptance.fixtures.course import XBlockFixtureDesc
-from common.test.acceptance.fixtures import LMS_BASE_URL
-=======
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.studio.component_editor import ComponentVisibilityEditorView
 from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
-from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage as LmsAutoAuthPage
 from common.test.acceptance.tests.lms.test_lms_user_preview import verify_expected_problem_visibility
-<<<<<<< HEAD
 
-from bok_choy.promise import EmptyPromise
-from bok_choy.page_object import XSS_INJECTION
-=======
 from studio.base_studio_test import ContainerBase
 
 AUDIT_TRACK = "Audit"
 VERIFIED_TRACK = "Verified"
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 @attr(shard=5)
@@ -71,8 +52,6 @@ class EndToEndCohortedCoursewareTest(ContainerBase):
             self.browser, username=self.cohort_b_student_username, email=self.cohort_b_student_email, no_login=True
         ).visit()
 
-<<<<<<< HEAD
-=======
         # Create a Verified Student
         self.cohort_verified_student_username = "cohort_verified_student"
         self.cohort_verified_student_email = "cohort_verified_student@example.com"
@@ -93,7 +72,6 @@ class EndToEndCohortedCoursewareTest(ContainerBase):
             no_login=True
         ).visit()
 
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
         # Create a student who will end up in the default cohort group
         self.cohort_default_student_username = "cohort_default_student"
         self.cohort_default_student_email = "cohort_default_student@example.com"
@@ -203,13 +181,8 @@ class EndToEndCohortedCoursewareTest(ContainerBase):
         """
         courseware_page = CoursewarePage(self.browser, self.course_id)
 
-<<<<<<< HEAD
-        def login_and_verify_visible_problems(username, email, expected_problems):
-            LmsAutoAuthPage(
-=======
         def login_and_verify_visible_problems(username, email, expected_problems, track=None):
             AutoAuthPage(
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
                 self.browser, username=username, email=email, course_id=self.course_id
             ).visit()
             courseware_page.visit()

@@ -13,20 +13,8 @@ from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.common.logout import LogoutPage
 from common.test.acceptance.pages.lms.bookmarks import BookmarksPage
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
-<<<<<<< HEAD
-<<<<<<< HEAD
-from common.test.acceptance.pages.lms.course_nav import CourseNavPage
-from common.test.acceptance.pages.studio.overview import CourseOutlinePage
-from common.test.acceptance.pages.common.logout import LogoutPage
-from common.test.acceptance.pages.common import BASE_URL
-
-from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
-=======
 from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage as StudioAutoAuthPage
-=======
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.tests.helpers import EventsTestMixin, UniqueCourseTest, is_404_page
 
 
@@ -37,8 +25,6 @@ class BookmarksTestMixin(EventsTestMixin, UniqueCourseTest):
     USERNAME = "STUDENT"
     EMAIL = "student@example.com"
 
-<<<<<<< HEAD
-=======
     def setUp(self):
         super(BookmarksTestMixin, self).setUp()
 
@@ -73,7 +59,6 @@ class BookmarksTestMixin(EventsTestMixin, UniqueCourseTest):
 
         self.courseware_page.visit()
 
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
     def create_course_fixture(self, num_chapters):
         """
         Create course fixture
@@ -418,12 +403,8 @@ class BookmarksTest(BookmarksTestMixin):
         self.update_and_publish_block_display_name(modified_name)
 
         LogoutPage(self.browser).visit()
-<<<<<<< HEAD
-        LmsAutoAuthPage(self.browser, username=self.USERNAME, email=self.EMAIL, course_id=self.course_id).visit()
-        self.courseware_page.visit()
-=======
+
         AutoAuthPage(self.browser, username=self.USERNAME, email=self.EMAIL, course_id=self.course_id).visit()
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
         self._navigate_to_bookmarks_list()
         self._verify_breadcrumbs(num_units=1, modified_name=modified_name)

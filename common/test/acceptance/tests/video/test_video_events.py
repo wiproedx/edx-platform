@@ -2,13 +2,9 @@
 
 import datetime
 import json
-<<<<<<< HEAD
 from nose.plugins.attrib import attr
-=======
 
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 import ddt
-from nose.plugins.attrib import attr
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
 from common.test.acceptance.pages.lms.video.video import _parse_time_str

@@ -1,29 +1,17 @@
 """Acceptance tests for LMS-hosted Programs pages"""
 from nose.plugins.attrib import attr
 
-<<<<<<< HEAD
 from common.test.acceptance.fixtures.catalog import CatalogFixture, CatalogConfigMixin
 from common.test.acceptance.fixtures.programs import ProgramsFixture, ProgramsConfigMixin
-=======
-from common.test.acceptance.fixtures.catalog import CatalogFixture, CatalogIntegrationMixin
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.fixtures.course import CourseFixture
-from common.test.acceptance.fixtures.programs import ProgramsConfigMixin
-<<<<<<< HEAD
-from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
-<<<<<<< HEAD
-from common.test.acceptance.pages.lms.programs import ProgramListingPage, ProgramDetailsPage
+
 from openedx.core.djangoapps.catalog.tests import factories as catalog_factories
 from openedx.core.djangoapps.programs.tests import factories as program_factories
-=======
-=======
 from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.lms.catalog import CacheProgramsPage
 from common.test.acceptance.pages.lms.programs import ProgramDetailsPage, ProgramListingPage
 from common.test.acceptance.tests.helpers import UniqueCourseTest
 from openedx.core.djangoapps.catalog.tests.factories import CourseFactory, CourseRunFactory, ProgramFactory
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 class ProgramPageBase(ProgramsConfigMixin, CatalogConfigMixin, UniqueCourseTest):

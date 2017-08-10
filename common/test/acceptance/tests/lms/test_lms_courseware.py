@@ -22,16 +22,8 @@ from ...pages.lms.problem import ProblemPage
 from ...pages.lms.progress import ProgressPage
 from ...pages.lms.staff_view import StaffPage
 from ...pages.lms.track_selection import TrackSelectionPage
-<<<<<<< HEAD
-from ...pages.studio.auto_auth import AutoAuthPage
-<<<<<<< HEAD
 from ...pages.studio.overview import CourseOutlinePage
-=======
-=======
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
-from ...pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
 from ..helpers import EventsTestMixin, UniqueCourseTest, auto_auth, create_multiple_choice_problem
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 @attr(shard=9)

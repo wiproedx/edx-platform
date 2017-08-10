@@ -4,48 +4,22 @@ Test courseware search
 
 import json
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-from common.test.acceptance.tests.helpers import remove_file
-=======
 from nose.plugins.attrib import attr
 
-from common.test.acceptance.fixtures.course import XBlockFixtureDesc
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.pages.common.logout import LogoutPage
 from common.test.acceptance.pages.studio.overview import CourseOutlinePage
 from common.test.acceptance.pages.lms.courseware_search import CoursewareSearchPage
-<<<<<<< HEAD
+
 from common.test.acceptance.pages.lms.course_nav import CourseNavPage
 from common.test.acceptance.fixtures.course import XBlockFixtureDesc
 from common.test.acceptance.tests.helpers import create_user_partition_json
 
-from xmodule.partitions.partitions import Group
 
-=======
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
-from nose.plugins.attrib import attr
-
-from common.test.acceptance.fixtures.course import XBlockFixtureDesc
 from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
-from common.test.acceptance.pages.common.logout import LogoutPage
-from common.test.acceptance.pages.lms.courseware_search import CoursewareSearchPage
-from common.test.acceptance.pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
 from common.test.acceptance.tests.helpers import create_user_partition_json, remove_file
 from common.test.acceptance.tests.studio.base_studio_test import ContainerBase
-<<<<<<< HEAD
 
-from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage as StudioAutoAuthPage
-=======
-from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage as StudioAutoAuthPage
-from common.test.acceptance.pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
-from common.test.acceptance.tests.helpers import create_user_partition_json, remove_file
-from common.test.acceptance.tests.studio.base_studio_test import ContainerBase
-from openedx.core.lib.partitions.partitions import Group
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
-=======
 from xmodule.partitions.partitions import Group
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
 
 @attr(shard=1)

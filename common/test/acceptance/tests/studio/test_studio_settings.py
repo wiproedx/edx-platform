@@ -20,17 +20,8 @@ from common.test.acceptance.pages.studio.settings import SettingsPage
 from common.test.acceptance.pages.studio.settings_advanced import AdvancedSettingsPage
 from common.test.acceptance.pages.studio.settings_group_configurations import GroupConfigurationsPage
 from common.test.acceptance.pages.studio.utils import get_input_value
-<<<<<<< HEAD
-<<<<<<< HEAD
-from textwrap import dedent
-=======
-from common.test.acceptance.tests.helpers import create_user_partition_json, element_has_text
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
-from xmodule.partitions.partitions import Group
-=======
 from common.test.acceptance.tests.helpers import create_user_partition_json, element_has_text
 from openedx.core.lib.partitions.partitions import Group
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 @attr(shard=8)

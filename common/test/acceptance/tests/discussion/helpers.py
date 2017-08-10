@@ -6,11 +6,7 @@ import json
 from uuid import uuid4
 
 from common.test.acceptance.fixtures import LMS_BASE_URL
-<<<<<<< HEAD
-from common.test.acceptance.fixtures.course import CourseFixture
-=======
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.fixtures.discussion import (
     ForumsConfigMixin,
     MultipleThreadFixture,

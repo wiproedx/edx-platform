@@ -14,13 +14,6 @@ from common.test.acceptance.pages.studio.container import XBlockWrapper
 from common.test.acceptance.pages.studio.pagination import PaginatedMixin
 from common.test.acceptance.pages.studio.users import UsersPageMixin
 from common.test.acceptance.pages.studio.utils import HelpMixin
-<<<<<<< HEAD
-from common.test.acceptance.pages.common.utils import confirm_prompt, wait_for_notification
-
-from common.test.acceptance.pages.studio import BASE_URL
-=======
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
-
 
 class LibraryPage(PageObject, HelpMixin):
     """

@@ -7,18 +7,13 @@ import logging
 import uuid
 import json
 import warnings
-<<<<<<< HEAD
-from collections import defaultdict
 from urlparse import urljoin, urlsplit, parse_qs, urlunsplit
 
 from django.views.generic import TemplateView
 from pytz import UTC
 from requests import HTTPError
 from ipware.ip import get_ip
-=======
 from collections import defaultdict, namedtuple
-from urlparse import parse_qs, urlsplit, urlunsplit
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
 import edx_oauth2_provider
 from django.conf import settings
@@ -32,25 +27,16 @@ from django.core import mail
 from django.core.urlresolvers import reverse, NoReverseMatch, reverse_lazy
 from django.core.validators import validate_email, ValidationError
 from django.db import IntegrityError, transaction
-<<<<<<< HEAD
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseServerError, Http404
-=======
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
-from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from django.shortcuts import redirect
 from django.utils.encoding import force_bytes, force_text
 from django.utils.translation import ungettext
 from django.utils.http import base36_to_int, urlsafe_base64_encode, urlencode
 from django.utils.translation import ugettext as _, get_language
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
-<<<<<<< HEAD
-from django.views.decorators.http import require_POST, require_GET
-from django.db.models.signals import post_save
-from django.dispatch import receiver, Signal
 from django.template.response import TemplateResponse
-=======
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
 from eventtracking import tracker
@@ -59,7 +45,7 @@ from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from opaque_keys.edx.locator import CourseLocator
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
+
 from provider.oauth2.models import Client
 from ratelimitbackend.exceptions import RateLimitException
 
@@ -100,10 +86,9 @@ from opaque_keys.edx.locator import CourseLocator
 from collections import namedtuple
 
 from courseware.courses import get_courses, sort_by_announcement, sort_by_start_date  # pylint: disable=import-error
-<<<<<<< HEAD
 from courseware.access import has_access
 
-from django_comment_common.models import Role
+from django_comment_common.models import Role, assign_role
 
 from openedx.core.djangoapps.external_auth.models import ExternalAuthMap
 import openedx.core.djangoapps.external_auth.views
@@ -133,7 +118,6 @@ from student.helpers import (
     destroy_oauth_tokens
 )
 from student.cookies import set_logged_in_cookies, delete_logged_in_cookies, set_user_info_cookie
-from student.models import anonymous_id_for_user, UserAttribute, EnrollStatusChange
 from shoppingcart.models import DonationConfiguration, CourseRegistrationCode
 
 from openedx.core.djangoapps.embargo import api as embargo_api
@@ -141,13 +125,10 @@ from openedx.core.djangoapps.embargo import api as embargo_api
 import analytics
 from eventtracking import tracker
 
-=======
-from django_comment_common.models import assign_role
 from edxmako.shortcuts import render_to_response, render_to_string
 from lms.djangoapps.commerce.utils import EcommerceService  # pylint: disable=import-error
 from lms.djangoapps.grades.new.course_grade_factory import CourseGradeFactory
 from lms.djangoapps.verify_student.models import SoftwareSecurePhotoVerification  # pylint: disable=import-error
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 # Note that this lives in LMS, so this dependency should be refactored.
 from notification_prefs.views import enable_notifications
 
@@ -158,10 +139,8 @@ from openedx.core.djangoapps.programs.models import ProgramsApiConfig
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.theming import helpers as theming_helpers
 from openedx.core.djangoapps.user_api.preferences import api as preferences_api
-<<<<<<< HEAD
 from openedx.core.djangoapps.catalog.utils import get_programs_data
 
-=======
 from openedx.core.djangolib.markup import HTML
 from openedx.features.course_experience import course_home_url_name
 from openedx.features.enterprise_support.api import get_dashboard_consent_notification
@@ -207,7 +186,6 @@ from util.json_request import JsonResponse
 from util.milestones_helpers import get_pre_requisite_courses_not_completed
 from util.password_policy_validators import validate_password_strength
 from xmodule.modulestore.django import modulestore
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
 log = logging.getLogger("edx.student")
 AUDIT_LOG = logging.getLogger("audit")
@@ -2179,11 +2157,8 @@ def auto_auth(request):
         user.save()
         profile = UserProfile.objects.get(user=user)
         reg = Registration.objects.get(user=user)
-<<<<<<< HEAD
-=======
     except PermissionDenied:
         return HttpResponseForbidden(_('Account creation not allowed.'))
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
     user.is_staff = is_staff
     user.is_superuser = is_superuser
@@ -2223,22 +2198,15 @@ def auto_auth(request):
         if redirect_to:
             # Redirect to page specified by the client
             redirect_url = redirect_to
-<<<<<<< HEAD
-        # Redirect to course info page if course_id is known
-=======
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
         elif course_id:
             # Redirect to the course homepage (in LMS) or outline page (in Studio)
             try:
-<<<<<<< HEAD
                 # redirect to course info page in LMS
                 redirect_url = reverse(
                     'info',
                     kwargs={'course_id': course_id}
                 )
-=======
                 redirect_url = reverse(course_home_url_name(request), kwargs={'course_id': course_id})
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
             except NoReverseMatch:
                 redirect_url = reverse('course_handler', kwargs={'course_key_string': course_id})
         else:

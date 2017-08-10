@@ -6,19 +6,12 @@ import textwrap
 
 import ddt
 from nose.plugins.attrib import attr
-<<<<<<< HEAD
-from common.test.acceptance.tests.helpers import UniqueCourseTest, TestWithSearchIndexMixin
-from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
-from common.test.acceptance.pages.studio.overview import CourseOutlinePage
-from common.test.acceptance.pages.studio.library import StudioLibraryContentEditor, StudioLibraryContainerXBlockWrapper
-=======
 
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 from common.test.acceptance.fixtures.library import LibraryFixture
 from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.common.logout import LogoutPage
 from common.test.acceptance.pages.lms.course_home import CourseHomePage
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.library import LibraryContentXBlockWrapper
 from common.test.acceptance.pages.studio.library import StudioLibraryContainerXBlockWrapper, StudioLibraryContentEditor

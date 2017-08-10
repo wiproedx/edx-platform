@@ -1,27 +1,15 @@
 from django.test import TestCase
 from django.test.client import Client
-<<<<<<< HEAD
 from django.contrib.auth.models import User
 from django.conf import settings
 from django_comment_common.models import (
     Role, FORUM_ROLE_ADMINISTRATOR, FORUM_ROLE_MODERATOR, FORUM_ROLE_STUDENT)
 from django_comment_common.utils import seed_permissions_roles
-from student.models import anonymous_id_for_user, CourseEnrollment, UserProfile
-=======
 from mock import patch, Mock
 from opaque_keys.edx.locations import SlashSeparatedCourseKey
 from opaque_keys.edx.locator import CourseLocator
-
-from django_comment_common.models import (
-    Role, FORUM_ROLE_ADMINISTRATOR, FORUM_ROLE_MODERATOR, FORUM_ROLE_STUDENT
-)
-from django_comment_common.utils import seed_permissions_roles
 from student.models import anonymous_id_for_user, CourseAccessRole, CourseEnrollment, UserProfile
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from util.testing import UrlResetMixin
-from opaque_keys.edx.locations import SlashSeparatedCourseKey
-from opaque_keys.edx.locator import CourseLocator
-from mock import patch
 import ddt
 import json
 
@@ -271,8 +259,6 @@ class AutoAuthEnabledTestCase(AutoAuthTestCase):
 
         return response
 
-<<<<<<< HEAD
-=======
     @patch("openedx.core.djangoapps.site_configuration.helpers.get_value", Mock(return_value=False))
     def test_create_account_not_allowed(self):
         """
@@ -301,7 +287,6 @@ class AutoAuthEnabledTestCase(AutoAuthTestCase):
                 ).exists()
             )
 
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
 class AutoAuthDisabledTestCase(AutoAuthTestCase):
     """

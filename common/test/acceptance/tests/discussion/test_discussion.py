@@ -10,10 +10,6 @@ from nose.plugins.attrib import attr
 from nose.tools import nottest
 from pytz import UTC
 
-<<<<<<< HEAD
-from common.test.acceptance.tests.discussion.helpers import BaseDiscussionTestCase
-from common.test.acceptance.tests.helpers import UniqueCourseTest
-=======
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 from common.test.acceptance.fixtures.discussion import (
     Comment,
@@ -24,12 +20,8 @@ from common.test.acceptance.fixtures.discussion import (
     Thread,
     UserProfileViewFixture
 )
-<<<<<<< HEAD
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
-from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
-=======
+
 from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.discussion import (
     DiscussionSortPreferencePage,

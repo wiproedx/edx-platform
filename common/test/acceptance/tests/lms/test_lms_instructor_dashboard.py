@@ -12,24 +12,10 @@ from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureD
 from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.common.logout import LogoutPage
 from common.test.acceptance.pages.common.utils import enroll_user_track
-<<<<<<< HEAD
-from common.test.acceptance.pages.lms.auto_auth import AutoAuthPage
-<<<<<<< HEAD
-from common.test.acceptance.pages.studio.overview import CourseOutlinePage
-from common.test.acceptance.pages.lms.create_mode import ModeCreationPage
-from common.test.acceptance.pages.lms.courseware import CoursewarePage
-from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage, EntranceExamAdmin
-from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
-from common.test.acceptance.pages.lms.dashboard import DashboardPage
 from common.test.acceptance.pages.lms.problem import ProblemPage
 from common.test.acceptance.pages.lms.track_selection import TrackSelectionPage
 from common.test.acceptance.pages.lms.pay_and_verify import PaymentAndVerificationFlow, FakePaymentPage
 from common.test.acceptance.pages.lms.login_and_register import CombinedLoginAndRegisterPage
-from common.test.acceptance.tests.helpers import disable_animations
-from common.test.acceptance.fixtures.certificates import CertificateConfigFixture
-=======
-=======
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.create_mode import ModeCreationPage
 from common.test.acceptance.pages.lms.dashboard import DashboardPage
@@ -38,9 +24,7 @@ from common.test.acceptance.pages.lms.instructor_dashboard import (
     InstructorDashboardPage,
     StudentSpecificAdmin
 )
-from common.test.acceptance.pages.lms.login_and_register import CombinedLoginAndRegisterPage
-from common.test.acceptance.pages.lms.problem import ProblemPage
-from common.test.acceptance.pages.studio.overview import CourseOutlinePage as StudioCourseOutlinePage
+from common.test.acceptance.pages.studio.overview import CourseOutlinePage
 from common.test.acceptance.tests.helpers import (
     EventsTestMixin,
     UniqueCourseTest,
@@ -48,7 +32,6 @@ from common.test.acceptance.tests.helpers import (
     disable_animations,
     get_modal_alert
 )
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 class BaseInstructorDashboardTest(EventsTestMixin, UniqueCourseTest):
@@ -1238,8 +1221,6 @@ class CertificateInvalidationTest(BaseInstructorDashboardTest):
             '.certificates-wrapper'
         ])
         self.certificates_section.a11y_audit.check_for_accessibility_errors()
-<<<<<<< HEAD
-=======
 
 
 @attr(shard=10)
@@ -1381,4 +1362,3 @@ class StudentAdminTest(BaseInstructorDashboardTest):
         alert = get_modal_alert(student_admin_section.browser)
         alert.dismiss()
         self.assertFalse(self.instructor_dashboard_page.is_rescore_unsupported_message_visible())
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON

@@ -37,7 +37,6 @@ class HelpContextProcessorTest(TestCase):
 
     def test_get_doc_url(self):
         # Test default values.
-<<<<<<< HEAD
         self.assertEqual(
             "http://edx.readthedocs.io/projects/open-edx-learner-guide/en/latest/index.html",
             HelpContextProcessorTest._get_doc_url()
@@ -48,19 +47,17 @@ class HelpContextProcessorTest(TestCase):
             "http://edx.readthedocs.io/projects/open-edx-learner-guide/en/latest/sfd_dashboard_profile/index.html",
             HelpContextProcessorTest._get_doc_url('profile')
         )
-=======
+
         doc = "http://edx.readthedocs.io/projects/open-edx-learner-guide/en/{}/index.html"
         self.assertEqual(self._get_doc_url(), doc.format(doc_version()))
 
         # Provide a known page_token.
         doc = "http://edx.readthedocs.io/projects/open-edx-learner-guide/en/{}/sfd_dashboard_profile/index.html"
         self.assertEqual(self._get_doc_url('profile'), doc.format(doc_version()))
->>>>>>> f7b08b1... Adapt the tests to openedx.core.release.doc_version()
 
         # Use settings.DOC_LINK_BASE_URL to override default base_url.
         doc = "settings_base_url/en/{}/SFD_instructor_dash_help.html"
         with patch('django.conf.settings.DOC_LINK_BASE_URL', 'settings_base_url'):
-<<<<<<< HEAD
             self.assertEqual(
                 "settings_base_url/en/latest/SFD_instructor_dash_help.html",
                 HelpContextProcessorTest._get_doc_url('instructor')
@@ -68,27 +65,11 @@ class HelpContextProcessorTest(TestCase):
 
     def test_get_pdf_url(self):
         # Test default values.
-        self.assertEqual(
-            "https://media.readthedocs.org/pdf/open-edx-learner-guide/latest/open-edx-learner-guide.pdf",
-            HelpContextProcessorTest._get_pdf_url()
-        )
-=======
-            self.assertEqual(self._get_doc_url('instructor'), doc.format(doc_version()))
-
-    def test_get_pdf_url(self):
-        # Test default values.
         doc = "https://media.readthedocs.org/pdf/open-edx-learner-guide/{}/open-edx-learner-guide.pdf"
         self.assertEqual(self._get_pdf_url(), doc.format(doc_version()))
->>>>>>> f7b08b1... Adapt the tests to openedx.core.release.doc_version()
+
 
         # Use settings.DOC_LINK_BASE_URL to override default base_url.
         doc = "settings_base_url/{}/open-edx-learner-guide.pdf"
         with patch('django.conf.settings.DOC_LINK_BASE_URL', 'settings_base_url'):
-<<<<<<< HEAD
-            self.assertEqual(
-                "settings_base_url/latest/open-edx-learner-guide.pdf",
-                HelpContextProcessorTest._get_pdf_url()
-            )
-=======
             self.assertEqual(self._get_pdf_url(), doc.format(doc_version()))
->>>>>>> f7b08b1... Adapt the tests to openedx.core.release.doc_version()

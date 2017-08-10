@@ -88,12 +88,8 @@ from lms.envs.common import (
     # File upload defaults
     FILE_UPLOAD_STORAGE_BUCKET_NAME,
     FILE_UPLOAD_STORAGE_PREFIX,
-<<<<<<< HEAD
-=======
-
     COURSE_ENROLLMENT_MODES,
     HELP_TOKENS_BOOKS,
->>>>>>> 2f1936c... Replace context processor with new help-tokens app
 )
 from path import Path as path
 from warnings import simplefilter

@@ -1,11 +1,6 @@
 """
 Utility methods common to Studio and the LMS.
 """
-<<<<<<< HEAD
-from bok_choy.promise import EmptyPromise
-from common.test.acceptance.tests.helpers import disable_animations
-from selenium.webdriver.common.action_chains import ActionChains
-=======
 from bok_choy.promise import BrokenPromise
 from selenium.webdriver.common.action_chains import ActionChains
 
@@ -13,7 +8,6 @@ from common.test.acceptance.pages.lms.create_mode import ModeCreationPage
 from common.test.acceptance.pages.lms.pay_and_verify import FakePaymentPage, PaymentAndVerificationFlow
 from common.test.acceptance.pages.lms.track_selection import TrackSelectionPage
 from common.test.acceptance.tests.helpers import disable_animations
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 def wait_for_notification(page):

@@ -8,37 +8,15 @@ from textwrap import dedent
 
 from nose.plugins.attrib import attr
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 from common.test.acceptance.tests.helpers import UniqueCourseTest, create_user_partition_json
-from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
-from common.test.acceptance.pages.lms.courseware import CoursewarePage
-from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage
+from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.lms.staff_view import StaffPage
-from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 from bok_choy.promise import EmptyPromise
-from xmodule.partitions.partitions import Group
-from textwrap import dedent
-=======
-from nose.plugins.attrib import attr
 
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 from common.test.acceptance.pages.lms.courseware import CoursewarePage
 from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage
-from common.test.acceptance.pages.lms.staff_view import StaffCoursewarePage
-from common.test.acceptance.pages.studio.auto_auth import AutoAuthPage
-from common.test.acceptance.tests.helpers import UniqueCourseTest, create_user_partition_json
 from openedx.core.lib.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID, MINIMUM_STATIC_PARTITION_ID, Group
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
-=======
-from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
-from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
-from common.test.acceptance.pages.lms.courseware import CoursewarePage
-from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage
-from common.test.acceptance.pages.lms.staff_view import StaffCoursewarePage
-from common.test.acceptance.tests.helpers import UniqueCourseTest, create_user_partition_json
-from xmodule.partitions.partitions import ENROLLMENT_TRACK_PARTITION_ID, MINIMUM_STATIC_PARTITION_ID, Group
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON
 
 
 @attr(shard=10)

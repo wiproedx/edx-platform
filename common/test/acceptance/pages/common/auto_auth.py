@@ -21,13 +21,8 @@ class AutoAuthPage(PageObject):
     # Internal cache for parsed user info.
     _user_info = None
 
-<<<<<<< HEAD:common/test/acceptance/pages/lms/auto_auth.py
-    def __init__(self, browser, username=None, email=None, password=None, full_name=None, staff=None, course_id=None,
-                 enrollment_mode=None, roles=None):
-=======
     def __init__(self, browser, username=None, email=None, password=None, full_name=XSS_INJECTION, staff=False, course_id=None,
                  enrollment_mode=None, roles=None, no_login=False, is_active=True, course_access_roles=None):
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON:common/test/acceptance/pages/common/auto_auth.py
         """
         Auto-auth is an end-point for HTTP GET requests.
         By default, it will create accounts with random user credentials,
@@ -74,12 +69,9 @@ class AutoAuthPage(PageObject):
         if roles:
             self._params['roles'] = roles
 
-<<<<<<< HEAD:common/test/acceptance/pages/lms/auto_auth.py
-=======
         if no_login:
             self._params['no_login'] = True
 
->>>>>>> 6ff6148... Updated auto_auth endpoint to always return JSON:common/test/acceptance/pages/common/auto_auth.py
     @property
     def url(self):
         """

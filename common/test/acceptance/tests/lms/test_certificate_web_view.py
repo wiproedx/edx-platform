@@ -9,12 +9,9 @@ from common.test.acceptance.pages.common.auto_auth import AutoAuthPage
 from common.test.acceptance.pages.lms.certificate_page import CertificatePage
 from common.test.acceptance.pages.lms.course_info import CourseInfoPage
 from common.test.acceptance.pages.lms.tab_nav import TabNavPage
-<<<<<<< HEAD
 from common.test.acceptance.pages.lms.course_nav import CourseNavPage
 from common.test.acceptance.pages.lms.progress import ProgressPage
-=======
 from common.test.acceptance.tests.helpers import EventsTestMixin, UniqueCourseTest, get_element_padding, load_data_str
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 
 @attr(shard=5)

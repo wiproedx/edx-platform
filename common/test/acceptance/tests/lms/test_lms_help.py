@@ -40,14 +40,10 @@ class TestCohortHelp(ContainerBase):
             href (str): Help url
         """
         actual_link = self.cohort_management.get_cohort_help_element_and_click_help()
-<<<<<<< HEAD
-
         assert_link(self, expected_link, actual_link)
         assert_opened_help_link_is_correct(self, self.get_url_with_changed_domain(href))
-=======
         self.assertEqual(actual_link.text, "What does this mean?")
         assert_opened_help_link_is_correct(self, href)
->>>>>>> 2f1936c... Replace context processor with new help-tokens app
 
     def test_manual_cohort_help(self):
         """
@@ -63,18 +59,10 @@ class TestCohortHelp(ContainerBase):
         """
         self.cohort_management.add_cohort('cohort_name')
 
-<<<<<<< HEAD
-        href = (
-            'http://edx.readthedocs.org/projects/edx-partner-course-staff/en/{}/'
-            'course_features/cohorts/cohort_config.html#assign-learners-to-cohorts-manually'
-        ).format(doc_version())
-
-=======
         href = url_for_help(
             'course_author',
             '/course_features/cohorts/cohort_config.html#assign-learners-to-cohorts-manually',
         )
->>>>>>> 2f1936c... Replace context processor with new help-tokens app
         self.verify_help_link(href)
 
     def test_automatic_cohort_help(self):
@@ -92,18 +80,10 @@ class TestCohortHelp(ContainerBase):
 
         self.cohort_management.add_cohort('cohort_name', assignment_type='random')
 
-<<<<<<< HEAD
-        href = (
-            'http://edx.readthedocs.org/projects/edx-partner-course-staff/en/{}/'
-            'course_features/cohorts/cohorts_overview.html#all-automated-assignment'
-        ).format(doc_version())
-
-=======
         href = url_for_help(
             'course_author',
             '/course_features/cohorts/cohorts_overview.html#all-automated-assignment',
         )
->>>>>>> 2f1936c... Replace context processor with new help-tokens app
         self.verify_help_link(href)
 
     def enable_cohorting(self, course_fixture):

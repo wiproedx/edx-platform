@@ -9,12 +9,9 @@ from selenium.webdriver import ActionChains
 from common.test.acceptance.pages.lms import BASE_URL
 from common.test.acceptance.pages.lms.fields import FieldsMixin
 from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage
-<<<<<<< HEAD
 from selenium.webdriver import ActionChains
 
-=======
 from common.test.acceptance.tests.helpers import select_option_by_value
->>>>>>> 74f9858... Optimized all imports in common.test.acceptance
 
 PROFILE_VISIBILITY_SELECTOR = '#u-field-select-account_privacy option[value="{}"]'
 FIELD_ICONS = {
