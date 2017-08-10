@@ -15,9 +15,6 @@ from common.test.acceptance.pages.lms.edxnotes import EdxNotesUnitPage, EdxNotes
 from common.test.acceptance.fixtures.edxnotes import EdxNotesFixture, Note, Range
 from flaky import flaky
 
-import logging
-
-LOGGER = logging.getLogger(__name__)
 
 class EdxNotesTestMixin(UniqueCourseTest):
     """
@@ -454,7 +451,6 @@ class EdxNotesPageTest(EventsTestMixin, EdxNotesTestMixin):
         if view == 'Recent Activity':
             view = None
 
-        LOGGER.warning('VIEW HERE IN ASSERT EVENT VIEW: ' + view, exc_info=True)	
         actual_events = self.wait_for_events(
             event_filter={'event_type': 'edx.course.student_notes.notes_page_viewed'},
             number_of_matches=1 if view is None else 2

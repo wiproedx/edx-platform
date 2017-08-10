@@ -759,7 +759,7 @@ class StaffLockTest(CourseOutlineTest):
         """
         self.course_outline_page.visit()
         self.course_outline_page.section_at(0).subsection_at(1).set_staff_lock(True)
-        self.course_outline_page.view_live()        
+        self.course_outline_page.view_live()
         courseware = CoursewarePage(self.browser, self.course_id)
         courseware.wait_for_page()
         self.assertEqual(courseware.num_subsections, 2)
