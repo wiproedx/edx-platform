@@ -288,6 +288,7 @@ class TestCourseImport(ImportTestMixin, StudioCourseTest):
         """
         self.assertEqual(self.import_page.header_text, 'Course Import')
 
+    @flaky  # Fixed with update to ginkgo
     def test_multiple_course_import_message(self):
         """
         Given that I visit an empty course before import
