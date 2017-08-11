@@ -2,7 +2,8 @@
 Test Help links in LMS
 """
 import json
-
+from nose.plugins.attrib import attr
+from unittest import skip
 
 from common.test.acceptance.tests.lms.test_lms_instructor_dashboard import BaseInstructorDashboardTest
 from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDashboardPage
@@ -16,6 +17,7 @@ from common.test.acceptance.tests.helpers import (
 )
 
 
+@attr(shard=10)
 class TestCohortHelp(ContainerBase):
     """
     Tests help links in Cohort page
