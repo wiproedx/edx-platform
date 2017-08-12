@@ -172,6 +172,16 @@ class DashboardPage(PageObject):
         """
         return self.q(css='ul.listing-courses .course-item:first-of-type .info-date-block').first.text[0]
 
+    def get_course_date_gmt(self):
+        """
+        Get the course date of the first course from dashboard as GMT
+        """
+        UTC_OFFSET_TIMEDELTA = datetime.datetime.utcnow() - datetime.datetime.now()
+        course_date = self.get_course_date(self)
+        course_date_split = course_date.split("- ")
+        result_utc_datetime = datetime.fromtimestamp(course_date_split[1]) + UTC_OFFSET_TIMEDELTA
+        return course_date_split[0] + "- " + result_utc_datetime.strftime("%b %d, %Y %H:%M GMT")
+
     def click_username_dropdown(self):
         """
         Click username dropdown.

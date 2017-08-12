@@ -199,7 +199,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         # reload the page for changes to course date changes to appear in dashboard
         self.dashboard_page.visit()
 
-        course_date = self.dashboard_page.get_course_date()
+        course_date = self.dashboard_page.get_course_date_gmt()
 
         # Test that proper course date with 'ended' message is displayed if a course has already ended
         self.assertEqual(course_date, expected_course_date)
@@ -232,7 +232,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         # reload the page for changes to course date changes to appear in dashboard
         self.dashboard_page.visit()
 
-        course_date = self.dashboard_page.get_course_date()
+        course_date = self.dashboard_page.get_course_date_gmt()
 
         # Test that proper course date with 'started' message is displayed if a course is in running state
         self.assertEqual(course_date, expected_course_date)
@@ -265,7 +265,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         # reload the page for changes to course date changes to appear in dashboard
         self.dashboard_page.visit()
 
-        course_date = self.dashboard_page.get_course_date()
+        course_date = self.dashboard_page.get_course_date_gmt()
 
         # Test that proper course date with 'starts' message is displayed if a course is about to start in future,
         # and course does not start within 5 days
@@ -299,7 +299,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         # reload the page for changes to course date changes to appear in dashboard
         self.dashboard_page.visit()
 
-        course_date = self.dashboard_page.get_course_date()
+        course_date = self.dashboard_page.get_course_date_gmt()
 
         # Test that proper course date with 'starts' message is displayed if a course is about to start in future,
         # and course starts within 5 days
