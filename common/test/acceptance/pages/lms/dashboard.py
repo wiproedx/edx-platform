@@ -185,10 +185,10 @@ class DashboardPage(PageObject):
 
         # Round the seconds value up, the UTC_OFFSET_TIMEDELTA loses a few microseconds
         result_utc_datetime = (
-            datetime.strptime(course_date_split[1], DATE_STRING_FORMAT) + 
+            datetime.strptime(course_date_split[1], DATE_STRING_FORMAT) +
             timedelta(days=UTC_OFFSET_TIMEDELTA.days, seconds=round(UTC_OFFSET_TIMEDELTA.total_seconds()))
         )
-        return course_date_split[0] + "- " + result_utc_datetime.strftime(DATE_STRING_FORMAT)    
+        return course_date_split[0] + "- " + result_utc_datetime.strftime(DATE_STRING_FORMAT)
 
     def click_username_dropdown(self):
         """
