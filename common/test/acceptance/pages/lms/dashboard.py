@@ -5,7 +5,7 @@ Student dashboard page.
 from bok_choy.page_object import PageObject
 from common.test.acceptance.pages.lms import BASE_URL
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class DashboardPage(PageObject):
@@ -180,10 +180,15 @@ class DashboardPage(PageObject):
         """
         UTC_OFFSET_TIMEDELTA = datetime.utcnow() - datetime.now()
         DATE_STRING_FORMAT = "%b %d, %Y"
-        course_date = self.get_course_date()
+        course_date = self.get_course_date(self)
         course_date_split = course_date.split("- ")
-        result_utc_datetime = datetime.strptime(course_date_split[1], DATE_STRING_FORMAT) + UTC_OFFSET_TIMEDELTA
-        return course_date_split[0] + "- " + result_utc_datetime.strftime(DATE_STRING_FORMAT)
+
+        # Round the seconds value up, the UTC_OFFSET_TIMEDELTA loses a few microseconds
+        result_utc_datetime = (
+            datetime.strptime(course_date_split[1], DATE_STRING_FORMAT) + 
+            timedelta(days=UTC_OFFSET_TIMEDELTA.days, seconds=round(UTC_OFFSET_TIMEDELTA.total_seconds()))
+        )
+        return course_date_split[0] + "- " + result_utc_datetime.strftime(DATE_STRING_FORMAT)    
 
     def click_username_dropdown(self):
         """
