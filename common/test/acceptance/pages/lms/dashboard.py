@@ -180,7 +180,7 @@ class DashboardPage(PageObject):
         """
         UTC_OFFSET_TIMEDELTA = datetime.utcnow() - datetime.now()
         DATE_STRING_FORMAT = "%b %d, %Y"
-        course_date = self.get_course_date(self)
+        course_date = self.get_course_date()
         course_date_split = course_date.split("- ")
 
         # Round the seconds value up, the UTC_OFFSET_TIMEDELTA loses a few microseconds
