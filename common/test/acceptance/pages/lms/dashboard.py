@@ -173,7 +173,7 @@ class DashboardPage(PageObject):
         """
         return self.q(css='ul.listing-courses .course-item:first-of-type .info-date-block').first.text[0]
 
-    def get_course_date_gmt():
+    def get_course_date_gmt(self):
         """
         Get the course date of the first course from dashboard as GMT
         """
