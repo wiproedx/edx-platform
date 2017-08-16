@@ -3,6 +3,7 @@
 End-to-end tests for the main LMS Dashboard (aka, Student Dashboard).
 """
 import datetime
+import pytz
 from nose.plugins.attrib import attr
 
 from common.test.acceptance.tests.helpers import UniqueCourseTest, generate_course_key
@@ -139,7 +140,11 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         super(LmsDashboardPageTest, self).setUp()
 
         # now datetime for usage in tests
-        self.now = datetime.datetime.now()
+        self.now = datetime.datetime.utcnow()
+
+    def _to_utc(local_datetime, tz):
+        timezone = pytz.timezone(tz)        
+        return timezone.localize(local_datetime).astimezone(pytz.utc)
 
     def test_dashboard_course_listings(self):
         """
@@ -184,7 +189,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         When I visit dashboard page
         Then the course date should have the following format "Ended - %b %d, %Y" e.g. "Ended - Sep 23, 2015"
         """
-        course_start_date = datetime.datetime(1970, 1, 1)
+        course_start_date = self.now - datetime.timedelta(days=365)
         course_end_date = self.now - datetime.timedelta(days=90)
 
         self.course_fixture.add_course_details({
@@ -199,7 +204,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         # reload the page for changes to course date changes to appear in dashboard
         self.dashboard_page.visit()
 
-        course_date = self.dashboard_page.get_course_date_gmt()
+        course_date = self.dashboard_page.get_course_date()
 
         # Test that proper course date with 'ended' message is displayed if a course has already ended
         self.assertEqual(course_date, expected_course_date)
@@ -217,7 +222,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         When I visit dashboard page
         Then the course date should have the following format "Started - %b %d, %Y" e.g. "Started - Sep 23, 2015"
         """
-        course_start_date = datetime.datetime(1970, 1, 1)
+        course_start_date = self.now - datetime.timedelta(days=90)
         course_end_date = self.now + datetime.timedelta(days=90)
 
         self.course_fixture.add_course_details({
@@ -232,7 +237,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         # reload the page for changes to course date changes to appear in dashboard
         self.dashboard_page.visit()
 
-        course_date = self.dashboard_page.get_course_date_gmt()
+        course_date = self.dashboard_page.get_course_date()
 
         # Test that proper course date with 'started' message is displayed if a course is in running state
         self.assertEqual(course_date, expected_course_date)
@@ -265,7 +270,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         # reload the page for changes to course date changes to appear in dashboard
         self.dashboard_page.visit()
 
-        course_date = self.dashboard_page.get_course_date_gmt()
+        course_date = self.dashboard_page.get_course_date()
 
         # Test that proper course date with 'starts' message is displayed if a course is about to start in future,
         # and course does not start within 5 days
@@ -299,7 +304,7 @@ class LmsDashboardPageTest(BaseLmsDashboardTest):
         # reload the page for changes to course date changes to appear in dashboard
         self.dashboard_page.visit()
 
-        course_date = self.dashboard_page.get_course_date_gmt()
+        course_date = self.dashboard_page.get_course_date()
 
         # Test that proper course date with 'starts' message is displayed if a course is about to start in future,
         # and course starts within 5 days
