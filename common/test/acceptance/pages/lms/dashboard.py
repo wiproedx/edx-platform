@@ -188,7 +188,17 @@ class DashboardPage(PageObject):
             datetime.strptime(course_date_split[1], DATE_STRING_FORMAT) +
             timedelta(days=UTC_OFFSET_TIMEDELTA.days, seconds=round(UTC_OFFSET_TIMEDELTA.total_seconds()))
         )
-        return course_date_split[0] + "- " + result_utc_datetime.strftime(DATE_STRING_FORMAT)
+        
+        try: 
+            result = course_date_split[0] + "- " + result_utc_datetime.strftime(DATE_STRING_FORMAT)
+        except ValueError, v:
+            ulr = len(v.args[0].partition('unconverted data remains: ')[2])
+            if ulr:
+                result =  course_date_split[0] + "- " + result_utc_datetime[:-ulr].strftime(DATE_STRING_FORMAT)
+            else
+                raise v
+
+        return result
 
     def click_username_dropdown(self):
         """
