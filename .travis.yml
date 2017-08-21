@@ -58,6 +58,7 @@ branches:
   - oxa/ci
   - oxa/ci-docker
   - oxa/ci-docker-qual
+  - rev85-/r_eol_js
 
 before_install:
 # Login and fetch container from Azure container registry
