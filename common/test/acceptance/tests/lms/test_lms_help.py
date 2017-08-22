@@ -105,6 +105,7 @@ class TestCohortHelp(ContainerBase):
         self.assertTrue(response.ok, "Failed to enable cohorts")
 
 
+@attr(shard=10)
 class InstructorDashboardHelp(BaseInstructorDashboardTest):
     """
     Tests opening help from the general Help button in the instructor dashboard.
